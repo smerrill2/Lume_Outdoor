@@ -1,120 +1,171 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Navbar from '@/components/Navbar';
+import ServicesGrid from '@/components/ServicesGrid';
+import PreviousWorkShowcase from '@/components/PreviousWorkShowcase';
+import Testimonials from '@/components/Testimonials';
+import ServiceProcess from '@/components/ServiceProcess';
+import ServiceAreaMap from '@/components/ServiceAreaMap';
+import FAQ from '@/components/FAQ';
+import ContactForm from '@/components/ContactForm';
+import Footer from '@/components/Footer';
+import SEO from '@/components/SEO';
 import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useImage } from '@/lib/imageConfig';
+
+// Register ScrollTrigger plugin
+gsap.registerPlugin(ScrollTrigger);
 
 function HomePage() {
+  const heroBackground = useImage('hero', 'background');
+  const starsBackground = useImage('hero', 'stars');
+  const heroTagRef = useRef(null);
+  const heroTitleRef = useRef(null);
+  const heroSubtitleRef = useRef(null);
+  const heroButtonRef = useRef(null);
+  
+  useEffect(() => {
+    // Initialize references to DOM elements
+    const starsElement = document.getElementById('starsBackground');
+    
+    // Initial state - set opacity to 0 for all elements
+    gsap.set([heroTagRef.current, heroTitleRef.current, heroSubtitleRef.current, heroButtonRef.current], { 
+      opacity: 0, 
+      y: 20 
+    });
+    
+    // Create a timeline for staggered animation
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+    
+    // Subtle stars animation
+    gsap.to(starsElement, {
+      backgroundPosition: '0% 10%',
+      duration: 100,
+      repeat: -1,
+      ease: "none",
+      yoyo: true
+    });
+    
+    // Animate stars opacity
+    gsap.fromTo(starsElement, 
+      { opacity: 0 },
+      { opacity: 0.4, duration: 2, ease: "power2.out" }
+    );
+    
+    // Staggered entrance animation
+    tl.to(heroTagRef.current, { opacity: 1, y: 0, duration: 0.8, delay: 0.2 })
+      .to(heroTitleRef.current, { opacity: 1, y: 0, duration: 0.8 }, "-=0.5")
+      .to(heroSubtitleRef.current, { opacity: 1, y: 0, duration: 0.8 }, "-=0.5")
+      .to(heroButtonRef.current, { 
+        opacity: 1, 
+        y: 0, 
+        duration: 0.8,
+        onComplete: () => {
+          // Optional pulse animation for the button to draw attention
+          gsap.to(heroButtonRef.current, {
+            scale: 1.05,
+            duration: 0.5,
+            repeat: 1,
+            yoyo: true,
+            ease: "power1.inOut"
+          });
+        }
+      }, "-=0.5");
+      
+  }, []);
+
   return (
-    <>
-      <style>
-        {`
-          @keyframes flicker {
-            0%, 100% { opacity: 1; }
-            25% { opacity: 0.85; }
-            50% { opacity: 0.95; }
-            75% { opacity: 0.9; }
-          }
-          
-          .twinkling {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: transparent url('/stars.png') repeat;
-            animation: move-twink-back 200s linear infinite;
-            z-index: 1;
-          }
-          
-          @keyframes move-twink-back {
-            from {background-position: 0 0;}
-            to {background-position: -10000px 5000px;}
-          }
-          
-          .light-beam {
-            position: absolute;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,215,0,0.3) 0%, rgba(255,165,0,0.1) 40%, rgba(255,165,0,0) 70%);
-            animation: expand 4s ease-in-out infinite;
-            z-index: 2;
-          }
-          
-          @keyframes expand {
-            0%, 100% { transform: scale(0.8); opacity: 0.5; }
-            50% { transform: scale(1.2); opacity: 0.8; }
-          }
-          
-          .btn-glow {
-            box-shadow: 0 0 15px #ffa500;
-            animation: glow 1.5s ease-in-out infinite alternate;
-          }
-          
-          @keyframes glow {
-            from { box-shadow: 0 0 10px #ffa500; }
-            to { box-shadow: 0 0 20px #ffa500, 0 0 30px #ff8c00; }
-          }
-        `}
-      </style>
-      <div className="bg-slate-900">
-        <Navbar />
-        <main>
-          <section
-            className="min-h-screen flex flex-col justify-end items-center text-white bg-cover bg-bottom relative px-6 pb-24 pt-24 md:pt-32 bg-[url('/mobile2.png')]"
-          >
-            {/* Twinkling stars overlay */}
-            <div className="twinkling"></div>
-            
-            {/* Light beams */}
-            <div className="light-beam absolute top-1/2 left-1/4" style={{ width: '300px', height: '300px' }}></div>
-            <div className="light-beam absolute bottom-1/3 right-1/4" style={{ width: '250px', height: '250px', animationDelay: '1s' }}></div>
-            <div className="light-beam absolute top-2/3 right-1/3" style={{ width: '200px', height: '200px', animationDelay: '2s' }}></div>
-            
-            {/* Dark overlay with gradient */}
-            <div
-              className="absolute inset-0 z-0"
-              style={{
-                background: 'linear-gradient(to bottom, rgba(0,0,15,0.4) 0%, rgba(0,0,30,0.6) 50%, rgba(0,0,0,0.8) 100%)',
+    <div className="min-h-screen bg-white">
+      <SEO />
+      <Navbar />
+      
+      <main>
+        {/* Hero Section */}
+        <section className="relative">
+          {/* Hero Image with Overlay */}
+          <div className="relative h-[calc(100vh-64px)] min-h-[500px] bg-black overflow-hidden">
+            {/* Background Image */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ 
+                backgroundImage: `url(${heroBackground})`,
+                filter: 'brightness(1)'
               }}
             ></div>
-
-            <div className="max-w-3xl text-center relative z-10 bg-black/30 p-8 rounded-lg backdrop-blur-sm mb-12">
-              <h1 className="text-5xl md:text-7xl font-bold mb-6 text-amber-100">
-                <span className="text-white">Transform</span> Your <span className="text-amber-400">Home</span> After Dark
-              </h1>
-              <p className="text-xl md:text-2xl mb-8 text-amber-50">
-                Professional outdoor lighting solutions that enhance beauty, safety, and the value of your property
-              </p>
-              <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                {/* Primary CTA with glow effect */}
-                <Button className="btn-glow relative bg-amber-600 text-white font-bold py-4 px-10 text-lg h-auto border-2 border-amber-500 overflow-hidden group">
-                  <span className="relative z-10">ILLUMINATE YOUR HOME</span>
-                </Button>
-                
-                {/* Secondary CTA with frost glass effect */}
-                <Button className="relative bg-transparent backdrop-blur-md text-white font-bold py-4 px-10 text-lg h-auto border border-white/30 overflow-hidden group hover:bg-white/10 transition-all duration-300">
-                  <span className="relative z-10">VIEW OUR WORK</span>
-                </Button>
-              </div>
+            
+            {/* Background with stars */}
+            <div className="absolute inset-0 bg-black/50">
+              <div 
+                className="absolute inset-0 opacity-40"
+                style={{ 
+                  backgroundImage: `url(${starsBackground})`,
+                  backgroundSize: 'cover'
+                }}
+                id="starsBackground"
+              ></div>
             </div>
             
-            {/* Feature highlights */}
-            <div className="w-full flex justify-between text-center relative z-10 px-4 md:px-10 max-w-6xl mx-auto">
-              <div className="bg-black/40 backdrop-blur-md p-4 rounded-lg flex-1 mx-2">
-                <h3 className="text-amber-400 text-lg font-semibold">Elegance</h3>
-                <p className="text-white/80 text-sm">Highlight architectural features</p>
+            {/* Hero Content */}
+            <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-4">
+              <div 
+                ref={heroTagRef}
+                className="inline-block bg-orange-500 text-white text-xs font-medium px-3 py-1 rounded-full mb-4"
+              >
+                OUTDOOR &amp; LANDSCAPE LIGHTING
               </div>
-              <div className="bg-black/40 backdrop-blur-md p-4 rounded-lg flex-1 mx-2">
-                <h3 className="text-amber-400 text-lg font-semibold">Security</h3>
-                <p className="text-white/80 text-sm">Enhance safety around your home</p>
-              </div>
-              <div className="bg-black/40 backdrop-blur-md p-4 rounded-lg flex-1 mx-2">
-                <h3 className="text-amber-400 text-lg font-semibold">Value</h3>
-                <p className="text-white/80 text-sm">Increase property appeal</p>
-              </div>
+              
+              <h1 
+                ref={heroTitleRef}
+                className="text-4xl md:text-6xl font-bold text-white mb-4"
+              >
+                Transform Your<br />Nightscape
+              </h1>
+              
+              <p 
+                ref={heroSubtitleRef}
+                className="text-white text-lg md:text-xl max-w-2xl mb-8"
+              >
+                Professional outdoor & landscape lighting that<br />brings your property to life after dark.
+              </p>
+              
+              <Button 
+                ref={heroButtonRef}
+                className="bg-orange-500 hover:bg-orange-600 text-white py-3 px-6 rounded-md flex items-center gap-2 text-base font-medium"
+                onClick={() => window.location.href = '/?view=consultation'}
+              >
+                Schedule Light Consultation <ArrowRight className="h-4 w-4" />
+              </Button>
             </div>
-          </section>
-        </main>
-      </div>
-    </>
+          </div>
+        </section>
+
+        {/* Services Grid Section */}
+        <ServicesGrid />
+
+        {/* Previous Work Showcase Section */}
+        <PreviousWorkShowcase />
+
+        {/* Testimonials Section */}
+        <Testimonials />
+
+        {/* Service Process Section */}
+        <ServiceProcess />
+
+        {/* Service Area Map Section */}
+        <ServiceAreaMap />
+
+        {/* FAQ Section */}
+        <FAQ />
+
+        {/* Contact Form Section */}
+        <ContactForm />
+      </main>
+
+      {/* Footer */}
+      <Footer />
+    </div>
   );
 }
 

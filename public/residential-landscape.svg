@@ -1,0 +1,14 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- House -->
+  <path d="M32 12L44 22v20H20V22L32 12z" fill="#ffffff"/>
+  
+  <!-- Trees/Landscaping -->
+  <circle cx="12" cy="30" r="6" fill="#ffffff"/>
+  <rect x="10" y="36" width="4" height="7" fill="#ffffff"/>
+  
+  <circle cx="52" cy="30" r="6" fill="#ffffff"/>
+  <rect x="50" y="36" width="4" height="7" fill="#ffffff"/>
+  
+  <!-- Ground line -->
+  <rect x="6" y="43" width="52" height="2" fill="#ffffff"/>
+</svg> 

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project Detail - Lume Outdoor</title>
+    <script>
+      // Redirect to the main React app and pass the project ID as a parameter
+      window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectId = urlParams.get('id');
+        
+        // Store the project ID in sessionStorage
+        if (projectId) {
+          sessionStorage.setItem('currentProjectId', projectId);
+        }
+        
+        // Redirect to the main app
+        window.location.href = '/?view=project-detail';
+      }
+    </script>
+  </head>
+  <body>
+    <p>Loading project details...</p>
+  </body>
+</html>

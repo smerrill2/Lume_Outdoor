@@ -1,0 +1,21 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Curved pathway -->
+  <path d="M10 45 Q32 35 54 45" stroke="#ffffff" stroke-width="6" fill="none"/>
+  
+  <!-- Light fixtures along path -->
+  <circle cx="18" cy="41" r="2" fill="#ffffff"/>
+  <rect x="17" y="35" width="2" height="6" fill="#ffffff"/>
+  
+  <circle cx="32" cy="37" r="2" fill="#ffffff"/>
+  <rect x="31" y="31" width="2" height="6" fill="#ffffff"/>
+  
+  <circle cx="46" cy="41" r="2" fill="#ffffff"/>
+  <rect x="45" y="35" width="2" height="6" fill="#ffffff"/>
+  
+  <!-- Small landscaping elements -->
+  <circle cx="12" cy="25" r="4" fill="#ffffff"/>
+  <circle cx="52" cy="28" r="4" fill="#ffffff"/>
+  
+  <!-- Ground line -->
+  <rect x="6" y="48" width="52" height="2" fill="#ffffff"/>
+</svg> 

@@ -1,0 +1,27 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Commercial Building -->
+  <rect x="22" y="8" width="20" height="34" fill="#ffffff"/>
+  
+  <!-- Building windows (more floors) -->
+  <rect x="25" y="12" width="4" height="3" fill="#1D4B26"/>
+  <rect x="35" y="12" width="4" height="3" fill="#1D4B26"/>
+  <rect x="25" y="18" width="4" height="3" fill="#1D4B26"/>
+  <rect x="35" y="18" width="4" height="3" fill="#1D4B26"/>
+  <rect x="25" y="24" width="4" height="3" fill="#1D4B26"/>
+  <rect x="35" y="24" width="4" height="3" fill="#1D4B26"/>
+  <rect x="25" y="30" width="4" height="3" fill="#1D4B26"/>
+  <rect x="35" y="30" width="4" height="3" fill="#1D4B26"/>
+  
+  <!-- Entrance -->
+  <rect x="29" y="36" width="6" height="6" fill="#1D4B26"/>
+  
+  <!-- Tree -->
+  <circle cx="12" cy="30" r="6" fill="#ffffff"/>
+  <rect x="10" y="36" width="4" height="7" fill="#ffffff"/>
+  
+  <!-- Structured Landscaping -->
+  <rect x="46" y="38" width="8" height="5" fill="#ffffff"/>
+  
+  <!-- Ground line -->
+  <rect x="6" y="43" width="52" height="2" fill="#ffffff"/>
+</svg> 
