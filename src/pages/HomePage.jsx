@@ -6,7 +6,7 @@ import Testimonials from '@/components/Testimonials';
 import ServiceProcess from '@/components/ServiceProcess';
 import ServiceAreaMap from '@/components/ServiceAreaMap';
 import FAQ from '@/components/FAQ';
-import ContactForm from '@/components/ContactForm';
+import ContactFormWithJobber from '@/components/ContactFormWithJobber';
 import Footer from '@/components/Footer';
 import SEO from '@/components/SEO';
 import { Button } from '@/components/ui/button';
@@ -160,7 +160,7 @@ function HomePage() {
         <FAQ />
 
         {/* Contact Form Section */}
-        <ContactForm />
+        <ContactFormWithJobber />
       </main>
 
       {/* Footer */}
