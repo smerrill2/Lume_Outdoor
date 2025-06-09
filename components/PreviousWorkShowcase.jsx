@@ -5,48 +5,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useImage } from '@/lib/imageConfig';
+import { projects } from '@/lib/content';
 import { Star } from 'lucide-react';
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
 
-// Project data moved inside component to use dynamic images
-
 function PreviousWorkShowcase() {
-  // Get project images using the useImage hook
-  const showcaseImage1 = useImage('projects', 'showcase1');
-  const heroBackground = useImage('hero', 'background');
-  
-  // Sample project data using dynamic images
-  const projects = [
-    {
-      id: 'sams-house',
-      title: "Sam's House, After Dark",
-      location: 'City View Street, Wichita',
-      description: 'Transformed a 2016 brick home from pitch-black to picture-perfect with strategic uplighting, path illumination, and architectural accents.',
-      image: "/SamProject/Drake's Home-04 (1).jpg",
-      tags: ['Residential', 'Brick Home', 'Path Lighting'],
-      featured: true
-    },
-    {
-      id: 'wichita-traditional-home',
-      title: 'The Millers\' Traditional Home',
-      location: 'College Hill, Wichita',
-      description: 'Transformed a beautiful traditional home with strategic uplighting, driveway illumination, and architectural accents that respect the home\'s classic character.',
-      image: '/Project2.png',
-      tags: ['Residential', 'Traditional', 'Driveway Lighting']
-    },
-    {
-      id: 'augusta-prairie-estate',
-      title: 'Prairie Style Estate',
-      location: 'Augusta, KS',
-      description: 'Dark-sky friendly lighting design celebrating prairie architecture and native Kansas landscape while preserving stunning night sky views.',
-      image: heroBackground,
-      tags: ['Residential', 'Dark Sky', 'Native Landscape']
-    }
-  ];
-  
   const sectionRef = useRef(null);
   const projectRefs = useRef([]);
   
@@ -167,7 +132,7 @@ function PreviousWorkShowcase() {
                 </p>
                 {project.featured ? (
                   <Link 
-                    href={`/project-detail.html?id=${project.id}`}
+                    href={`/projects/${project.id}`}
                     className="inline-flex items-center gap-2 text-[#FFA928] font-medium transition-transform transform group-hover:translate-x-2 duration-300"
                   >
                     <span className="bg-[#FFA928]/20 text-[#FFA928] px-2 py-1 rounded text-xs mr-1">FEATURED</span>
