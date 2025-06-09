@@ -156,7 +156,7 @@ function ServicePage({ slug }) {
           <div className="max-w-4xl mx-auto px-4">
             <h2 className="text-3xl font-bold mb-6">Ready to Transform Your Property?</h2>
             <p className="text-lg text-gray-700 mb-8">
-              Let's create a custom lighting design that perfectly suits your needs and budget.
+              Let&apos;s create a custom lighting design that perfectly suits your needs and budget.
             </p>
             <Button 
               onClick={scrollToContact}
