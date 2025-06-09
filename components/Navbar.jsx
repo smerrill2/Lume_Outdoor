@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
-import { gsap } from 'gsap';
 import { useImage } from '@/lib/imageConfig';
 
 function Navbar() {
@@ -38,19 +37,12 @@ function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const headerRef = useRef(null);
-  const mobileMenuRef = useRef(null);
-  const logoRef = useRef(null);
-  const navItemsRef = useRef([]);
-  const desktopNavRef = useRef([]);
-  const ctaButtonRef = useRef(null);
-  const menuTimelineRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
 
-    // Set initial state
     handleScroll();
     window.addEventListener('scroll', handleScroll);
 
@@ -59,118 +51,21 @@ function Navbar() {
     };
   }, []);
 
-  // Animation for navbar on scroll
-  useEffect(() => {
-    if (headerRef.current) {
-      gsap.to(headerRef.current, {
-        duration: 0.3,
-        backgroundColor: isScrolled ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 0, 0)',
-        backdropFilter: isScrolled ? 'blur(12px)' : 'blur(0px)',
-        padding: isScrolled ? '12px 0' : '20px 0',
-        ease: 'power2.out'
-      });
-    }
-  }, [isScrolled]);
-
-  // Initialize mobile menu animation
-  useEffect(() => {
-    if (mobileMenuRef.current) {
-      // Create timeline for menu animation
-      menuTimelineRef.current = gsap.timeline({ paused: true });
-      
-      // Add animations to timeline
-      menuTimelineRef.current
-        .to(mobileMenuRef.current, {
-          duration: 0.3,
-          x: 0,
-          ease: 'power3.out'
-        })
-        .fromTo(
-          navItemsRef.current,
-          { y: 20, opacity: 0 },
-          { 
-            y: 0, 
-            opacity: 1, 
-            stagger: 0.1,
-            duration: 0.4,
-            ease: 'power2.out'
-          },
-          '-=0.1'
-        );
-    }
-  }, []);
-
-  // Play/reverse animation when menu state changes
-  useEffect(() => {
-    if (menuTimelineRef.current) {
-      if (isMobileMenuOpen) {
-        menuTimelineRef.current.play();
-      } else {
-        menuTimelineRef.current.reverse();
-      }
-    }
-  }, [isMobileMenuOpen]);
-
-  // Animations on page load
-  useEffect(() => {
-    const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
-    
-    // Animate logo
-    if (logoRef.current) {
-      tl.fromTo(
-        logoRef.current,
-        { opacity: 0, y: 10 },
-        { opacity: 1, y: 0, duration: 0.8 },
-        0.2 // Start after a short delay
-      );
-    }
-
-    // Animate desktop nav items
-    if (desktopNavRef.current.length > 0) {
-      const validNavItems = desktopNavRef.current.filter(el => el);
-      tl.fromTo(
-        validNavItems,
-        { opacity: 0, y: 10 },
-        { 
-          opacity: 1, 
-          y: 0, 
-          duration: 0.6,
-          stagger: 0.1,
-        },
-        0.4 // Overlap with logo animation for a smoother effect
-      );
-    }
-
-    // Animate CTA button
-    if (ctaButtonRef.current) {
-      tl.fromTo(
-        ctaButtonRef.current,
-        { opacity: 0, scale: 0.9, y: 10 },
-        { opacity: 1, scale: 1, y: 0, duration: 0.7, ease: 'power2.out' },
-        0.6 // Start as nav links are animating
-      );
-    }
-  }, []);
-
   const handleNavClick = (e, href) => {
     e.preventDefault();
     setIsMobileMenuOpen(false);
 
-    // Full page navigation
     if (href.startsWith('/')) {
       router.push(href);
       return;
     }
 
-    // Anchor link navigation
     if (href.startsWith('#')) {
-      // If we are not on the homepage, navigate to homepage with hash
       if (window.location.pathname !== '/') {
         router.push(`/${href}`);
         return;
       }
       
-      // We are on the homepage, so just scroll
       const element = document.querySelector(href);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
@@ -182,12 +77,12 @@ function Navbar() {
     <>
       <header 
         ref={headerRef} 
-        className="fixed top-0 left-0 w-full z-50 transition-all duration-300"
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-black/90 backdrop-blur-md py-3' : 'bg-transparent py-5'}`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             {/* Logo */}
-            <Link href="/" className="relative z-10" ref={logoRef}>
+            <Link href="/" className="relative z-10">
               <div className="relative h-12 md:h-16 w-32 md:w-40">
                 <Image 
                   src={logoUrl} 
@@ -209,7 +104,6 @@ function Navbar() {
                   return (
                     <div key={item.name} className="relative group">
                       <button
-                        ref={el => desktopNavRef.current[index] = el}
                         className="text-white hover:text-orange-500 transition-colors font-medium flex items-center"
                         onClick={(e) => handleNavClick(e, item.href)}
                       >
@@ -236,7 +130,6 @@ function Navbar() {
                 return (
                   <Link
                     key={item.name}
-                    ref={el => desktopNavRef.current[index] = el}
                     href={item.href}
                     className="text-white hover:text-orange-500 transition-colors font-medium"
                     onClick={(e) => handleNavClick(e, item.href)}
@@ -246,7 +139,6 @@ function Navbar() {
                 );
               })}
               <Button 
-                ref={ctaButtonRef}
                 className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-lg font-medium"
                 onClick={() => router.push('/consultation')}
               >
@@ -271,8 +163,7 @@ function Navbar() {
 
       {/* Mobile Menu - Only shown on mobile */}
       <div
-        ref={mobileMenuRef}
-        className="lg:hidden fixed inset-0 bg-gray-900/95 backdrop-blur-md z-40 transform translate-x-full"
+        className={`lg:hidden fixed inset-0 bg-gray-900/95 backdrop-blur-md z-40 transform transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
         <div className="h-full flex flex-col justify-center items-center pt-16">
           <nav className="text-center">
@@ -280,8 +171,6 @@ function Navbar() {
               {navItems.map((item, index) => (
                 <li 
                   key={item.name}
-                  ref={el => navItemsRef.current[index] = el}
-                  className="opacity-0"
                 >
                   <Link
                     href={item.href}
@@ -295,8 +184,7 @@ function Navbar() {
             </ul>
           </nav>
           <div 
-            className="mt-12 opacity-0"
-            ref={el => navItemsRef.current[navItems.length] = el}
+            className="mt-12"
           >
             <Button 
               className="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-lg"
