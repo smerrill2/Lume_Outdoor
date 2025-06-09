@@ -9,11 +9,6 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, Check } from 'lucide-react';
 import { useImage } from '@/lib/imageConfig';
 import { serviceData as allServiceData } from '@/lib/content'; // Import from content.js
-import { 
-  getServiceHeroImage, 
-  getServiceGalleryImages, 
-  checkImageExists 
-} from '@/lib/serviceImages';
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
@@ -23,34 +18,6 @@ function ServicePage({ slug }) {
   const router = useRouter();
   const heroRef = useRef(null);
   const contentRefs = useRef([]);
-  const [heroImage, setHeroImage] = useState(service?.heroImage || '/placeholder.jpg');
-  const [galleryImages, setGalleryImages] = useState([]);
-  
-  const heroBackground = useImage('hero', 'background');
-  
-  useEffect(() => {
-    const loadServiceImages = async () => {
-      const serviceHero = getServiceHeroImage(slug);
-      if (await checkImageExists(serviceHero)) {
-        setHeroImage(serviceHero);
-      } else {
-        setHeroImage(heroBackground);
-      }
-      
-      const serviceGallery = getServiceGalleryImages(slug);
-      const existingImages = [];
-      for (const img of serviceGallery) {
-        if (await checkImageExists(img)) {
-          existingImages.push(img);
-        }
-      }
-      setGalleryImages(existingImages);
-    };
-
-    if (slug) {
-      loadServiceImages();
-    }
-  }, [slug, heroBackground]);
   
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -100,7 +67,7 @@ function ServicePage({ slug }) {
       >
         <div className="absolute inset-0">
           <Image 
-            src={heroImage}
+            src={service.heroImage}
             alt={service.title}
             fill
             className="object-cover"
@@ -146,16 +113,16 @@ function ServicePage({ slug }) {
         </section>
 
         {/* Gallery Section */}
-        {galleryImages.length > 0 && (
+        {service.galleryImages && service.galleryImages.length > 0 && (
           <section ref={el => (contentRefs.current[2] = el)} className="py-16">
             <div className="max-w-7xl mx-auto px-4">
               <h2 className="text-3xl font-bold text-center mb-12">Project Gallery</h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {galleryImages.map((image, index) => (
+                {service.galleryImages.map((image, index) => (
                   <div key={index} className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
                     <Image 
-                      src={image}
-                      alt={`${service.title} example ${index + 1}`}
+                      src={image.src}
+                      alt={image.alt || `${service.title} example ${index + 1}`}
                       fill
                       className="object-cover hover:scale-105 transition-transform duration-300"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -166,35 +133,6 @@ function ServicePage({ slug }) {
             </div>
           </section>
         )}
-
-        {/* Features Section */}
-        <section ref={el => (contentRefs.current[3] = el)} className="bg-white py-16">
-          <div className="max-w-6xl mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-12">Our Lighting Solutions</h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              {service.features.map((feature, index) => {
-                const featureImage = useImage('products', feature.image);
-                return (
-                  <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden">
-                    <div className="relative h-48">
-                      <Image 
-                        src={featureImage} 
-                        alt={feature.title}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      />
-                    </div>
-                    <div className="p-6">
-                      <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                      <p className="text-gray-600">{feature.description}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
 
         {/* Process Section */}
         <section ref={el => (contentRefs.current[4] = el)} className="bg-gray-800 text-white py-16">

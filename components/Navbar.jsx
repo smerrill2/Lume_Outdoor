@@ -102,7 +102,7 @@ function Navbar() {
               {navItems.map((item, index) => {
                 if (item.isDropdown) {
                   return (
-                    <div key={item.name} className="relative group">
+                    <div key={item.name} className="relative group py-4">
                       <button
                         className="text-white hover:text-orange-500 transition-colors font-medium flex items-center"
                         onClick={(e) => handleNavClick(e, item.href)}
@@ -110,7 +110,7 @@ function Navbar() {
                         {item.name}
                         <svg className="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                       </button>
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto">
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 pointer-events-none group-hover:pointer-events-auto">
                         <div className="py-1">
                           {item.dropdownItems.map(dropdownItem => (
                             <Link
