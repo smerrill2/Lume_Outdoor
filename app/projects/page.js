@@ -89,7 +89,7 @@ export default function ProjectsPage() {
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">Ready to Start Your Project?</h2>
           <p className="text-xl text-gray-300 mb-8">
-            Let's create a custom lighting design that transforms your property
+            Let&apos;s create a custom lighting design that transforms your property
           </p>
           <Link
             href="/consultation"

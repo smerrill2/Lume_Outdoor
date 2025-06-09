@@ -73,7 +73,7 @@ function PreviousWorkShowcase() {
       card.addEventListener('mouseenter', () => hoverTimeline.play());
       card.addEventListener('mouseleave', () => hoverTimeline.reverse());
     });
-  }, [projects.length]);
+  }, []);
   
   return (
     <section ref={sectionRef} className="py-24 px-4 bg-black text-white">
