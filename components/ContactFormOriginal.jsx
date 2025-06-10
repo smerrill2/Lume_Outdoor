@@ -53,14 +53,14 @@ const ContactFormOriginal = () => {
     {
       icon: Phone,
       title: 'Call Us',
-      details: ['(555) 123-4567', 'Mon-Fri 8am-6pm'],
-      action: { type: 'tel', value: '5551234567' }
+      details: ['+1 (316) 655-1270', 'Mon-Fri 8am-6pm'],
+      action: { type: 'tel', value: '+13166551270' }
     },
     {
       icon: Mail,
       title: 'Email Us',
-      details: ['info@lumeoutdoor.com', 'We reply within 24 hours'],
-      action: { type: 'email', value: 'info@lumeoutdoor.com' }
+      details: ['Drake@lumeoutdoorlighting.com', 'We reply within 24 hours'],
+      action: { type: 'email', value: 'Drake@lumeoutdoorlighting.com' }
     },
     {
       icon: MapPin,

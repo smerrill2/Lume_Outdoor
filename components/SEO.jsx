@@ -70,8 +70,8 @@ const SEO = ({
       "name": "Lume Outdoor",
       "description": "Premium outdoor and landscape lighting services",
       "url": typeof window !== 'undefined' ? window.location.origin : '',
-      "telephone": "(555) 123-4567",
-      "email": "info@lumeoutdoor.com",
+      "telephone": "+1 (316) 655-1270",
+      "email": "Drake@lumeoutdoorlighting.com",
       "address": {
         "@type": "PostalAddress",
         "addressLocality": "Your City",

@@ -53,13 +53,13 @@ const ContactForm = () => {
     {
       icon: Phone,
       title: 'Call Us',
-      details: '(555) 123-4567',
+      details: '+1 (316) 655-1270',
       subtext: 'Mon-Fri 8am-6pm'
     },
     {
       icon: Mail,
       title: 'Email Us',
-      details: 'info@lumeoutdoor.com',
+      details: 'Drake@lumeoutdoorlighting.com',
       subtext: 'We reply within 24 hours'
     },
     {
@@ -200,7 +200,7 @@ const ContactForm = () => {
         submitting: false,
         submitted: false,
         error: true,
-        message: 'Sorry, there was an error. Please call us directly at (555) 123-4567.'
+        message: 'Sorry, there was an error. Please call us directly at +1 (316) 655-1270.'
       });
     }
   };
