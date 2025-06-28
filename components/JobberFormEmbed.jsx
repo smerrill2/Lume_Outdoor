@@ -53,8 +53,40 @@ const JobberFormEmbed = ({ formId = 'homepage-jobber-form' }) => {
       { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }
     );
 
+    // Set up MutationObserver to detect when Jobber form loads
+    const observer = new MutationObserver((mutations) => {
+      // Look for the Jobber form submit button
+      const submitButton = containerRef.current?.querySelector('input[type="submit"], button[type="submit"]');
+      
+      if (submitButton && !submitButton.hasAttribute('data-conversion-tracked')) {
+        // Mark that we've added tracking to prevent duplicate handlers
+        submitButton.setAttribute('data-conversion-tracked', 'true');
+        
+        // Add click handler for conversion tracking
+        submitButton.addEventListener('click', (e) => {
+          // Call the conversion tracking function
+          if (typeof window.gtag_report_conversion === 'function') {
+            window.gtag_report_conversion();
+          }
+          // Don't prevent default - let the form submit normally
+        });
+        
+        // Stop observing once we've found and handled the button
+        observer.disconnect();
+      }
+    });
+
+    // Start observing the container for changes
+    if (containerRef.current) {
+      observer.observe(containerRef.current, { 
+        childList: true, 
+        subtree: true 
+      });
+    }
+
     // Cleanup - remove the form div when component unmounts
     return () => {
+      observer.disconnect();
       if (formDiv && formDiv.parentNode) {
         formDiv.parentNode.removeChild(formDiv);
       }
