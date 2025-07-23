@@ -61,7 +61,7 @@ function PreviousWorkShowcase() {
             Recent Projects
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            See how we've transformed outdoor spaces across Kansas with professional lighting solutions
+            See how we&apos;ve transformed outdoor spaces across Kansas with professional lighting solutions
           </p>
         </div>
 
