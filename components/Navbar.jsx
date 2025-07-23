@@ -77,13 +77,17 @@ function Navbar() {
     <>
       <header 
         ref={headerRef} 
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-black/90 backdrop-blur-md py-3' : 'bg-transparent py-5'}`}
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+          isScrolled 
+            ? 'bg-black/20 backdrop-blur-md border-b border-white/10 shadow-lg' 
+            : 'bg-black/10 backdrop-blur-sm border-b border-white/5'
+        } py-3`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
-            {/* Logo */}
+          <div className="flex items-center">
+            {/* Logo - Left aligned with projects section */}
             <Link href="/" className="relative z-10">
-              <div className="relative h-12 md:h-16 w-32 md:w-40">
+              <div className="relative h-16 md:h-20 w-40 md:w-48">
                 <Image 
                   src={logoUrl} 
                   alt="Lume Outdoors Logo" 
@@ -93,12 +97,14 @@ function Navbar() {
                     filter: "brightness(0) invert(1)",
                   }}
                   priority
+                  quality={85}
+                  sizes="(max-width: 768px) 160px, 192px"
                 />
               </div>
             </Link>
             
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center space-x-8">
+            {/* Desktop Navigation - Centered in remaining space */}
+            <nav className="hidden lg:flex items-center justify-center flex-1 space-x-8 ml-8">
               {navItems.map((item, index) => {
                 if (item.isDropdown) {
                   return (
@@ -138,13 +144,15 @@ function Navbar() {
                   </Link>
                 );
               })}
-              <Button 
-                className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-lg font-medium"
-                onClick={() => router.push('/consultation')}
-              >
-                Schedule Consultation
-              </Button>
             </nav>
+            
+            {/* CTA Button - Right aligned */}
+            <Button 
+              className="hidden lg:block bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-lg font-medium ml-8"
+              onClick={() => router.push('/consultation')}
+            >
+              Schedule Consultation
+            </Button>
 
             {/* Mobile Menu Button */}
             <button

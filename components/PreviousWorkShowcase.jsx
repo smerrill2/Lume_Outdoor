@@ -1,89 +1,70 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Star, ArrowRight, MapPin, Calendar } from 'lucide-react';
 import { projects } from '@/lib/content';
-import { Star } from 'lucide-react';
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
 
 function PreviousWorkShowcase() {
   const sectionRef = useRef(null);
+  const titleRef = useRef(null);
   const projectRefs = useRef([]);
-  
+
   useEffect(() => {
-    // Initialize project refs array
-    projectRefs.current = projectRefs.current.slice(0, projects.length);
-    
-    // Create a scroll animation for the section
-    gsap.fromTo(
-      sectionRef.current,
+    // Animate section title
+    gsap.fromTo(titleRef.current, 
       { opacity: 0, y: 50 },
-      { 
+      {
         opacity: 1, 
         y: 0, 
-        duration: 0.8,
+        duration: 1,
         scrollTrigger: {
-          trigger: sectionRef.current,
+          trigger: titleRef.current,
           start: "top 80%",
-          end: "top 20%",
-          toggleActions: "play none none reverse"
+          toggleActions: "play none none none"
         }
       }
     );
-    
-    // Staggered animations for each project
-    gsap.fromTo(
-      projectRefs.current,
-      { opacity: 0, y: 30 },
-      { 
-        opacity: 1, 
-        y: 0, 
-        stagger: 0.2,
-        duration: 0.8,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 70%",
-          end: "bottom 20%",
-          toggleActions: "play none none reverse"
-        }
+
+    // Animate project cards
+    projectRefs.current.forEach((project, index) => {
+      if (project) {
+        gsap.fromTo(project, 
+          { opacity: 0, y: 50 },
+          {
+            opacity: 1, 
+            y: 0, 
+            duration: 0.8,
+            delay: index * 0.2,
+            scrollTrigger: {
+              trigger: project,
+              start: "top 85%",
+              toggleActions: "play none none none"
+            }
+          }
+        );
       }
-    );
-    
-    // Add hover animations for each project card
-    projectRefs.current.forEach(card => {
-      const image = card.querySelector('.project-image');
-      const overlay = card.querySelector('.overlay');
-      const content = card.querySelector('.content');
-      
-      // Create a hover animation timeline
-      const hoverTimeline = gsap.timeline({ paused: true });
-      
-      hoverTimeline
-        .to(image, { scale: 1.05, duration: 0.4 })
-        .to(overlay, { opacity: 0.7, duration: 0.4 }, 0)
-        .to(content, { y: -10, duration: 0.4 }, 0);
-      
-      // Add event listeners
-      card.addEventListener('mouseenter', () => hoverTimeline.play());
-      card.addEventListener('mouseleave', () => hoverTimeline.reverse());
     });
   }, []);
-  
+
   return (
-    <section ref={sectionRef} className="py-24 px-4 bg-black text-white">
-      <div className="container mx-auto">
-        <h2 className="text-4xl font-bold text-center mb-2">Our Previous Work</h2>
-        <div className="w-24 h-1 bg-[#FFA928] mx-auto mb-6"></div>
-        <p className="text-center text-gray-300 max-w-2xl mx-auto mb-16 text-lg">
-          Explore our portfolio of successfully completed projects and see how we&apos;ve transformed properties with our custom lighting solutions.
-        </p>
-        
+    <section id="projects" className="py-20 bg-gray-50" ref={sectionRef}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16" ref={titleRef}>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Recent Projects
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            See how we've transformed outdoor spaces across Kansas with professional lighting solutions
+          </p>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((project, index) => (
             <div 
@@ -97,11 +78,15 @@ function PreviousWorkShowcase() {
                   src={project.image} 
                   alt={project.title}
                   fill
-                  className="project-image object-cover transition-transform duration-500"
+                  className="project-image object-cover transition-transform duration-500 group-hover:scale-110"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  quality={75}
+                  loading="lazy"
+                  placeholder="blur"
+                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
                 />
               </div>
-              <div className="overlay absolute inset-0 bg-black opacity-50 transition-opacity duration-300"></div>
+              <div className="overlay absolute inset-0 bg-black opacity-50 transition-opacity duration-300 group-hover:opacity-40"></div>
               
               {/* Featured Star Badge */}
               {project.featured && (
@@ -114,58 +99,50 @@ function PreviousWorkShowcase() {
               )}
               
               {/* Content */}
-              <div className="content absolute inset-0 flex flex-col justify-end p-8 transition-all duration-300">
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {project.tags.map(tag => (
-                    <span 
-                      key={tag} 
-                      className="px-3 py-1 bg-[#FFA928] text-black text-xs font-medium rounded-full"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+              <div className="absolute inset-0 p-6 flex flex-col justify-end text-white z-10">
+                <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                  <div className="flex items-center gap-2 mb-2 text-sm text-orange-300">
+                    <MapPin className="w-4 h-4" />
+                    <span>{project.location}</span>
+                  </div>
+                  
+                  <h3 className="text-2xl font-bold mb-2 group-hover:text-orange-400 transition-colors">
+                    {project.title}
+                  </h3>
+                  
+                  <p className="text-gray-200 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {project.description}
+                  </p>
+                  
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {project.tags.map((tag, tagIndex) => (
+                      <span 
+                        key={tagIndex} 
+                        className="bg-orange-500/80 text-white text-xs px-2 py-1 rounded-full"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  
+                  <Link 
+                    href={`/projects/${project.id}`}
+                    className="inline-flex items-center gap-2 text-orange-400 hover:text-orange-300 font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  >
+                    View Project <ArrowRight className="w-4 h-4" />
+                  </Link>
                 </div>
-                <h3 className="text-2xl font-bold mb-2">{project.title}</h3>
-                <p className="text-sm text-gray-300 mb-2">{project.location}</p>
-                <p className="text-sm text-gray-200 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  {project.description}
-                </p>
-                {project.featured ? (
-                  <Link 
-                    href={`/projects/${project.id}`}
-                    className="inline-flex items-center gap-2 text-[#FFA928] font-medium transition-transform transform group-hover:translate-x-2 duration-300"
-                  >
-                    <span className="bg-[#FFA928]/20 text-[#FFA928] px-2 py-1 rounded text-xs mr-1">FEATURED</span>
-                    View Full Project Story
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                  </Link>
-                ) : (
-                  <Link 
-                    href={`/projects/${project.id}`}
-                    className="inline-flex items-center gap-2 text-[#FFA928] font-medium transition-transform transform group-hover:translate-x-2 duration-300"
-                  >
-                    View Project Details
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                  </Link>
-                )}
               </div>
             </div>
           ))}
         </div>
-        
+
         <div className="text-center mt-12">
           <Link 
-            href="/projects" 
-            className="inline-flex items-center gap-2 px-8 py-4 bg-[#FFA928] text-black rounded-lg hover:bg-[#FFA928]/90 transition-colors shadow-md font-medium"
+            href="/projects"
+            className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-full font-medium transition-colors duration-300"
           >
-            View All Projects
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
+            View All Projects <ArrowRight className="w-5 h-5" />
           </Link>
         </div>
       </div>

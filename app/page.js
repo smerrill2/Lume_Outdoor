@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef } from 'react';
+import Image from 'next/image';
 import ServicesGrid from '@/components/ServicesGrid';
 import PreviousWorkShowcase from '@/components/PreviousWorkShowcase';
 import Testimonials from '@/components/Testimonials';
@@ -73,61 +74,160 @@ export default function Home() {
       
   }, []);
 
+  const scrollToServices = () => {
+    const servicesSection = document.getElementById('services');
+    if (servicesSection) {
+      servicesSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <main>
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative">
-        <div className="relative h-[calc(100vh-64px)] min-h-[500px] bg-black overflow-hidden">
-          <div 
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ 
-              backgroundImage: `url(${heroBackground})`,
-              filter: 'brightness(1)'
-            }}
-          ></div>
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Image with optimization */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src={heroBackground}
+            alt="Professional outdoor lighting installation"
+            fill
+            priority
+            quality={85}
+            sizes="100vw"
+            className="object-cover"
+            placeholder="blur"
+            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+          />
+        </div>
+
+        {/* Stars Background with optimization */}
+        <div 
+          id="starsBackground"
+          className="absolute inset-0 z-10 opacity-40"
+          style={{
+            backgroundImage: `url(${starsBackground})`,
+            backgroundSize: 'cover',
+            backgroundPosition: '0% 0%',
+            backgroundRepeat: 'no-repeat'
+          }}
+        ></div>
+
+        {/* Hero Content */}
+        <div className="relative z-20 text-center text-white px-4 max-w-4xl mx-auto">
+          {/* Subtle gradient overlay behind text only */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-transparent rounded-3xl blur-sm"></div>
           
-          <div className="absolute inset-0 bg-black/50">
-            <div 
-              className="absolute inset-0 opacity-40"
-              style={{ 
-                backgroundImage: `url(${starsBackground})`,
-                backgroundSize: 'cover'
-              }}
-              id="starsBackground"
-            ></div>
-          </div>
-          
-          <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-4">
-            <div 
-              ref={heroTagRef}
-              className="inline-block bg-orange-500 text-white text-xs font-medium px-3 py-1 rounded-full mb-4"
-            >
-              OUTDOOR &amp; LANDSCAPE LIGHTING
+          {/* Text content */}
+          <div className="relative z-10">
+            <div ref={heroTagRef} className="inline-block bg-white/10 backdrop-blur-sm border border-white/20 text-white px-6 py-2 rounded-full text-sm font-medium mb-6 shadow-lg">
+              Premium Outdoor Lighting Solutions
             </div>
             
-            <h1 
-              ref={heroTitleRef}
-              className="text-4xl md:text-6xl font-bold text-white mb-4"
-            >
-              Transform Your<br />Nightscape
+            <h1 ref={heroTitleRef} className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+              Illuminate Your <span className="text-orange-500">Outdoor Dreams</span>
             </h1>
             
-            <p 
-              ref={heroSubtitleRef}
-              className="text-white text-lg md:text-xl max-w-2xl mb-8"
-            >
-              Professional outdoor & landscape lighting that<br />brings your property to life after dark.
+            <p ref={heroSubtitleRef} className="text-xl md:text-2xl mb-8 text-gray-100 max-w-3xl mx-auto">
+              Transform your property with professional landscape lighting that enhances beauty, security, and value.
             </p>
             
             <Button 
               ref={heroButtonRef}
-              className="bg-orange-500 hover:bg-orange-600 text-white py-3 px-6 rounded-md flex items-center gap-2 text-base font-medium"
-              onClick={() => window.location.href = '/consultation'}
+              onClick={scrollToServices}
+              size="lg" 
+              className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 text-lg font-semibold rounded-full transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
             >
-              Schedule Light Consultation <ArrowRight className="h-4 w-4" />
+              Explore Our Services
+              <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
           </div>
         </div>
+      </section>
+
+      {/* #1 Professional Banner */}
+      <div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] bg-gradient-to-r from-orange-500 to-orange-600 py-3 text-white overflow-hidden">
+        <div className="animate-marquee whitespace-nowrap">
+          <span className="text-xl md:text-2xl font-black tracking-wider mx-8">
+            #1 LIGHTING PROFESSIONAL IN WICHITA!
+          </span>
+          <span className="text-xl md:text-2xl font-black tracking-wider mx-8">
+            #1 LIGHTING PROFESSIONAL IN WICHITA!
+          </span>
+          <span className="text-xl md:text-2xl font-black tracking-wider mx-8">
+            #1 LIGHTING PROFESSIONAL IN WICHITA!
+          </span>
+          <span className="text-xl md:text-2xl font-black tracking-wider mx-8">
+            #1 LIGHTING PROFESSIONAL IN WICHITA!
+          </span>
+          <span className="text-xl md:text-2xl font-black tracking-wider mx-8">
+            #1 LIGHTING PROFESSIONAL IN WICHITA!
+          </span>
+          <span className="text-xl md:text-2xl font-black tracking-wider mx-8">
+            #1 LIGHTING PROFESSIONAL IN WICHITA!
+          </span>
+        </div>
+      </div>
+
+      {/* Trusted Companies & USP Banner */}
+      <section className="relative py-16 bg-gradient-to-b from-black/5 via-gray-50 to-white overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Trusted Companies */}
+          <div className="text-center mb-16">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-12">
+              Trusted by Leading Companies & Homeowners
+            </h2>
+            
+            {/* Company Logos with Links */}
+            <div className="flex flex-wrap justify-center items-center gap-24 md:gap-32 lg:gap-40">
+              <a 
+                href="https://eliteelectriccompany.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="h-16 w-48 flex items-center justify-center hover:scale-105 transition-transform duration-300"
+              >
+                <Image
+                  src="/logos/elite.png"
+                  alt="Elite Electric Company"
+                  width={192}
+                  height={64}
+                  className="object-contain"
+                />
+              </a>
+              <a 
+                href="https://www.midwestlakesidesolutions.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="h-16 w-48 flex items-center justify-center hover:scale-105 transition-transform duration-300"
+              >
+                <Image
+                  src="/logos/lakeside-logo.png"
+                  alt="Lakeside Solutions"
+                  width={192}
+                  height={64}
+                  className="object-contain"
+                />
+              </a>
+              <a 
+                href="https://www.realproducersmagazine.com/home/wichita" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="h-18 w-55 flex items-center justify-center hover:scale-105 transition-transform duration-300"
+              >
+                <Image
+                  src="/logos/real_producers.png"
+                  alt="Real Producers - Wichita"
+                  width={221}
+                  height={74}
+                  className="object-contain"
+                />
+              </a>
+            </div>
+          </div>
+
+
+        </div>
+
+
       </section>
 
       <ServicesGrid />
@@ -137,6 +237,6 @@ export default function Home() {
       <ServiceAreaMap />
       <FAQ />
       <ContactFormWithJobber />
-    </main>
+    </div>
   );
 }
