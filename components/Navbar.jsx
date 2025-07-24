@@ -81,13 +81,13 @@ function Navbar() {
           isScrolled 
             ? 'bg-black/20 backdrop-blur-md border-b border-white/10 shadow-lg' 
             : 'bg-black/10 backdrop-blur-sm border-b border-white/5'
-        } py-3`}
+        }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center">
+        <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20 md:h-24">
             {/* Logo - Left aligned with projects section */}
-            <Link href="/" className="relative z-10">
-              <div className="relative h-16 md:h-20 w-40 md:w-48">
+            <Link href="/" className="relative z-10 flex items-center justify-center flex-shrink-0 -ml-1 sm:ml-0 h-full">
+              <div className="relative h-14 md:h-20 w-40 md:w-52 md:mt-0" style={{marginTop: '15px', marginLeft: '-10px', transform: 'scale(1.1)'}}>
                 <Image 
                   src={logoUrl} 
                   alt="Lume Outdoors Logo" 
@@ -98,66 +98,67 @@ function Navbar() {
                   }}
                   priority
                   quality={85}
-                  sizes="(max-width: 768px) 160px, 192px"
+                  sizes="(max-width: 768px) 176px, 208px"
                 />
               </div>
             </Link>
             
-            {/* Desktop Navigation - Centered in remaining space */}
-            <nav className="hidden lg:flex items-center justify-center flex-1 space-x-8 ml-8">
-              {navItems.map((item, index) => {
-                if (item.isDropdown) {
-                  return (
-                    <div key={item.name} className="relative group py-4">
-                      <button
-                        className="text-white hover:text-orange-500 transition-colors font-medium flex items-center"
-                        onClick={(e) => handleNavClick(e, item.href)}
-                      >
-                        {item.name}
-                        <svg className="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                      </button>
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 pointer-events-none group-hover:pointer-events-auto">
-                        <div className="py-1">
-                          {item.dropdownItems.map(dropdownItem => (
-                            <Link
-                              key={dropdownItem.name}
-                              href={dropdownItem.href}
-                              className="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100"
-                              onClick={(e) => handleNavClick(e, dropdownItem.href)}
-                            >
-                              {dropdownItem.name}
-                            </Link>
-                          ))}
+            {/* Desktop Navigation & CTA - Grouped and aligned right */}
+            <div className="hidden lg:flex items-center justify-end flex-1 ml-8">
+              <nav className="flex items-center justify-center space-x-8">
+                {navItems.map((item, index) => {
+                  if (item.isDropdown) {
+                    return (
+                      <div key={item.name} className="relative group py-4">
+                        <button
+                          className="text-white hover:text-orange-500 transition-colors font-medium flex items-center"
+                          onClick={(e) => handleNavClick(e, item.href)}
+                        >
+                          {item.name}
+                          <svg className="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 pointer-events-none group-hover:pointer-events-auto">
+                          <div className="py-1">
+                            {item.dropdownItems.map(dropdownItem => (
+                              <Link
+                                key={dropdownItem.name}
+                                href={dropdownItem.href}
+                                className="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100"
+                                onClick={(e) => handleNavClick(e, dropdownItem.href)}
+                              >
+                                {dropdownItem.name}
+                              </Link>
+                            ))}
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    );
+                  }
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className="text-white hover:text-orange-500 transition-colors font-medium"
+                      onClick={(e) => handleNavClick(e, item.href)}
+                    >
+                      {item.name}
+                    </Link>
                   );
-                }
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="text-white hover:text-orange-500 transition-colors font-medium"
-                    onClick={(e) => handleNavClick(e, item.href)}
-                  >
-                    {item.name}
-                  </Link>
-                );
-              })}
-            </nav>
-            
-            {/* CTA Button - Right aligned */}
-            <Button 
-              className="hidden lg:block bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-lg font-medium ml-8"
-              onClick={() => router.push('/consultation')}
-            >
-              Schedule Consultation
-            </Button>
+                })}
+              </nav>
+              
+              <Button 
+                className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-lg font-medium ml-8"
+                onClick={() => router.push('/consultation')}
+              >
+                Schedule Consultation
+              </Button>
+            </div>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu Button - Always on the right */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden relative z-10 p-2 text-white hover:bg-white/10 rounded-full transition-colors"
+              className="lg:hidden relative z-10 flex items-center justify-center w-12 h-12 text-white hover:bg-white/10 rounded-full transition-colors"
               aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
             >
               {isMobileMenuOpen ? 

@@ -67,73 +67,69 @@ function PreviousWorkShowcase() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((project, index) => (
-            <div 
+            <Link 
               key={project.id}
+              href={`/projects/${project.id}`}
               ref={el => projectRefs.current[index] = el}
-              className="group relative rounded-xl overflow-hidden shadow-xl h-[400px] cursor-pointer"
+              className="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 cursor-pointer block"
             >
-              {/* Project Image with Overlay */}
-              <div className="absolute inset-0">
+              {/* Project Image */}
+              <div className="relative h-[300px] overflow-hidden">
                 <Image 
                   src={project.image} 
                   alt={project.title}
                   fill
-                  className="project-image object-cover transition-transform duration-500 group-hover:scale-110"
+                  className="project-image object-cover transition-transform duration-500 group-hover:scale-105"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   quality={75}
                   loading="lazy"
                   placeholder="blur"
                   blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
                 />
+                {/* Light overlay for better text readability */}
+                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-all duration-300"></div>
+                
+                {/* Featured Star Badge */}
+                {project.featured && (
+                  <div className="absolute top-4 right-4 z-10">
+                    <div className="relative">
+                      <Star className="w-8 h-8 text-[#FFA928] fill-[#FFA928] drop-shadow-lg" />
+                    </div>
+                  </div>
+                )}
               </div>
-              <div className="overlay absolute inset-0 bg-black opacity-50 transition-opacity duration-300 group-hover:opacity-40"></div>
               
-              {/* Featured Star Badge */}
-              {project.featured && (
-                <div className="absolute top-4 right-4 z-10">
-                  <div className="relative">
-                    <Star className="w-12 h-12 text-[#FFA928] fill-[#FFA928] drop-shadow-lg animate-pulse" />
-                    <span className="absolute inset-0 flex items-center justify-center text-black text-xs font-bold">★</span>
-                  </div>
+              {/* Content Below Image */}
+              <div className="p-6">
+                <div className="flex items-center gap-2 mb-3 text-sm text-gray-600">
+                  <MapPin className="w-4 h-4 text-orange-500" />
+                  <span>{project.location}</span>
                 </div>
-              )}
-              
-              {/* Content */}
-              <div className="absolute inset-0 p-6 flex flex-col justify-end text-white z-10">
-                <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                  <div className="flex items-center gap-2 mb-2 text-sm text-orange-300">
-                    <MapPin className="w-4 h-4" />
-                    <span>{project.location}</span>
-                  </div>
-                  
-                  <h3 className="text-2xl font-bold mb-2 group-hover:text-orange-400 transition-colors">
-                    {project.title}
-                  </h3>
-                  
-                  <p className="text-gray-200 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    {project.description}
-                  </p>
-                  
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {project.tags.map((tag, tagIndex) => (
-                      <span 
-                        key={tagIndex} 
-                        className="bg-orange-500/80 text-white text-xs px-2 py-1 rounded-full"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                  
-                  <Link 
-                    href={`/projects/${project.id}`}
-                    className="inline-flex items-center gap-2 text-orange-400 hover:text-orange-300 font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  >
-                    View Project <ArrowRight className="w-4 h-4" />
-                  </Link>
+                
+                <h3 className="text-xl font-bold mb-3 text-gray-900 group-hover:text-orange-600 transition-colors">
+                  {project.title}
+                </h3>
+                
+                <p className="text-gray-600 mb-4 line-clamp-2">
+                  {project.description}
+                </p>
+                
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {project.tags.map((tag, tagIndex) => (
+                    <span 
+                      key={tagIndex} 
+                      className="bg-orange-100 text-orange-800 text-xs px-3 py-1 rounded-full"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                
+                <div className="inline-flex items-center gap-2 text-orange-500 group-hover:text-orange-600 font-medium transition-colors duration-300">
+                  View Project <ArrowRight className="w-4 h-4" />
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
