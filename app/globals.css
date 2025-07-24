@@ -51,8 +51,13 @@
   * {
     @apply border-border;
   }
+  html {
+    @apply bg-black;
+  }
   body {
     @apply bg-background text-foreground;
+    /* Ensure no green background appears on mobile */
+    background-color: white !important;
   }
 }
 

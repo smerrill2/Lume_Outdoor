@@ -9,6 +9,8 @@ export const metadata = {
   keywords: ['outdoor lighting', 'landscape lighting', 'Wichita lighting', 'residential lighting', 'commercial lighting'],
   authors: [{ name: 'Lume Outdoor' }],
   creator: 'Lume Outdoor',
+  viewport: 'width=device-width, initial-scale=1.0, viewport-fit=cover',
+  themeColor: '#000000',
   icons: {
     icon: [
       { url: '/favicon.ico' },
