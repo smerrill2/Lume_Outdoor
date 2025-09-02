@@ -19,7 +19,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function Home() {
   const heroBackground = useImage('hero', 'background');
-  const starsBackground = useImage('hero', 'stars');
+  const heroSectionRef = useRef(null);
   const heroTagRef = useRef(null);
   const heroTitleRef = useRef(null);
   const heroSubtitleRef = useRef(null);
@@ -29,49 +29,29 @@ export default function Home() {
     // Ensure we're on the client side
     if (typeof window === 'undefined') return;
     
-    const starsElement = document.getElementById('starsBackground');
-    
-    gsap.set([heroTagRef.current, heroTitleRef.current, heroSubtitleRef.current, heroButtonRef.current], { 
-      opacity: 0, 
-      y: 20 
-    });
-    
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-    
-    // Only animate stars if element exists
-    if (starsElement) {
-      gsap.to(starsElement, {
-        backgroundPosition: '0% 10%',
-        duration: 100,
-        repeat: -1,
-        ease: "none",
-        yoyo: true
+    const ctx = gsap.context(() => {
+      gsap.set([heroTagRef.current, heroTitleRef.current, heroSubtitleRef.current, heroButtonRef.current], { 
+        opacity: 0, 
+        y: 20 
       });
-      
-      gsap.fromTo(starsElement, 
-        { opacity: 0 },
-        { opacity: 0.4, duration: 2, ease: "power2.out" }
-      );
-    }
-    
-    tl.to(heroTagRef.current, { opacity: 1, y: 0, duration: 0.8, delay: 0.2 })
-      .to(heroTitleRef.current, { opacity: 1, y: 0, duration: 0.8 }, "-=0.5")
-      .to(heroSubtitleRef.current, { opacity: 1, y: 0, duration: 0.8 }, "-=0.5")
-      .to(heroButtonRef.current, { 
-        opacity: 1, 
-        y: 0, 
-        duration: 0.8,
-        onComplete: () => {
-          gsap.to(heroButtonRef.current, {
-            scale: 1.05,
-            duration: 0.5,
-            repeat: 1,
-            yoyo: true,
-            ease: "power1.inOut"
-          });
-        }
-      }, "-=0.5");
-      
+
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+      tl.to(heroTagRef.current, { opacity: 1, y: 0, duration: 0.7 })
+        .to(heroTitleRef.current, { opacity: 1, y: 0, duration: 0.7 }, "-=0.55")
+        .to(heroSubtitleRef.current, { opacity: 1, y: 0, duration: 0.7 }, "-=0.55")
+        .to(heroButtonRef.current, { opacity: 1, y: 0, duration: 0.6 }, "<")
+        // Subtle pulse immediately after reveal, inside the same timeline
+        .to(heroButtonRef.current, { 
+          scale: 1.05,
+          duration: 0.35,
+          repeat: 1,
+          yoyo: true,
+          ease: "power1.inOut"
+        }, "-=0.2");
+    }, heroSectionRef);
+
+    return () => ctx.revert();
   }, []);
 
   const scrollToServices = () => {
@@ -84,7 +64,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
+      <section ref={heroSectionRef} className="relative h-[80vh] flex items-center justify-center overflow-hidden">
         {/* Background Image with optimization */}
         <div className="absolute inset-0 z-0">
           <Image
@@ -99,18 +79,6 @@ export default function Home() {
             blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
           />
         </div>
-
-        {/* Stars Background with optimization */}
-        <div 
-          id="starsBackground"
-          className="absolute inset-0 z-10 opacity-40"
-          style={{
-            backgroundImage: `url(${starsBackground})`,
-            backgroundSize: 'cover',
-            backgroundPosition: '0% 0%',
-            backgroundRepeat: 'no-repeat'
-          }}
-        ></div>
 
         {/* Hero Content */}
         <div className="relative z-20 text-center text-white px-4 max-w-4xl mx-auto">
@@ -135,7 +103,7 @@ export default function Home() {
               ref={heroButtonRef}
               onClick={scrollToServices}
               size="lg" 
-              className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 text-lg font-semibold rounded-full transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
+              className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 text-lg font-semibold rounded-full transition-colors duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
             >
               Explore Our Services
               <ArrowRight className="ml-2 w-5 h-5" />

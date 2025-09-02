@@ -8,7 +8,6 @@ import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin, Zap, Star, Sparkles
 
 const Footer = () => {
   const logoUrl = useImage('logo', 'svg');
-  const starsBackground = useImage('hero', 'stars');
   const footerRef = useRef(null);
   
   const handleNavClick = (e, href) => {
@@ -29,14 +28,6 @@ const Footer = () => {
 
   return (
     <footer ref={footerRef} className="relative bg-gradient-to-b from-gray-900 to-black text-white overflow-hidden">
-      {/* Static background with stars */}
-      <div 
-        className="absolute inset-0 opacity-20"
-        style={{ 
-          backgroundImage: `url(${starsBackground})`,
-          backgroundSize: 'cover'
-        }}
-      ></div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Top decorative element */}
