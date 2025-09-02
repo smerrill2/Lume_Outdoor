@@ -32,18 +32,14 @@ const Footer = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Top decorative element */}
         <div className="flex items-center justify-center mb-12">
-          <Star className="w-4 h-4 text-orange-500" />
-          <div className="mx-4 h-px w-24 bg-gradient-to-r from-transparent via-orange-500 to-transparent"></div>
-          <Sparkles className="w-5 h-5 text-orange-500" />
-          <div className="mx-4 h-px w-24 bg-gradient-to-r from-transparent via-orange-500 to-transparent"></div>
-          <Star className="w-4 h-4 text-orange-500" />
+          <div className="h-px w-64 bg-gradient-to-r from-transparent via-orange-500 to-transparent"></div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <Link href="/" className="flex items-center space-x-2 inline-block">
-              <div className="relative h-12 w-32">
+            <Link href="/" className="inline-block">
+              <div className="relative h-14 md:h-20 w-40 md:w-52">
                 <Image 
                   src={logoUrl} 
                   alt="Lume Outdoor" 
@@ -51,32 +47,27 @@ const Footer = () => {
                   className="object-contain brightness-0 invert hover:opacity-80 transition-opacity cursor-pointer"
                 />
               </div>
-              <Zap className="w-5 h-5 text-orange-500" />
             </Link>
             <p className="text-gray-300 text-sm leading-relaxed">
               Illuminating outdoor spaces with premium lighting solutions that transform your property into a nighttime masterpiece.
             </p>
             <div className="flex space-x-4 pt-2">
-              <a href="https://www.facebook.com/profile.php?id=61575907045065" target="_blank" rel="noopener noreferrer" className="group relative">
-                <div className="absolute inset-0 bg-orange-500 rounded-full blur-md opacity-0 group-hover:opacity-50 transition-opacity"></div>
-                <Facebook className="relative w-5 h-5 text-gray-400 hover:text-white transition-colors" />
+              <a href="https://www.facebook.com/profile.php?id=61575907045065" target="_blank" rel="noopener noreferrer">
+                <Facebook className="w-5 h-5 text-white hover:text-orange-500 transition-colors" />
               </a>
-              <a href="https://www.instagram.com/lumeoutdoorlighting/" target="_blank" rel="noopener noreferrer" className="group relative">
-                <div className="absolute inset-0 bg-orange-500 rounded-full blur-md opacity-0 group-hover:opacity-50 transition-opacity"></div>
-                <Instagram className="relative w-5 h-5 text-gray-400 hover:text-white transition-colors" />
+              <a href="https://www.instagram.com/lumeoutdoorlighting/" target="_blank" rel="noopener noreferrer">
+                <Instagram className="w-5 h-5 text-white hover:text-orange-500 transition-colors" />
               </a>
-              <a href="https://www.linkedin.com/company/107065988/" target="_blank" rel="noopener noreferrer" className="group relative">
-                <div className="absolute inset-0 bg-orange-500 rounded-full blur-md opacity-0 group-hover:opacity-50 transition-opacity"></div>
-                <Linkedin className="relative w-5 h-5 text-gray-400 hover:text-white transition-colors" />
+              <a href="https://www.linkedin.com/company/107065988/" target="_blank" rel="noopener noreferrer">
+                <Linkedin className="w-5 h-5 text-white hover:text-orange-500 transition-colors" />
               </a>
             </div>
           </div>
 
           {/* Services */}
           <div>
-            <h3 className="text-lg font-semibold mb-4 flex items-center">
-              <span className="mr-2">Our Services</span>
-              <Sparkles className="w-4 h-4 text-orange-500" />
+            <h3 className="text-lg font-semibold mb-4">
+              Our Services
             </h3>
             <ul className="space-y-2">
               {[
@@ -140,11 +131,8 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Get In Touch</h3>
             <ul className="space-y-4">
-              <li className="flex items-start space-x-3 group">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-orange-500 rounded-full blur-sm opacity-0 group-hover:opacity-50 transition-opacity"></div>
-                  <Phone className="relative w-4 h-4 mt-0.5 flex-shrink-0 text-orange-500" />
-                </div>
+              <li className="flex items-start space-x-3">
+                <Phone className="w-4 h-4 mt-0.5 flex-shrink-0 text-white" />
                 <div>
                   <p className="text-sm text-gray-400">24/7 Support</p>
                   <a href="tel:+13166551270" className="text-white hover:text-orange-400 transition-colors font-medium">
@@ -152,11 +140,8 @@ const Footer = () => {
                   </a>
                 </div>
               </li>
-              <li className="flex items-start space-x-3 group">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-orange-500 rounded-full blur-sm opacity-0 group-hover:opacity-50 transition-opacity"></div>
-                  <Mail className="relative w-4 h-4 mt-0.5 flex-shrink-0 text-orange-500" />
-                </div>
+              <li className="flex items-start space-x-3">
+                <Mail className="w-4 h-4 mt-0.5 flex-shrink-0 text-white" />
                 <div>
                   <p className="text-sm text-gray-400">Email Us</p>
                   <a href="mailto:Drake@lumeoutdoorlighting.com" className="text-white hover:text-orange-400 transition-colors">
@@ -164,11 +149,8 @@ const Footer = () => {
                   </a>
                 </div>
               </li>
-              <li className="flex items-start space-x-3 group">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-orange-500 rounded-full blur-sm opacity-0 group-hover:opacity-50 transition-opacity"></div>
-                  <MapPin className="relative w-4 h-4 mt-0.5 flex-shrink-0 text-orange-500" />
-                </div>
+              <li className="flex items-start space-x-3">
+                <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0 text-white" />
                 <div>
                   <p className="text-sm text-gray-400">Service Area</p>
                   <p className="text-white">Wichita Metro & Surrounding Areas</p>
@@ -193,9 +175,8 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-16 pt-8 border-t border-gray-800">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-sm text-gray-400 flex items-center">
+            <p className="text-sm text-gray-400">
               © 2024 Lume Outdoor. Brightening nights since 2020
-              <Sparkles className="ml-2 w-3 h-3 text-orange-500" />
             </p>
             <div className="flex items-center space-x-6">
               <a href="#" className="text-sm text-gray-400 hover:text-orange-400 transition-colors">

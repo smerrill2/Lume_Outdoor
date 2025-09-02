@@ -102,7 +102,7 @@ const FAQ = () => {
   };
 
   return (
-    <section ref={sectionRef} className="py-16 md:py-20 px-4 bg-gray-50">
+    <section ref={sectionRef} className="py-16 md:py-20 px-4 bg-white">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <div className="flex justify-center items-center mb-4">

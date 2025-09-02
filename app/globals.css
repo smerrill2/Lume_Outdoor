@@ -74,3 +74,11 @@
 .animate-marquee {
   animation: marquee 20s linear infinite;
 }
+
+/* Image bottom fade utility (tweak stops as needed) */
+.mask-fade-bottom {
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%);
+          mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%);
+  -webkit-mask-size: 100% 100%;
+          mask-size: 100% 100%;
+}

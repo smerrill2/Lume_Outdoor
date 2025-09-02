@@ -77,7 +77,7 @@ function Navbar() {
     <>
       <header 
         ref={headerRef} 
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+        className={`fixed top-0 left-0 w-full z-50 isolation-isolate will-change-transform [transform:translateZ(0)] transition-all duration-300 ${
           isScrolled 
             ? 'bg-black/20 backdrop-blur-md border-b border-white/10 shadow-lg' 
             : 'bg-black/10 backdrop-blur-sm border-b border-white/5'
