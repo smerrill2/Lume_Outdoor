@@ -80,45 +80,7 @@ function ServicesGrid() {
   const serviceRefs = useRef([]);
 
   useEffect(() => {
-    // Initialize refs array
-    serviceRefs.current = serviceRefs.current.slice(0, services.length);
-
-    // Animation for section entrance
-    gsap.fromTo(
-      sectionRef.current,
-      { opacity: 0, y: 50 },
-      { 
-        opacity: 1, 
-        y: 0, 
-        duration: 0.8,
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 80%",
-          end: "bottom 20%",
-          toggleActions: "play none none reverse"
-        }
-      }
-    );
-
-    // Staggered animation for service items
-    gsap.fromTo(
-      serviceRefs.current,
-      { opacity: 0, y: 30, scale: 0.9 },
-      { 
-        opacity: 1, 
-        y: 0, 
-        scale: 1,
-        stagger: 0.1,
-        duration: 0.6,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: gridRef.current,
-          start: "top 75%",
-          end: "bottom 20%",
-          toggleActions: "play none none reverse"
-        }
-      }
-    );
+    // No animations - elements stay visible
   }, [services.length]);
 
   const handleServiceClick = (service) => {

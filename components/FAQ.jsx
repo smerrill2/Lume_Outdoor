@@ -57,44 +57,7 @@ const FAQ = () => {
   ];
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Animate title
-      gsap.fromTo(titleRef.current,
-        { opacity: 0, y: 30 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: titleRef.current,
-            start: "top 80%",
-            toggleActions: "play none none none"
-          }
-        }
-      );
-
-      // Animate FAQ items
-      faqRefs.current.forEach((item, index) => {
-        gsap.fromTo(item,
-          { opacity: 0, y: 20 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            delay: index * 0.1,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: item,
-              start: "top 85%",
-              toggleActions: "play none none none"
-            }
-          }
-        );
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
+    // No animations - elements stay visible
   }, []);
 
   const toggleFAQ = (index) => {

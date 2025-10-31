@@ -337,7 +337,7 @@ function ProjectDetailPage({ projectId }) {
                 </p>
                 <Button 
                   className="px-10 py-4 bg-orange-500 hover:bg-orange-600 text-white rounded-full shadow-lg text-lg font-medium transform hover:scale-105 transition-all"
-                  onClick={() => window.location.href = '/?view=consultation'}
+                  onClick={() => window.location.href = '/consultation'}
                 >
                   Schedule Your Free Consultation <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>

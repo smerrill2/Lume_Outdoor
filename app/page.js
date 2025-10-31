@@ -30,25 +30,17 @@ export default function Home() {
     if (typeof window === 'undefined') return;
     
     const ctx = gsap.context(() => {
+      // Quick fade in on initial load only - much faster
       gsap.set([heroTagRef.current, heroTitleRef.current, heroSubtitleRef.current, heroButtonRef.current], { 
-        opacity: 0, 
-        y: 20 
+        opacity: 0
       });
 
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-
-      tl.to(heroTagRef.current, { opacity: 1, y: 0, duration: 0.7 })
-        .to(heroTitleRef.current, { opacity: 1, y: 0, duration: 0.7 }, "-=0.55")
-        .to(heroSubtitleRef.current, { opacity: 1, y: 0, duration: 0.7 }, "-=0.55")
-        .to(heroButtonRef.current, { opacity: 1, y: 0, duration: 0.6 }, "<")
-        // Subtle pulse immediately after reveal, inside the same timeline
-        .to(heroButtonRef.current, { 
-          scale: 1.05,
-          duration: 0.35,
-          repeat: 1,
-          yoyo: true,
-          ease: "power1.inOut"
-        }, "-=0.2");
+      gsap.to([heroTagRef.current, heroTitleRef.current, heroSubtitleRef.current, heroButtonRef.current], { 
+        opacity: 1, 
+        duration: 0.3,
+        stagger: 0.05,
+        ease: "power2.out"
+      });
     }, heroSectionRef);
 
     return () => ctx.revert();

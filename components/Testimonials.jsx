@@ -45,36 +45,7 @@ const Testimonials = () => {
   ];
 
   useEffect(() => {
-    const section = sectionRef.current;
-    const title = titleRef.current;
-    const subtitle = subtitleRef.current;
-    const cards = cardsRef.current;
-
-    gsap.set([title, subtitle], { opacity: 0, y: 30 });
-    gsap.set(cards, { opacity: 0, y: 50 });
-
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: 'top 80%',
-        end: 'bottom 20%',
-        toggleActions: 'play none none reverse'
-      }
-    });
-
-    tl.to(title, { opacity: 1, y: 0, duration: 0.8 })
-      .to(subtitle, { opacity: 1, y: 0, duration: 0.8 }, '-=0.6')
-      .to(cards, {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        stagger: 0.2,
-        ease: 'power3.out'
-      }, '-=0.4');
-
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
+    // No animations - elements stay visible
   }, []);
 
   const renderStars = (rating) => {

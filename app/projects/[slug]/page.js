@@ -4,7 +4,8 @@ import { projectDetails } from '@/lib/content';
 import { notFound } from 'next/navigation';
 
 export async function generateMetadata({ params }) {
-  const project = projectDetails[params.slug];
+  const { slug } = await params;
+  const project = projectDetails[slug];
   
   if (!project) {
     return {
@@ -23,14 +24,15 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default function ProjectPage({ params }) {
-  const project = projectDetails[params.slug];
+export default async function ProjectPage({ params }) {
+  const { slug } = await params;
+  const project = projectDetails[slug];
   
   if (!project) {
     notFound();
   }
   
-  return <ProjectDetailPage projectId={params.slug} />;
+  return <ProjectDetailPage projectId={slug} />;
 }
 
 export async function generateStaticParams() {
