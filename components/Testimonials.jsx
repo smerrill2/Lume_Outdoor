@@ -60,7 +60,7 @@ const Testimonials = () => {
   };
 
   return (
-    <section ref={sectionRef} id="testimonials" className="py-12 sm:py-16 md:py-20 px-4 bg-white">
+    <section ref={sectionRef} id="testimonials" className="py-12 sm:py-16 md:py-20 px-4 bg-gradient-to-b from-amber-50/40 via-orange-50/20 to-white">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12 md:mb-16">
           <h2 ref={titleRef} className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4">

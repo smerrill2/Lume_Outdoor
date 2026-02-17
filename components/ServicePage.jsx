@@ -59,11 +59,11 @@ function ServicePage({ slug }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <section 
         ref={heroRef}
-        className="relative min-h-[60vh] flex items-center justify-center overflow-hidden bg-gray-800"
+        className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-gray-800 pt-24"
       >
         <div className="absolute inset-0">
           <Image 
@@ -98,7 +98,7 @@ function ServicePage({ slug }) {
         </section>
 
         {/* Benefits Section */}
-        <section ref={el => (contentRefs.current[1] = el)} className="bg-white py-16">
+        <section ref={el => (contentRefs.current[1] = el)} className="py-16">
           <div className="max-w-6xl mx-auto px-4">
             <h2 className="text-3xl font-bold text-center mb-12">Benefits of Our {service.title}</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -135,16 +135,16 @@ function ServicePage({ slug }) {
         )}
 
         {/* Process Section */}
-        <section ref={el => (contentRefs.current[4] = el)} className="bg-gray-800 text-white py-16">
+        <section ref={el => (contentRefs.current[4] = el)} className="bg-gray-50 py-16">
           <div className="max-w-4xl mx-auto px-4">
             <h2 className="text-3xl font-bold text-center mb-12">Our Process</h2>
             <div className="space-y-4">
               {service.process.map((step, index) => (
                 <div key={index} className="flex items-center space-x-4">
                   <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="font-bold">{index + 1}</span>
+                    <span className="font-bold text-white">{index + 1}</span>
                   </div>
-                  <p className="text-lg">{step}</p>
+                  <p className="text-lg text-gray-700">{step}</p>
                 </div>
               ))}
             </div>

@@ -1,7 +1,21 @@
 import './globals.css'
+import { Montserrat, Inter } from 'next/font/google'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import Script from 'next/script'
+
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  weight: ['200', '300'],
+  variable: '--font-montserrat',
+  display: 'swap',
+})
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
 
 export const metadata = {
   title: 'Lume Outdoor - Premium Outdoor Lighting Solutions',
@@ -59,7 +73,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${montserrat.variable} ${inter.variable}`}>
       <head>
         {process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID && (
           <>

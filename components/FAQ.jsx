@@ -65,7 +65,7 @@ const FAQ = () => {
   };
 
   return (
-    <section ref={sectionRef} className="py-16 md:py-20 px-4 bg-white">
+    <section ref={sectionRef} className="py-16 md:py-20 px-4 bg-gradient-to-b from-amber-50/40 via-orange-50/20 to-white">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <div className="flex justify-center items-center mb-4">

@@ -55,9 +55,12 @@
     @apply bg-black;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-body;
     /* Ensure no green background appears on mobile */
     background-color: white !important;
+  }
+  h1, h2, h3 {
+    @apply font-heading font-extralight;
   }
 }
 

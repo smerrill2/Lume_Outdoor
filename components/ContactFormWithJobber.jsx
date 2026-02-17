@@ -79,7 +79,7 @@ const ContactFormWithJobber = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} id="contact" className="py-20 px-4 bg-white">
+    <section ref={sectionRef} id="contact" className="py-20 px-4 bg-gradient-to-b from-amber-50/40 via-orange-50/20 to-white">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 ref={titleRef} className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">

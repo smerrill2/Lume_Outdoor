@@ -4,8 +4,9 @@ import { serviceData } from '@/lib/content';
 import { notFound } from 'next/navigation';
 
 export async function generateMetadata({ params }) {
-  const service = serviceData[params.slug];
-  
+  const { slug } = await params;
+  const service = serviceData[slug];
+
   if (!service) {
     return {
       title: 'Service Not Found',
@@ -22,14 +23,15 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default function ServiceDetailPage({ params }) {
-  const service = serviceData[params.slug];
-  
+export default async function ServiceDetailPage({ params }) {
+  const { slug } = await params;
+  const service = serviceData[slug];
+
   if (!service) {
     notFound();
   }
-  
-  return <ServicePage slug={params.slug} />;
+
+  return <ServicePage slug={slug} />;
 }
 
 export async function generateStaticParams() {

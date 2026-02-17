@@ -56,7 +56,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section ref={heroSectionRef} className="relative h-[80vh] flex items-center justify-center overflow-hidden">
+      <section ref={heroSectionRef} className="relative h-[calc(100vh+200px)] -mt-[200px] pt-[200px] flex items-center justify-center overflow-hidden">
         {/* Background Image with optimization */}
         <div className="absolute inset-0 z-0">
           <Image
@@ -84,7 +84,7 @@ export default function Home() {
             </div>
             
             <h1 ref={heroTitleRef} className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-              Illuminate Your <span className="text-orange-500">Outdoor Dreams</span>
+              Illuminate Your Outdoor Dreams
             </h1>
             
             <p ref={heroSubtitleRef} className="text-xl md:text-2xl mb-8 text-gray-100 max-w-3xl mx-auto">
@@ -95,7 +95,7 @@ export default function Home() {
               ref={heroButtonRef}
               onClick={scrollToServices}
               size="lg" 
-              className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 text-lg font-semibold rounded-full transition-colors duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
+              className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 text-lg font-semibold rounded-lg transition-colors duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
             >
               Explore Our Services
               <ArrowRight className="ml-2 w-5 h-5" />

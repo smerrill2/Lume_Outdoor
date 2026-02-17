@@ -93,7 +93,7 @@ const ServiceProcess = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} id="process" className="py-12 sm:py-16 md:py-20 px-4 bg-white">
+    <section ref={sectionRef} id="process" className="py-12 sm:py-16 md:py-20 px-4 bg-gradient-to-b from-amber-50/40 via-orange-50/20 to-white">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12 md:mb-16">
           <h2 ref={titleRef} className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -141,24 +141,24 @@ const ServiceProcess = () => {
           </div>
 
           {/* Mobile Timeline */}
-          <div className="md:hidden space-y-8">
+          <div className="md:hidden">
             {steps.map((step, index) => {
               const Icon = step.icon;
               return (
                 <div
                   key={step.id}
                   ref={el => stepsRef.current[index] = el}
-                  className="flex items-start space-x-4"
+                  className="flex items-stretch"
                 >
-                  <div className="flex-shrink-0">
-                    <div className="w-14 h-14 sm:w-16 sm:h-16 bg-orange-500 rounded-full flex items-center justify-center shadow-lg">
+                  <div className="flex flex-col items-center mr-4">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 bg-orange-500 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
                       <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                     </div>
                     {index < steps.length - 1 && (
-                      <div className="w-0.5 h-16 sm:h-20 bg-orange-200 mx-auto mt-2" />
+                      <div className="w-0.5 flex-1 bg-orange-200 mt-2" />
                     )}
                   </div>
-                  <div className="flex-1">
+                  <div className={`flex-1 ${index < steps.length - 1 ? 'pb-8' : ''}`}>
                     <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1">{step.title}</h3>
                     <p className="text-gray-600 text-xs sm:text-sm mb-1">{step.description}</p>
                     <span className="text-xs sm:text-sm font-semibold text-orange-600">{step.duration}</span>
