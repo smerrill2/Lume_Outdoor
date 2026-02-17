@@ -95,43 +95,57 @@ export default function EditorialScrollForm() {
   };
 
   return (
-    <div className="bg-gray-950 rounded-2xl overflow-hidden border border-gray-800/50 shadow-2xl">
-      {/* Progress Bar */}
-      <div className="bg-gray-900/80 border-b border-gray-800/50 px-6 py-4">
-        <div className="flex items-center justify-center gap-1 max-w-md mx-auto">
+    <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
+      {/* Progress Banner */}
+      <div className="border-b border-gray-100">
+        <div className="flex">
           {phases.map((step, index) => {
             const currentIndex = getPhaseIndex();
             const isComplete = index < currentIndex;
             const isCurrent = index === currentIndex;
             return (
-              <div key={step.id} className="flex items-center gap-1 flex-1">
-                <div className="flex flex-col items-center flex-1">
-                  <div
-                    className={`w-2 h-2 rounded-full transition-all ${
-                      isComplete
-                        ? 'bg-[#1D4B26]'
-                        : isCurrent
-                          ? 'bg-orange-500 ring-4 ring-orange-500/20'
-                          : 'bg-gray-700'
-                    }`}
-                  />
+              <div
+                key={step.id}
+                className={`relative flex-1 py-3.5 text-center overflow-hidden transition-colors ${
+                  isComplete
+                    ? 'bg-[#1D4B26]'
+                    : isCurrent
+                      ? 'bg-orange-500'
+                      : 'bg-gray-100'
+                }`}
+              >
+                {/* Glow pulse on active step */}
+                {isCurrent && (
+                  <div className="absolute inset-0 animate-pulse bg-white/15 rounded-full blur-xl scale-150" />
+                )}
+
+                <div className="relative flex items-center justify-center gap-2">
+                  {/* Step number / check */}
                   <span
-                    className={`text-[10px] mt-1.5 font-medium transition-colors ${
-                      isCurrent
-                        ? 'text-orange-400'
-                        : isComplete
-                          ? 'text-gray-500'
-                          : 'text-gray-700'
+                    className={`inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${
+                      isComplete
+                        ? 'bg-white/20 text-white'
+                        : isCurrent
+                          ? 'bg-white/25 text-white'
+                          : 'bg-gray-300 text-gray-500'
+                    }`}
+                  >
+                    {isComplete ? (
+                      <Check className="w-3 h-3" />
+                    ) : (
+                      index + 1
+                    )}
+                  </span>
+                  <span
+                    className={`text-xs font-semibold tracking-wide ${
+                      isComplete || isCurrent
+                        ? 'text-white'
+                        : 'text-gray-400'
                     }`}
                   >
                     {step.label}
                   </span>
                 </div>
-                {index < phases.length - 1 && (
-                  <div
-                    className={`h-px flex-1 -mt-3 ${isComplete ? 'bg-[#1D4B26]' : 'bg-gray-800'}`}
-                  />
-                )}
               </div>
             );
           })}
@@ -141,7 +155,7 @@ export default function EditorialScrollForm() {
       {/* === PHASE: SELECT SERVICE === */}
       {phase === 'select' && (
         <div className="p-6 md:p-10">
-          <h3 className="text-2xl md:text-3xl font-bold text-white mb-2 font-[family-name:var(--font-lora)]">
+          <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 font-[family-name:var(--font-lora)]">
             {configuredAreas.length > 0
               ? 'Add Another Area'
               : 'What area would you like to light?'}
@@ -159,7 +173,7 @@ export default function EditorialScrollForm() {
                 <button
                   key={service.id}
                   onClick={() => selectService(service.id)}
-                  className="group relative aspect-[3/4] rounded-xl overflow-hidden border border-gray-800 hover:border-orange-500/30 transition-all hover:shadow-lg hover:shadow-orange-500/5"
+                  className="group relative aspect-[3/4] rounded-xl overflow-hidden border border-gray-200 hover:border-orange-300 transition-all hover:shadow-lg hover:shadow-orange-100"
                 >
                   <Image
                     src={service.photo}
@@ -168,19 +182,19 @@ export default function EditorialScrollForm() {
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                     sizes="(max-width: 768px) 50vw, 25vw"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <div className="w-9 h-9 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center mb-2">
+                    <div className="w-9 h-9 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center mb-2">
                       <IconComponent className="w-4 h-4 text-white" />
                     </div>
                     <p className="font-semibold text-white text-sm leading-tight">
                       {service.name}
                     </p>
-                    <p className="text-xs text-white/40 mt-0.5">
+                    <p className="text-xs text-white/60 mt-0.5">
                       {service.description}
                     </p>
                   </div>
-                  <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                     <Plus className="w-3.5 h-3.5 text-white" />
                   </div>
                 </button>
@@ -193,7 +207,7 @@ export default function EditorialScrollForm() {
             <div className="mt-8 flex justify-center">
               <button
                 onClick={() => setPhase('areas')}
-                className="text-sm text-gray-500 hover:text-white transition-colors flex items-center gap-2"
+                className="text-sm text-gray-400 hover:text-gray-900 transition-colors flex items-center gap-2"
               >
                 Skip — go back to my areas
                 <ChevronRight className="w-4 h-4" />
@@ -207,16 +221,19 @@ export default function EditorialScrollForm() {
       {phase === 'configure' && currentService && (
         <div className="flex flex-col lg:flex-row min-h-[560px]">
           {/* LEFT: Service Photo */}
-          <div className="relative lg:w-[45%] aspect-[4/3] lg:aspect-auto">
+          <div className="relative lg:w-[55%] aspect-[4/3] lg:aspect-auto">
             <Image
               src={currentService.photo}
               alt={currentService.name}
               fill
               className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 45vw"
+              sizes="(max-width: 1024px) 100vw, 55vw"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/10 lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-gray-950" />
+            {/* Mobile: bottom fade for text readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent lg:hidden" />
+            {/* Desktop: very subtle right-edge fade into white */}
+            <div className="absolute inset-0 hidden lg:block" style={{ background: 'linear-gradient(to right, transparent 60%, white)' }} />
             <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-8 lg:right-auto lg:max-w-xs">
               <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center mb-3">
                 <currentService.Icon className="w-5 h-5 text-white" />
@@ -224,7 +241,7 @@ export default function EditorialScrollForm() {
               <h3 className="text-2xl font-bold text-white font-[family-name:var(--font-lora)]">
                 {currentService.name}
               </h3>
-              <p className="text-sm text-white/50 mt-1">
+              <p className="text-sm text-white/60 mt-1">
                 {currentService.description}
               </p>
             </div>
@@ -246,15 +263,15 @@ export default function EditorialScrollForm() {
                       onClick={() => toggleSubOption(option.id)}
                       className={`w-full text-left flex items-center gap-4 p-4 rounded-xl border transition-all ${
                         isSelected
-                          ? 'border-orange-500/40 bg-orange-500/10'
-                          : 'border-gray-800 hover:border-gray-700 bg-gray-900/30'
+                          ? 'border-orange-300 bg-orange-50'
+                          : 'border-gray-200 hover:border-gray-300 bg-white'
                       }`}
                     >
                       <div
                         className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
                           isSelected
                             ? 'border-orange-500 bg-orange-500'
-                            : 'border-gray-600'
+                            : 'border-gray-300'
                         }`}
                       >
                         {isSelected && (
@@ -263,11 +280,13 @@ export default function EditorialScrollForm() {
                       </div>
                       <div>
                         <p
-                          className={`font-medium text-sm ${isSelected ? 'text-white' : 'text-gray-300'}`}
+                          className={`font-medium text-sm ${isSelected ? 'text-gray-900' : 'text-gray-700'}`}
                         >
                           {option.name}
                         </p>
-                        <p className="text-xs text-gray-600">{option.description}</p>
+                        <p className="text-xs text-gray-400">
+                          {option.description}
+                        </p>
                       </div>
                     </button>
                   );
@@ -289,17 +308,17 @@ export default function EditorialScrollForm() {
                       onClick={() => setCurrentMaterial(material.id)}
                       className={`relative text-center p-4 rounded-xl border transition-all ${
                         isSelected
-                          ? 'border-orange-500/40 bg-orange-500/10 ring-1 ring-orange-500/20'
-                          : 'border-gray-800 hover:border-gray-700 bg-gray-900/30'
+                          ? 'border-[#1D4B26] bg-[#1D4B26]/5 ring-1 ring-[#1D4B26]/20'
+                          : 'border-gray-200 hover:border-gray-300 bg-white'
                       }`}
                     >
                       {/* Material dot indicator */}
                       <div
                         className={`w-10 h-10 rounded-full mx-auto mb-3 flex items-center justify-center ${
                           material.id === 'aluminum'
-                            ? 'bg-gradient-to-br from-gray-400 to-gray-500'
+                            ? 'bg-gradient-to-br from-gray-300 to-gray-400'
                             : material.id === 'brass'
-                              ? 'bg-gradient-to-br from-amber-500 to-amber-700'
+                              ? 'bg-gradient-to-br from-amber-400 to-amber-600'
                               : 'bg-gradient-to-br from-purple-400 to-purple-600'
                         }`}
                       >
@@ -307,20 +326,20 @@ export default function EditorialScrollForm() {
                           <Check className="w-4 h-4 text-white drop-shadow" />
                         )}
                       </div>
-                      <p className="font-semibold text-white text-sm">
+                      <p className="font-semibold text-gray-900 text-sm">
                         {material.name}
                       </p>
-                      <p className="text-xs text-gray-500 mt-0.5">
+                      <p className="text-xs text-gray-400 mt-0.5">
                         {material.tier}
                       </p>
                       <p
-                        className={`text-sm font-bold mt-2 ${isSelected ? 'text-orange-400' : 'text-gray-400'}`}
+                        className={`text-sm font-bold mt-2 ${isSelected ? 'text-orange-600' : 'text-gray-500'}`}
                       >
                         {material.upcharge === 0
                           ? 'Included'
                           : `+$${material.upcharge.toFixed(2)}`}
                       </p>
-                      <p className="text-[10px] text-gray-600">per light</p>
+                      <p className="text-[10px] text-gray-400">per light</p>
                     </button>
                   );
                 })}
@@ -329,7 +348,7 @@ export default function EditorialScrollForm() {
 
             {/* Material features */}
             {currentMaterialData && (
-              <div className="bg-gray-900/50 rounded-lg p-4 mb-6 border border-gray-800/50">
+              <div className="bg-gray-50 rounded-lg p-4 mb-6 border border-gray-100">
                 <p className="text-xs text-gray-500 mb-2">
                   {currentMaterialData.description}
                 </p>
@@ -337,7 +356,7 @@ export default function EditorialScrollForm() {
                   {currentMaterialData.features.map((f) => (
                     <span
                       key={f}
-                      className="text-[11px] bg-gray-800/50 text-gray-400 px-2 py-1 rounded"
+                      className="text-[11px] bg-white text-gray-500 px-2 py-1 rounded border border-gray-200"
                     >
                       {f}
                     </span>
@@ -361,7 +380,7 @@ export default function EditorialScrollForm() {
       {/* === PHASE: YOUR AREAS (Summary + Add More) === */}
       {phase === 'areas' && (
         <div className="p-6 md:p-10">
-          <h3 className="text-2xl md:text-3xl font-bold text-white mb-2 font-[family-name:var(--font-lora)]">
+          <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 font-[family-name:var(--font-lora)]">
             Your Lighting Areas
           </h3>
           <p className="text-gray-500 mb-8">
@@ -384,7 +403,7 @@ export default function EditorialScrollForm() {
               return (
                 <div
                   key={index}
-                  className="flex items-center gap-4 bg-gray-900/50 border border-gray-800/50 rounded-xl p-4"
+                  className="flex items-center gap-4 bg-gray-50 border border-gray-200 rounded-xl p-4"
                 >
                   {/* Thumbnail */}
                   <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0">
@@ -403,7 +422,7 @@ export default function EditorialScrollForm() {
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-white text-sm">
+                    <p className="font-semibold text-gray-900 text-sm">
                       {service.name}
                     </p>
                     <p className="text-xs text-gray-500 mt-0.5">
@@ -426,13 +445,13 @@ export default function EditorialScrollForm() {
                             ? 'text-gray-400'
                             : material?.id === 'brass'
                               ? 'text-amber-500'
-                              : 'text-purple-400'
+                              : 'text-purple-500'
                         }`}
                       />
                       <span className="text-xs text-gray-500">
                         {material?.name}
                         {material?.upcharge > 0 && (
-                          <span className="text-orange-400 ml-1">
+                          <span className="text-orange-600 ml-1">
                             +${material.upcharge.toFixed(2)}/light
                           </span>
                         )}
@@ -443,7 +462,7 @@ export default function EditorialScrollForm() {
                   {/* Remove */}
                   <button
                     onClick={() => removeArea(index)}
-                    className="w-8 h-8 rounded-lg bg-red-500/10 text-red-400 flex items-center justify-center hover:bg-red-500/20 transition-colors shrink-0"
+                    className="w-8 h-8 rounded-lg bg-red-50 text-red-400 flex items-center justify-center hover:bg-red-100 transition-colors shrink-0"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -457,7 +476,7 @@ export default function EditorialScrollForm() {
             {availableServices.length > 0 && (
               <button
                 onClick={() => setPhase('select')}
-                className="flex-1 flex items-center justify-center gap-2 border border-dashed border-gray-700 hover:border-orange-500/30 text-gray-400 hover:text-orange-400 py-3.5 rounded-xl transition-all"
+                className="flex-1 flex items-center justify-center gap-2 border border-dashed border-gray-300 hover:border-orange-300 text-gray-400 hover:text-orange-600 py-3.5 rounded-xl transition-all"
               >
                 <Plus className="w-4 h-4" />
                 Add Another Area
@@ -466,7 +485,7 @@ export default function EditorialScrollForm() {
             <button
               onClick={() => setPhase('contact')}
               disabled={configuredAreas.length === 0}
-              className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-800 disabled:text-gray-600 text-white font-semibold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2"
+              className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-200 disabled:text-gray-400 text-white font-semibold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2"
             >
               Continue
               <ChevronRight className="w-4 h-4" />
@@ -479,7 +498,7 @@ export default function EditorialScrollForm() {
       {phase === 'contact' && (
         <div className="p-6 md:p-10">
           <div className="max-w-lg mx-auto">
-            <h3 className="text-2xl md:text-3xl font-bold text-white mb-2 font-[family-name:var(--font-lora)]">
+            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 font-[family-name:var(--font-lora)]">
               Your Details
             </h3>
             <p className="text-gray-500 mb-8">
@@ -499,7 +518,7 @@ export default function EditorialScrollForm() {
                     setContactInfo({ ...contactInfo, name: e.target.value })
                   }
                   placeholder="John Smith"
-                  className="w-full px-4 py-3.5 bg-gray-900/50 border border-gray-800 rounded-xl text-white placeholder-gray-700 focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 outline-none transition-all"
+                  className="w-full px-4 py-3.5 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:border-[#1D4B26] focus:ring-2 focus:ring-[#1D4B26]/20 outline-none transition-all"
                 />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -514,7 +533,7 @@ export default function EditorialScrollForm() {
                       setContactInfo({ ...contactInfo, email: e.target.value })
                     }
                     placeholder="john@email.com"
-                    className="w-full px-4 py-3.5 bg-gray-900/50 border border-gray-800 rounded-xl text-white placeholder-gray-700 focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 outline-none transition-all"
+                    className="w-full px-4 py-3.5 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:border-[#1D4B26] focus:ring-2 focus:ring-[#1D4B26]/20 outline-none transition-all"
                   />
                 </div>
                 <div>
@@ -528,7 +547,7 @@ export default function EditorialScrollForm() {
                       setContactInfo({ ...contactInfo, phone: e.target.value })
                     }
                     placeholder="(316) 555-0100"
-                    className="w-full px-4 py-3.5 bg-gray-900/50 border border-gray-800 rounded-xl text-white placeholder-gray-700 focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 outline-none transition-all"
+                    className="w-full px-4 py-3.5 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:border-[#1D4B26] focus:ring-2 focus:ring-[#1D4B26]/20 outline-none transition-all"
                   />
                 </div>
               </div>
@@ -543,7 +562,7 @@ export default function EditorialScrollForm() {
                     setContactInfo({ ...contactInfo, address: e.target.value })
                   }
                   placeholder="123 Main St, Wichita, KS"
-                  className="w-full px-4 py-3.5 bg-gray-900/50 border border-gray-800 rounded-xl text-white placeholder-gray-700 focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 outline-none transition-all"
+                  className="w-full px-4 py-3.5 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:border-[#1D4B26] focus:ring-2 focus:ring-[#1D4B26]/20 outline-none transition-all"
                 />
               </div>
               <div>
@@ -557,7 +576,7 @@ export default function EditorialScrollForm() {
                   }
                   rows={3}
                   placeholder="Tell us about your property, timeline, or specific requests..."
-                  className="w-full px-4 py-3.5 bg-gray-900/50 border border-gray-800 rounded-xl text-white placeholder-gray-700 focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 outline-none transition-all resize-none"
+                  className="w-full px-4 py-3.5 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:border-[#1D4B26] focus:ring-2 focus:ring-[#1D4B26]/20 outline-none transition-all resize-none"
                 />
               </div>
             </div>
@@ -569,7 +588,7 @@ export default function EditorialScrollForm() {
       {phase === 'review' && (
         <div className="p-6 md:p-10">
           <div className="max-w-2xl mx-auto">
-            <h3 className="text-2xl md:text-3xl font-bold text-white mb-2 font-[family-name:var(--font-lora)]">
+            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 font-[family-name:var(--font-lora)]">
               Review Your Consultation
             </h3>
             <p className="text-gray-500 mb-8">
@@ -578,7 +597,7 @@ export default function EditorialScrollForm() {
 
             {/* Areas summary */}
             <div className="mb-6">
-              <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
+              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
                 Lighting Areas ({configuredAreas.length})
               </h4>
               <div className="space-y-3">
@@ -594,7 +613,7 @@ export default function EditorialScrollForm() {
                   return (
                     <div
                       key={index}
-                      className="flex items-center gap-4 bg-gray-900/50 border border-gray-800/50 rounded-xl p-4"
+                      className="flex items-center gap-4 bg-gray-50 border border-gray-200 rounded-xl p-4"
                     >
                       <div className="relative w-14 h-14 rounded-lg overflow-hidden shrink-0">
                         <Image
@@ -606,7 +625,7 @@ export default function EditorialScrollForm() {
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-white text-sm">
+                        <p className="font-semibold text-gray-900 text-sm">
                           {service.name}
                         </p>
                         {area.subOptions.length > 0 && (
@@ -624,11 +643,11 @@ export default function EditorialScrollForm() {
                         )}
                       </div>
                       <div className="text-right shrink-0">
-                        <p className="text-sm text-white font-medium">
+                        <p className="text-sm text-gray-900 font-medium">
                           {material?.name}
                         </p>
                         {material?.upcharge > 0 && (
-                          <p className="text-xs text-orange-400">
+                          <p className="text-xs text-orange-600">
                             +${material.upcharge.toFixed(2)}/light
                           </p>
                         )}
@@ -640,21 +659,21 @@ export default function EditorialScrollForm() {
             </div>
 
             {/* Contact summary */}
-            <div className="bg-gray-900/50 border border-gray-800/50 rounded-xl p-5 mb-8">
-              <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 mb-8">
+              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
                 Contact Information
               </h4>
               <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-sm">
-                <span className="text-gray-600">Name</span>
-                <span className="text-white">{contactInfo.name}</span>
-                <span className="text-gray-600">Email</span>
-                <span className="text-white">{contactInfo.email}</span>
-                <span className="text-gray-600">Phone</span>
-                <span className="text-white">{contactInfo.phone}</span>
+                <span className="text-gray-400">Name</span>
+                <span className="text-gray-900">{contactInfo.name}</span>
+                <span className="text-gray-400">Email</span>
+                <span className="text-gray-900">{contactInfo.email}</span>
+                <span className="text-gray-400">Phone</span>
+                <span className="text-gray-900">{contactInfo.phone}</span>
                 {contactInfo.address && (
                   <>
-                    <span className="text-gray-600">Address</span>
-                    <span className="text-white">{contactInfo.address}</span>
+                    <span className="text-gray-400">Address</span>
+                    <span className="text-gray-900">{contactInfo.address}</span>
                   </>
                 )}
               </div>
@@ -665,7 +684,7 @@ export default function EditorialScrollForm() {
               <Send className="w-5 h-5" />
               Submit Consultation Request
             </button>
-            <p className="text-xs text-gray-600 text-center mt-3">
+            <p className="text-xs text-gray-400 text-center mt-3">
               You&apos;ll receive a PDF summary of your selections via email.
             </p>
           </div>
@@ -673,10 +692,10 @@ export default function EditorialScrollForm() {
       )}
 
       {/* Bottom Nav */}
-      <div className="border-t border-gray-800/50 bg-gray-900/50 px-6 py-4 flex items-center justify-between">
+      <div className="border-t border-gray-100 bg-gray-50/50 px-6 py-4 flex items-center justify-between">
         <button
           onClick={goBack}
-          className={`flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-white transition-colors ${
+          className={`flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-gray-900 transition-colors ${
             phase === 'select' && configuredAreas.length === 0
               ? 'invisible'
               : ''
@@ -688,7 +707,7 @@ export default function EditorialScrollForm() {
 
         <div className="flex items-center gap-3">
           {configuredAreas.length > 0 && (
-            <span className="text-xs text-gray-600">
+            <span className="text-xs text-gray-400">
               {configuredAreas.length} area
               {configuredAreas.length !== 1 ? 's' : ''}
             </span>
@@ -701,16 +720,17 @@ export default function EditorialScrollForm() {
             disabled={
               !contactInfo.name || !contactInfo.email || !contactInfo.phone
             }
-            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-800 disabled:text-gray-600 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition-colors"
+            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-200 disabled:text-gray-400 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition-colors"
           >
             Review
             <ChevronRight className="w-4 h-4" />
           </button>
         )}
 
-        {phase !== 'contact' && phase !== 'review' && phase !== 'areas' && phase !== 'configure' && (
-          <div className="w-20" />
-        )}
+        {phase !== 'contact' &&
+          phase !== 'review' &&
+          phase !== 'areas' &&
+          phase !== 'configure' && <div className="w-20" />}
       </div>
     </div>
   );
