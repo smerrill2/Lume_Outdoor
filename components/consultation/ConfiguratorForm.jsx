@@ -162,7 +162,7 @@ export default function ConfiguratorForm() {
                       {/* Expanded sub-options */}
                       {isSelected && isExpanded && (
                         <div className="mt-2 ml-14 grid grid-cols-1 sm:grid-cols-3 gap-2">
-                          {service.subOptions.map((option) => {
+                          {(service.subOptions || []).map((option) => {
                             const isOptSelected = (
                               selectedSubOptions[service.id] || []
                             ).includes(option.id);

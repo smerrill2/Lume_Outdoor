@@ -6,56 +6,129 @@ import {
   LayoutGrid,
   Shield,
   Sparkles,
+  Lightbulb,
 } from 'lucide-react';
 
+/* ── Shared fixture & finish data ── */
+
+export const aluminumColors = [
+  { id: 'black', name: 'Black', swatch: '#1a1a1a' },
+  { id: 'white', name: 'White', swatch: '#f0f0f0' },
+  { id: 'sand', name: 'Sand', swatch: '#c2b280' },
+];
+
+export const fixtureTypes = [
+  {
+    id: 'v1-dropin',
+    name: 'V1 — Drop-In Fixture',
+    shortName: 'V1 Drop-In',
+    description:
+      'Versatile fixture you can adjust after installation. Change the beam angle and reposition as your landscape grows.',
+    benefits: ['Adjustable beam angle', 'Repositionable post-install', 'Versatile placement'],
+    finishes: [
+      {
+        id: 'raw-brass',
+        name: 'Raw Brass',
+        priceTier: '$$$',
+        swatch: '#4A3728',
+        description:
+          'Solid brass that develops a rich natural patina over time. One-of-a-kind character.',
+      },
+      {
+        id: 'artisan-brass',
+        name: 'Artisan Brass',
+        priceTier: '$$',
+        swatch: '#8B6914',
+        description: 'Hand-finished brass with a warm, polished sheen. Premium craftsmanship.',
+      },
+      {
+        id: 'aluminum',
+        name: 'Aluminum',
+        priceTier: '$',
+        swatch: null,
+        hasColorOptions: true,
+        description:
+          'Durable, lightweight aluminum available in 3 colors. Great value with solid performance.',
+      },
+    ],
+  },
+  {
+    id: 'v2-integrated',
+    name: 'V2 — Integrated Fixture',
+    shortName: 'V2 Integrated',
+    description:
+      'Fixed-mount fixture built directly into the landscape. Stronger construction with a clean, seamless look.',
+    benefits: ['Structurally stronger', 'Seamless installation', 'Clean, minimal profile'],
+    finishes: [
+      {
+        id: 'raw-brass',
+        name: 'Raw Brass',
+        priceTier: '$$',
+        swatch: '#4A3728',
+        description:
+          'Solid brass that develops a rich natural patina over time. One-of-a-kind character.',
+      },
+      {
+        id: 'aluminum',
+        name: 'Aluminum',
+        priceTier: '$',
+        swatch: null,
+        hasColorOptions: true,
+        description:
+          'Durable, lightweight aluminum available in 3 colors. Great value with solid performance.',
+      },
+    ],
+  },
+];
+
+/* ── Tree lighting styles ── */
+
+export const treeLightingStyles = [
+  {
+    id: 'dramatic',
+    name: 'Dramatic',
+    description:
+      'Bold, high-contrast lighting for striking visual impact. Best for statement trees and focal points.',
+    recommended: true,
+  },
+  {
+    id: 'soft',
+    name: 'Soft',
+    description:
+      'Gentle, ambient glow that blends naturally with the landscape. Creates a warm, inviting atmosphere.',
+  },
+];
+
+/* ── Lighting service areas ── */
+/* configType: 'fixture' = V1/V2 fixture → finish flow */
+/* configType: 'tree'    = dramatic vs soft style */
+/* configType: 'generic' = legacy sub-options + material picker */
+
 export const lightingServices = [
+  /* ── Primary areas ── */
+  {
+    id: 'uplighting',
+    name: 'House Uplighting',
+    description: "Highlight your home's facade and architectural features",
+    Icon: Building2,
+    photo: "/SamProject/Drake's Home-04 (1).jpg",
+    configType: 'fixture',
+  },
+  {
+    id: 'tree',
+    name: 'Tree Uplighting',
+    description: 'In-ground dramatic or soft tree illumination',
+    Icon: TreePine,
+    photo: "/SamProject/Drake's Home-09 (1).jpg",
+    configType: 'tree',
+  },
   {
     id: 'pathway',
     name: 'Pathway Lighting',
     description: 'Safe and beautiful walkway illumination',
     Icon: Route,
     photo: '/servicesphotos/pathwaylighting.png',
-    subOptions: [
-      { id: 'pathway-solar', name: 'Solar Powered', description: 'Eco-friendly, no wiring needed' },
-      { id: 'pathway-wired', name: 'Hardwired', description: 'Consistent brightness, reliable' },
-      { id: 'pathway-low-voltage', name: 'Low Voltage', description: 'Energy efficient, easy install' },
-    ],
-  },
-  {
-    id: 'pool',
-    name: 'Pool & Water Features',
-    description: 'Stunning aquatic illumination',
-    Icon: Waves,
-    photo: '/servicesphotos/poolandspa.jpg',
-    subOptions: [
-      { id: 'pool-underwater', name: 'Underwater Lighting', description: 'Illuminate from below the surface' },
-      { id: 'pool-poolside', name: 'Poolside Ambiance', description: 'Warm surrounding glow' },
-      { id: 'pool-fountain', name: 'Fountain & Water Feature', description: 'Dramatic water illumination' },
-    ],
-  },
-  {
-    id: 'uplighting',
-    name: 'Uplighting',
-    description: "Highlight your home's facade and features",
-    Icon: Building2,
-    photo: "/SamProject/Drake's Home-04 (1).jpg",
-    subOptions: [
-      { id: 'uplighting-facade', name: 'Facade Wash', description: 'Even wall illumination' },
-      { id: 'uplighting-column', name: 'Column & Pillar', description: 'Vertical accent lighting' },
-      { id: 'uplighting-accent', name: 'Accent Spotlights', description: 'Focused feature highlights' },
-    ],
-  },
-  {
-    id: 'tree',
-    name: 'Tree Lighting',
-    description: 'Dramatic canopy and trunk illumination',
-    Icon: TreePine,
-    photo: "/SamProject/Drake's Home-09 (1).jpg",
-    subOptions: [
-      { id: 'tree-canopy', name: 'Canopy Uplighting', description: 'Light filtering through leaves' },
-      { id: 'tree-spotlight', name: 'Trunk Spotlights', description: 'Dramatic bark texturing' },
-      { id: 'tree-downlight', name: 'Moonlight Downlighting', description: 'Soft overhead glow' },
-    ],
+    configType: 'fixture',
   },
   {
     id: 'deck',
@@ -63,10 +136,28 @@ export const lightingServices = [
     description: 'Perfect outdoor entertaining spaces',
     Icon: LayoutGrid,
     photo: '/servicesphotos/deck&patio.jpg',
+    configType: 'fixture',
+  },
+  {
+    id: 'wash-area',
+    name: 'Wash / Area Lighting',
+    description: 'Broad, even illumination for open spaces',
+    Icon: Lightbulb,
+    photo: "/SamProject/Drake's Home-04 (1).jpg",
+    configType: 'fixture',
+  },
+  /* ── Secondary areas ── */
+  {
+    id: 'pool',
+    name: 'Pool & Water Features',
+    description: 'Stunning aquatic illumination',
+    Icon: Waves,
+    photo: '/servicesphotos/poolandspa.jpg',
+    configType: 'generic',
     subOptions: [
-      { id: 'deck-rail', name: 'Rail Lighting', description: 'Illuminated railings and borders' },
-      { id: 'deck-step', name: 'Step & Riser Lights', description: 'Safe stair navigation' },
-      { id: 'deck-string', name: 'Overhead String Lights', description: 'Festive canopy ambiance' },
+      { id: 'pool-underwater', name: 'Underwater Lighting', description: 'Illuminate from below the surface' },
+      { id: 'pool-poolside', name: 'Poolside Ambiance', description: 'Warm surrounding glow' },
+      { id: 'pool-fountain', name: 'Fountain & Water Feature', description: 'Dramatic water illumination' },
     ],
   },
   {
@@ -75,6 +166,7 @@ export const lightingServices = [
     description: 'Enhanced safety and protection',
     Icon: Shield,
     photo: '/servicesphotos/securitylighting.png',
+    configType: 'generic',
     subOptions: [
       { id: 'security-motion', name: 'Motion-Activated', description: 'Triggers on movement detection' },
       { id: 'security-flood', name: 'Floodlights', description: 'Broad area coverage' },
@@ -87,6 +179,7 @@ export const lightingServices = [
     description: 'Seasonal decorative displays',
     Icon: Sparkles,
     photo: '/servicesphotos/holiday.png',
+    configType: 'generic',
     subOptions: [
       { id: 'holiday-roofline', name: 'Roofline Display', description: 'Classic roofline outlines' },
       { id: 'holiday-tree-wrap', name: 'Tree Wraps', description: 'Trunk and branch wrapping' },
@@ -94,6 +187,8 @@ export const lightingServices = [
     ],
   },
 ];
+
+/* ── Legacy material tiers (used by generic configType services) ── */
 
 export const materialTiers = [
   {

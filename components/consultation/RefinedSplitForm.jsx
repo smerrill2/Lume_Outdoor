@@ -236,7 +236,7 @@ export default function RefinedSplitForm() {
                 Select Options
               </h4>
               <div className="space-y-2">
-                {activeService.subOptions.map((option) => {
+                {(activeService.subOptions || []).map((option) => {
                   const isActive = selectedSubOptions.includes(option.id);
                   return (
                     <button

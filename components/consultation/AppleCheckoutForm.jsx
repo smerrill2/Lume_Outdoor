@@ -168,7 +168,7 @@ export default function AppleCheckoutForm() {
                         </h4>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        {service.subOptions.map((option) => {
+                        {(service.subOptions || []).map((option) => {
                           const isSelected = (
                             selectedSubOptions[service.id] || []
                           ).includes(option.id);

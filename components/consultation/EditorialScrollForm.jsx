@@ -255,7 +255,7 @@ export default function EditorialScrollForm() {
                 What type of {currentService.name.toLowerCase()}?
               </h4>
               <div className="space-y-2.5">
-                {currentService.subOptions.map((option) => {
+                {(currentService.subOptions || []).map((option) => {
                   const isSelected = currentSubOptions.includes(option.id);
                   return (
                     <button
