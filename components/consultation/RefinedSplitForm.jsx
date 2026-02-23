@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import {
   Check,
@@ -12,7 +12,7 @@ import {
   CircleDot,
   ArrowRight,
 } from 'lucide-react';
-import { lightingServices, materialTiers } from './formData';
+import { lightingServices, materialTiers, fixtureTypes, aluminumColors } from './formData';
 
 const steps = [
   { id: 'select', label: 'Area' },
@@ -27,7 +27,17 @@ export default function RefinedSplitForm() {
   const [selectedServiceId, setSelectedServiceId] = useState(null);
   const [selectedSubOptions, setSelectedSubOptions] = useState([]);
   const [selectedMaterial, setSelectedMaterial] = useState('aluminum');
+  const [configPhase, setConfigPhase] = useState('fixture'); // 'fixture' | 'finish'
+  const [selectedFixtureType, setSelectedFixtureType] = useState(null);
+  const [selectedFinish, setSelectedFinish] = useState(null);
+  const [selectedAluminumColor, setSelectedAluminumColor] = useState(null);
   const [savedAreas, setSavedAreas] = useState([]);
+  const formRef = useRef(null);
+
+  // Scroll form into view when step or phase changes
+  useEffect(() => {
+    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [activeStep, configPhase]);
   const [contactInfo, setContactInfo] = useState({
     name: '',
     email: '',
@@ -38,10 +48,12 @@ export default function RefinedSplitForm() {
 
   const activeService = lightingServices.find((s) => s.id === selectedServiceId);
   const activeMaterialData = materialTiers.find((m) => m.id === selectedMaterial);
+  const activeFixture = fixtureTypes.find((f) => f.id === selectedFixtureType);
   const configuredServiceIds = savedAreas.map((a) => a.serviceId);
   const remainingServices = lightingServices.filter(
     (s) => !configuredServiceIds.includes(s.id)
   );
+  const previousFixtureConfig = [...savedAreas].reverse().find((a) => a.fixtureType) || null;
 
   const stepIndex = steps.findIndex((s) => s.id === activeStep);
 
@@ -49,6 +61,16 @@ export default function RefinedSplitForm() {
     setSelectedServiceId(id);
     setSelectedSubOptions([]);
     setSelectedMaterial('aluminum');
+    setConfigPhase('fixture');
+    setSelectedFixtureType(null);
+    // Pre-fill finish + color from last configured fixture area
+    if (previousFixtureConfig) {
+      setSelectedFinish(previousFixtureConfig.finish);
+      setSelectedAluminumColor(previousFixtureConfig.aluminumColor || null);
+    } else {
+      setSelectedFinish(null);
+      setSelectedAluminumColor(null);
+    }
     setActiveStep('configure');
   };
 
@@ -61,17 +83,29 @@ export default function RefinedSplitForm() {
   };
 
   const saveArea = () => {
-    setSavedAreas((prev) => [
-      ...prev,
-      {
-        serviceId: selectedServiceId,
-        subOptions: [...selectedSubOptions],
-        material: selectedMaterial,
-      },
-    ]);
+    const areaData = {
+      serviceId: selectedServiceId,
+      subOptions: [...selectedSubOptions],
+    };
+
+    if (activeService?.configType === 'fixture') {
+      areaData.fixtureType = selectedFixtureType;
+      areaData.finish = selectedFinish;
+      if (selectedFinish === 'aluminum' && selectedAluminumColor) {
+        areaData.aluminumColor = selectedAluminumColor;
+      }
+    } else {
+      areaData.material = selectedMaterial;
+    }
+
+    setSavedAreas((prev) => [...prev, areaData]);
     setSelectedServiceId(null);
     setSelectedSubOptions([]);
     setSelectedMaterial('aluminum');
+    setSelectedFixtureType(null);
+    setSelectedFinish(null);
+    setSelectedAluminumColor(null);
+    setConfigPhase('fixture');
     setActiveStep('areas');
   };
 
@@ -80,15 +114,22 @@ export default function RefinedSplitForm() {
   };
 
   const goBack = () => {
-    if (activeStep === 'configure') setActiveStep('select');
-    else if (activeStep === 'areas') {
+    if (activeStep === 'configure') {
+      if (configPhase === 'finish') {
+        setConfigPhase('fixture');
+        setSelectedFixtureType(null);
+        setSelectedFinish(null);
+      } else {
+        setActiveStep('select');
+      }
+    } else if (activeStep === 'areas') {
       if (savedAreas.length === 0) setActiveStep('select');
     } else if (activeStep === 'contact') setActiveStep('areas');
     else if (activeStep === 'review') setActiveStep('contact');
   };
 
   return (
-    <div className="bg-[#0f0f0f] rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+    <div ref={formRef} className="bg-[#0f0f0f] rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
       {/* Minimal step indicator */}
       <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between">
         <div className="flex items-center gap-1">
@@ -144,31 +185,61 @@ export default function RefinedSplitForm() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {remainingServices.map((service) => {
+            {lightingServices.map((service) => {
+              const isConfigured = configuredServiceIds.includes(service.id);
               const IconComp = service.Icon;
               return (
                 <button
                   key={service.id}
-                  onClick={() => pickService(service.id)}
-                  className="group relative aspect-[3/4] rounded-xl overflow-hidden border border-white/10 hover:border-orange-500/40 transition-all duration-300"
+                  onClick={() => !isConfigured && pickService(service.id)}
+                  disabled={isConfigured}
+                  className={`group relative aspect-[3/4] rounded-xl overflow-hidden border transition-all duration-300 ${
+                    isConfigured
+                      ? 'border-white/20 cursor-default'
+                      : 'border-white/10 hover:border-orange-500/40'
+                  }`}
                 >
                   <Image
                     src={service.photo}
                     alt={service.name}
                     fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    className={`object-cover transition-transform duration-700 ${
+                      isConfigured ? '' : 'group-hover:scale-110'
+                    }`}
                     sizes="(max-width: 768px) 50vw, 25vw"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
 
+                  {/* Selected overlay */}
+                  {isConfigured && (
+                    <div className="absolute inset-0 bg-white/25 backdrop-blur-[2px] z-10 flex items-center justify-center">
+                      <div className="bg-white/90 text-black font-bold text-sm px-4 py-2 rounded-lg flex items-center gap-2 shadow-lg">
+                        <Check className="w-4 h-4" />
+                        Selected
+                      </div>
+                    </div>
+                  )}
+
                   {/* Hover glow */}
-                  <div className="absolute inset-0 bg-orange-500/0 group-hover:bg-orange-500/10 transition-colors duration-300" />
+                  {!isConfigured && (
+                    <div className="absolute inset-0 bg-orange-500/0 group-hover:bg-orange-500/10 transition-colors duration-300" />
+                  )}
 
                   <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <div className="w-8 h-8 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center mb-2 group-hover:bg-orange-500/20 transition-colors">
-                      <IconComp className="w-4 h-4 text-white/70 group-hover:text-orange-300 transition-colors" />
+                    <div className={`w-8 h-8 rounded-lg backdrop-blur-sm flex items-center justify-center mb-2 transition-colors ${
+                      isConfigured
+                        ? 'bg-white/10'
+                        : 'bg-white/10 group-hover:bg-orange-500/20'
+                    }`}>
+                      <IconComp className={`w-4 h-4 transition-colors ${
+                        isConfigured
+                          ? 'text-white/40'
+                          : 'text-white/70 group-hover:text-orange-300'
+                      }`} />
                     </div>
-                    <p className="font-semibold text-white text-sm leading-tight">
+                    <p className={`font-semibold text-sm leading-tight ${
+                      isConfigured ? 'text-white/50' : 'text-white'
+                    }`}>
                       {service.name}
                     </p>
                     <p className="text-[11px] text-white/40 mt-0.5 line-clamp-2">
@@ -177,9 +248,11 @@ export default function RefinedSplitForm() {
                   </div>
 
                   {/* Corner arrow */}
-                  <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all translate-x-1 group-hover:translate-x-0">
-                    <ArrowRight className="w-3.5 h-3.5 text-white" />
-                  </div>
+                  {!isConfigured && (
+                    <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all translate-x-1 group-hover:translate-x-0">
+                      <ArrowRight className="w-3.5 h-3.5 text-white" />
+                    </div>
+                  )}
                 </button>
               );
             })}
@@ -199,147 +272,354 @@ export default function RefinedSplitForm() {
         </div>
       )}
 
-      {/* === CONFIGURE (Split: Photo Left / Options Right) === */}
+      {/* === CONFIGURE === */}
       {activeStep === 'configure' && activeService && (
-        <div className="flex flex-col lg:flex-row min-h-[560px]">
-          {/* Photo side */}
-          <div className="relative lg:w-[50%] aspect-[4/3] lg:aspect-auto">
-            <Image
-              src={activeService.photo}
-              alt={activeService.name}
-              fill
-              className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              priority
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-[#0f0f0f]" />
-
-            {/* Service label on photo */}
-            <div className="absolute bottom-0 left-0 p-6 lg:p-8 lg:bottom-auto lg:top-1/2 lg:-translate-y-1/2">
-              <div className="w-12 h-12 rounded-xl bg-orange-500 flex items-center justify-center mb-3 shadow-lg shadow-orange-500/30">
-                <activeService.Icon className="w-6 h-6 text-white" />
+        <>
+          {/* ── Fixture-type services: Phase 1 — Pick fixture type ── */}
+          {activeService.configType === 'fixture' && configPhase === 'fixture' && (
+            <div className="p-6 md:p-10">
+              <div className="mb-8">
+                <h3 className="text-2xl md:text-3xl font-bold text-white mb-2 font-[family-name:var(--font-lora)]">
+                  Choose Your Fixture Type
+                </h3>
+                <p className="text-white/40 text-sm">
+                  Select a fixture style for your {activeService.name.toLowerCase()}.
+                </p>
               </div>
-              <h3 className="text-2xl font-bold text-white font-[family-name:var(--font-lora)]">
-                {activeService.name}
-              </h3>
-              <p className="text-sm text-white/50 mt-1 max-w-[240px]">
-                {activeService.description}
-              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {fixtureTypes.map((fixture) => (
+                  <button
+                    key={fixture.id}
+                    onClick={() => {
+                      setSelectedFixtureType(fixture.id);
+                      // Keep pre-filled finish only if it exists in this fixture's finishes
+                      const hasPrefilledFinish = fixture.finishes.some((f) => f.id === selectedFinish);
+                      if (!hasPrefilledFinish) {
+                        setSelectedFinish(null);
+                        setSelectedAluminumColor(null);
+                      }
+                      setConfigPhase('finish');
+                    }}
+                    className="group relative aspect-[3/4] rounded-xl overflow-hidden border border-white/10 hover:border-orange-500/40 transition-all duration-300"
+                  >
+                    <Image
+                      src={fixture.photo}
+                      alt={fixture.name}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+
+                    {/* Hover glow */}
+                    <div className="absolute inset-0 bg-orange-500/0 group-hover:bg-orange-500/10 transition-colors duration-300" />
+
+                    {/* Previously selected badge */}
+                    {previousFixtureConfig?.fixtureType === fixture.id && (
+                      <div className="absolute top-3 left-3 z-10">
+                        <span className="text-[10px] font-semibold bg-white/90 text-black px-2.5 py-1 rounded-full">
+                          Previously selected
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="absolute bottom-0 left-0 right-0 p-6">
+                      <h4 className="text-xl font-bold text-white mb-1 font-[family-name:var(--font-lora)]">
+                        {fixture.name}
+                      </h4>
+                      <p className="text-sm text-white/50 mb-3">{fixture.description}</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {fixture.benefits.map((benefit) => (
+                          <span
+                            key={benefit}
+                            className="text-[10px] bg-white/10 backdrop-blur-sm text-white/70 px-2.5 py-1 rounded-full border border-white/10"
+                          >
+                            {benefit}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Corner arrow */}
+                    <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all translate-x-1 group-hover:translate-x-0">
+                      <ArrowRight className="w-3.5 h-3.5 text-white" />
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Options side */}
-          <div className="flex-1 p-6 lg:p-8 overflow-y-auto">
-            {/* Sub-options */}
-            <div className="mb-8">
-              <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
-                Select Options
-              </h4>
-              <div className="space-y-2">
-                {(activeService.subOptions || []).map((option) => {
-                  const isActive = selectedSubOptions.includes(option.id);
-                  return (
-                    <button
-                      key={option.id}
-                      onClick={() => toggleOption(option.id)}
-                      className={`w-full text-left flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 ${
-                        isActive
-                          ? 'border-orange-500/40 bg-orange-500/10'
-                          : 'border-white/10 hover:border-white/20 bg-white/[0.02]'
-                      }`}
-                    >
-                      <div
-                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
-                          isActive
-                            ? 'border-orange-500 bg-orange-500'
-                            : 'border-white/20'
-                        }`}
-                      >
-                        {isActive && <Check className="w-3 h-3 text-white" />}
-                      </div>
-                      <div>
-                        <p className={`font-medium text-sm ${isActive ? 'text-white' : 'text-white/70'}`}>
-                          {option.name}
-                        </p>
-                        <p className="text-xs text-white/30">{option.description}</p>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+          {/* ── Fixture-type services: Phase 2 — Pick finish/color ── */}
+          {activeService.configType === 'fixture' && configPhase === 'finish' && activeFixture && (
+            <div className="flex flex-col lg:flex-row min-h-[560px]">
+              {/* Photo side — selected fixture */}
+              <div className="relative lg:w-[50%] aspect-[4/3] lg:aspect-auto">
+                <Image
+                  src={activeFixture.photo}
+                  alt={activeFixture.name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-[#0f0f0f]" />
 
-            {/* Material */}
-            <div className="mb-8">
-              <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
-                Fixture Material
-              </h4>
-              <div className="grid grid-cols-3 gap-2">
-                {materialTiers.map((material) => {
-                  const isActive = selectedMaterial === material.id;
-                  return (
-                    <button
-                      key={material.id}
-                      onClick={() => setSelectedMaterial(material.id)}
-                      className={`relative text-center p-4 rounded-xl border transition-all duration-200 ${
-                        isActive
-                          ? 'border-[#1D4B26] bg-[#1D4B26]/15 ring-1 ring-[#1D4B26]/30'
-                          : 'border-white/10 hover:border-white/20 bg-white/[0.02]'
-                      }`}
-                    >
-                      <div
-                        className={`w-8 h-8 rounded-full mx-auto mb-2 ${
-                          material.id === 'aluminum'
-                            ? 'bg-gradient-to-br from-gray-400 to-gray-500'
-                            : material.id === 'brass'
-                              ? 'bg-gradient-to-br from-amber-400 to-amber-600'
-                              : 'bg-gradient-to-br from-purple-400 to-purple-600'
-                        }`}
-                      >
-                        {isActive && (
-                          <div className="w-full h-full rounded-full flex items-center justify-center">
-                            <Check className="w-3.5 h-3.5 text-white drop-shadow" />
-                          </div>
-                        )}
-                      </div>
-                      <p className="font-medium text-white text-xs">{material.name}</p>
-                      <p className="text-[10px] text-white/30 mt-0.5">{material.tier}</p>
-                      <p className={`text-xs font-bold mt-1.5 ${isActive ? 'text-orange-400' : 'text-white/40'}`}>
-                        {material.upcharge === 0 ? 'Included' : `+$${material.upcharge.toFixed(2)}`}
-                      </p>
-                    </button>
-                  );
-                })}
+                <div className="absolute bottom-0 left-0 p-6 lg:p-8 lg:bottom-auto lg:top-1/2 lg:-translate-y-1/2">
+                  <div className="w-12 h-12 rounded-xl bg-orange-500 flex items-center justify-center mb-3 shadow-lg shadow-orange-500/30">
+                    <activeService.Icon className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-white font-[family-name:var(--font-lora)]">
+                    {activeService.name}
+                  </h3>
+                  <p className="text-sm text-white/50 mt-1 max-w-[240px]">
+                    {activeFixture.shortName}
+                  </p>
+                </div>
               </div>
 
-              {/* Material description */}
-              {activeMaterialData && (
-                <div className="mt-3 bg-white/[0.03] rounded-lg p-3 border border-white/5">
-                  <p className="text-[11px] text-white/40 mb-2">{activeMaterialData.description}</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {activeMaterialData.features.map((f) => (
-                      <span
-                        key={f}
-                        className="text-[10px] bg-white/5 text-white/50 px-2 py-0.5 rounded-full border border-white/5"
-                      >
-                        {f}
-                      </span>
-                    ))}
+              {/* Options side — finish picker */}
+              <div className="flex-1 p-6 lg:p-8 overflow-y-auto">
+                <div className="mb-8">
+                  <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
+                    Select Finish
+                  </h4>
+                  <div className="space-y-2">
+                    {activeFixture.finishes.map((finish) => {
+                      const isActive = selectedFinish === finish.id;
+                      return (
+                        <div key={finish.id}>
+                          <button
+                            onClick={() => {
+                              setSelectedFinish(finish.id);
+                              if (!finish.hasColorOptions) setSelectedAluminumColor(null);
+                            }}
+                            className={`w-full text-left flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 ${
+                              isActive
+                                ? 'border-orange-500/40 bg-orange-500/10'
+                                : 'border-white/10 hover:border-white/20 bg-white/[0.02]'
+                            }`}
+                          >
+                            <div
+                              className="w-10 h-10 rounded-full shrink-0 border border-white/10 flex items-center justify-center"
+                              style={{ backgroundColor: finish.swatch || '#888' }}
+                            >
+                              {isActive && !finish.hasColorOptions && <Check className="w-4 h-4 text-white drop-shadow" />}
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <p className={`font-medium text-sm ${isActive ? 'text-white' : 'text-white/70'}`}>
+                                  {finish.name}
+                                </p>
+                                {previousFixtureConfig?.finish === finish.id && (
+                                  <span className="text-[9px] font-semibold bg-white/10 text-white/50 px-2 py-0.5 rounded-full">
+                                    Previously selected
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-xs text-white/30 mt-0.5">{finish.description}</p>
+                            </div>
+                            <span className={`text-sm font-bold shrink-0 ${isActive ? 'text-orange-400' : 'text-white/30'}`}>
+                              {finish.priceTier}
+                            </span>
+                          </button>
+
+                          {/* Inline aluminum color swatches */}
+                          {isActive && finish.hasColorOptions && (
+                            <div className="mt-2 ml-14 flex items-center gap-3 py-3">
+                              {aluminumColors.map((color) => {
+                                const colorActive = selectedAluminumColor === color.id;
+                                return (
+                                  <button
+                                    key={color.id}
+                                    onClick={() => setSelectedAluminumColor(color.id)}
+                                    className="flex flex-col items-center gap-1.5 group/color"
+                                  >
+                                    <div
+                                      className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all ${
+                                        colorActive
+                                          ? 'border-orange-500 scale-110'
+                                          : 'border-white/15 hover:border-white/30'
+                                      }`}
+                                      style={{ backgroundColor: color.swatch }}
+                                    >
+                                      {colorActive && <Check className="w-4 h-4 text-white drop-shadow" />}
+                                    </div>
+                                    <span className={`text-[10px] font-medium ${
+                                      colorActive ? 'text-orange-400' : 'text-white/40'
+                                    }`}>
+                                      {color.name}
+                                    </span>
+                                    {previousFixtureConfig?.aluminumColor === color.id && (
+                                      <span className="text-[8px] text-white/30 -mt-0.5">Prev.</span>
+                                    )}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-              )}
-            </div>
 
-            {/* Save */}
-            <button
-              onClick={saveArea}
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2"
-            >
-              Save This Area
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
+                {/* Save */}
+                <button
+                  onClick={saveArea}
+                  disabled={!selectedFinish || (activeFixture.finishes.find((f) => f.id === selectedFinish)?.hasColorOptions && !selectedAluminumColor)}
+                  className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-white/5 disabled:text-white/20 text-white font-semibold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2"
+                >
+                  Save This Area
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ── Generic / tree services: legacy sub-options + material flow ── */}
+          {activeService.configType !== 'fixture' && (
+            <div className="flex flex-col lg:flex-row min-h-[560px]">
+              {/* Photo side */}
+              <div className="relative lg:w-[50%] aspect-[4/3] lg:aspect-auto">
+                <Image
+                  src={activeService.photo}
+                  alt={activeService.name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-[#0f0f0f]" />
+
+                <div className="absolute bottom-0 left-0 p-6 lg:p-8 lg:bottom-auto lg:top-1/2 lg:-translate-y-1/2">
+                  <div className="w-12 h-12 rounded-xl bg-orange-500 flex items-center justify-center mb-3 shadow-lg shadow-orange-500/30">
+                    <activeService.Icon className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-white font-[family-name:var(--font-lora)]">
+                    {activeService.name}
+                  </h3>
+                  <p className="text-sm text-white/50 mt-1 max-w-[240px]">
+                    {activeService.description}
+                  </p>
+                </div>
+              </div>
+
+              {/* Options side */}
+              <div className="flex-1 p-6 lg:p-8 overflow-y-auto">
+                {(activeService.subOptions || []).length > 0 && (
+                  <div className="mb-8">
+                    <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
+                      Select Options
+                    </h4>
+                    <div className="space-y-2">
+                      {activeService.subOptions.map((option) => {
+                        const isActive = selectedSubOptions.includes(option.id);
+                        return (
+                          <button
+                            key={option.id}
+                            onClick={() => toggleOption(option.id)}
+                            className={`w-full text-left flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 ${
+                              isActive
+                                ? 'border-orange-500/40 bg-orange-500/10'
+                                : 'border-white/10 hover:border-white/20 bg-white/[0.02]'
+                            }`}
+                          >
+                            <div
+                              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+                                isActive
+                                  ? 'border-orange-500 bg-orange-500'
+                                  : 'border-white/20'
+                              }`}
+                            >
+                              {isActive && <Check className="w-3 h-3 text-white" />}
+                            </div>
+                            <div>
+                              <p className={`font-medium text-sm ${isActive ? 'text-white' : 'text-white/70'}`}>
+                                {option.name}
+                              </p>
+                              <p className="text-xs text-white/30">{option.description}</p>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Material */}
+                <div className="mb-8">
+                  <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
+                    Fixture Material
+                  </h4>
+                  <div className="grid grid-cols-3 gap-2">
+                    {materialTiers.map((material) => {
+                      const isActive = selectedMaterial === material.id;
+                      return (
+                        <button
+                          key={material.id}
+                          onClick={() => setSelectedMaterial(material.id)}
+                          className={`relative text-center p-4 rounded-xl border transition-all duration-200 ${
+                            isActive
+                              ? 'border-[#1D4B26] bg-[#1D4B26]/15 ring-1 ring-[#1D4B26]/30'
+                              : 'border-white/10 hover:border-white/20 bg-white/[0.02]'
+                          }`}
+                        >
+                          <div
+                            className={`w-8 h-8 rounded-full mx-auto mb-2 ${
+                              material.id === 'aluminum'
+                                ? 'bg-gradient-to-br from-gray-400 to-gray-500'
+                                : material.id === 'brass'
+                                  ? 'bg-gradient-to-br from-amber-400 to-amber-600'
+                                  : 'bg-gradient-to-br from-purple-400 to-purple-600'
+                            }`}
+                          >
+                            {isActive && (
+                              <div className="w-full h-full rounded-full flex items-center justify-center">
+                                <Check className="w-3.5 h-3.5 text-white drop-shadow" />
+                              </div>
+                            )}
+                          </div>
+                          <p className="font-medium text-white text-xs">{material.name}</p>
+                          <p className="text-[10px] text-white/30 mt-0.5">{material.tier}</p>
+                          <p className={`text-xs font-bold mt-1.5 ${isActive ? 'text-orange-400' : 'text-white/40'}`}>
+                            {material.upcharge === 0 ? 'Included' : `+$${material.upcharge.toFixed(2)}`}
+                          </p>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {activeMaterialData && (
+                    <div className="mt-3 bg-white/[0.03] rounded-lg p-3 border border-white/5">
+                      <p className="text-[11px] text-white/40 mb-2">{activeMaterialData.description}</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {activeMaterialData.features.map((f) => (
+                          <span
+                            key={f}
+                            className="text-[10px] bg-white/5 text-white/50 px-2 py-0.5 rounded-full border border-white/5"
+                          >
+                            {f}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Save */}
+                <button
+                  onClick={saveArea}
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2"
+                >
+                  Save This Area
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* === AREAS SUMMARY === */}
@@ -355,9 +635,11 @@ export default function RefinedSplitForm() {
           <div className="space-y-3 mb-8">
             {savedAreas.map((area, index) => {
               const service = lightingServices.find((s) => s.id === area.serviceId);
-              const material = materialTiers.find((m) => m.id === area.material);
               if (!service) return null;
               const IconComp = service.Icon;
+              const fixture = area.fixtureType ? fixtureTypes.find((f) => f.id === area.fixtureType) : null;
+              const finish = fixture ? fixture.finishes.find((f) => f.id === area.finish) : null;
+              const material = area.material ? materialTiers.find((m) => m.id === area.material) : null;
               return (
                 <div
                   key={index}
@@ -371,31 +653,61 @@ export default function RefinedSplitForm() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-white text-sm">{service.name}</p>
-                    <p className="text-xs text-white/40 mt-0.5">
-                      {area.subOptions.length > 0
-                        ? area.subOptions
-                            .map((optId) => service.subOptions.find((o) => o.id === optId)?.name)
-                            .filter(Boolean)
-                            .join(', ')
-                        : 'No specific options'}
-                    </p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <CircleDot
-                        className={`w-3 h-3 ${
-                          material?.id === 'aluminum'
-                            ? 'text-gray-400'
-                            : material?.id === 'brass'
-                              ? 'text-amber-500'
-                              : 'text-purple-400'
-                        }`}
-                      />
-                      <span className="text-xs text-white/40">
-                        {material?.name}
-                        {material?.upcharge > 0 && (
-                          <span className="text-orange-400 ml-1">+${material.upcharge.toFixed(2)}/light</span>
-                        )}
-                      </span>
-                    </div>
+                    {fixture ? (
+                      <>
+                        <p className="text-xs text-white/40 mt-0.5">{fixture.shortName}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          {area.aluminumColor ? (
+                            <div
+                              className="w-3 h-3 rounded-full border border-white/10"
+                              style={{ backgroundColor: aluminumColors.find((c) => c.id === area.aluminumColor)?.swatch || '#888' }}
+                            />
+                          ) : (
+                            <div
+                              className="w-3 h-3 rounded-full border border-white/10"
+                              style={{ backgroundColor: finish?.swatch || '#888' }}
+                            />
+                          )}
+                          <span className="text-xs text-white/40">
+                            {finish?.name}
+                            {area.aluminumColor && (
+                              <span className="text-white/50 ml-1">
+                                — {aluminumColors.find((c) => c.id === area.aluminumColor)?.name}
+                              </span>
+                            )}
+                            <span className="text-orange-400 ml-1">{finish?.priceTier}</span>
+                          </span>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-xs text-white/40 mt-0.5">
+                          {area.subOptions?.length > 0
+                            ? area.subOptions
+                                .map((optId) => service.subOptions?.find((o) => o.id === optId)?.name)
+                                .filter(Boolean)
+                                .join(', ')
+                            : 'No specific options'}
+                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <CircleDot
+                            className={`w-3 h-3 ${
+                              material?.id === 'aluminum'
+                                ? 'text-gray-400'
+                                : material?.id === 'brass'
+                                  ? 'text-amber-500'
+                                  : 'text-purple-400'
+                            }`}
+                          />
+                          <span className="text-xs text-white/40">
+                            {material?.name}
+                            {material?.upcharge > 0 && (
+                              <span className="text-orange-400 ml-1">+${material.upcharge.toFixed(2)}/light</span>
+                            )}
+                          </span>
+                        </div>
+                      </>
+                    )}
                   </div>
                   <button
                     onClick={() => removeArea(index)}
@@ -528,7 +840,9 @@ export default function RefinedSplitForm() {
               <div className="space-y-2">
                 {savedAreas.map((area, index) => {
                   const service = lightingServices.find((s) => s.id === area.serviceId);
-                  const material = materialTiers.find((m) => m.id === area.material);
+                  const fixture = area.fixtureType ? fixtureTypes.find((f) => f.id === area.fixtureType) : null;
+                  const finish = fixture ? fixture.finishes.find((f) => f.id === area.finish) : null;
+                  const material = area.material ? materialTiers.find((m) => m.id === area.material) : null;
                   if (!service) return null;
                   return (
                     <div key={index} className="flex items-center gap-4 bg-white/[0.03] border border-white/10 rounded-xl p-4">
@@ -537,19 +851,36 @@ export default function RefinedSplitForm() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-white text-sm">{service.name}</p>
-                        {area.subOptions.length > 0 && (
+                        {fixture && (
+                          <p className="text-xs text-white/40 mt-0.5">{fixture.shortName}</p>
+                        )}
+                        {!fixture && area.subOptions?.length > 0 && (
                           <p className="text-xs text-white/40 mt-0.5">
                             {area.subOptions
-                              .map((optId) => service.subOptions.find((o) => o.id === optId)?.name)
+                              .map((optId) => service.subOptions?.find((o) => o.id === optId)?.name)
                               .filter(Boolean)
                               .join(', ')}
                           </p>
                         )}
                       </div>
                       <div className="text-right shrink-0">
-                        <p className="text-sm text-white font-medium">{material?.name}</p>
-                        {material?.upcharge > 0 && (
-                          <p className="text-xs text-orange-400">+${material.upcharge.toFixed(2)}/light</p>
+                        {finish ? (
+                          <>
+                            <p className="text-sm text-white font-medium">{finish.name}</p>
+                            {area.aluminumColor && (
+                              <p className="text-xs text-white/50">
+                                {aluminumColors.find((c) => c.id === area.aluminumColor)?.name}
+                              </p>
+                            )}
+                            <p className="text-xs text-orange-400">{finish.priceTier}</p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="text-sm text-white font-medium">{material?.name}</p>
+                            {material?.upcharge > 0 && (
+                              <p className="text-xs text-orange-400">+${material.upcharge.toFixed(2)}/light</p>
+                            )}
+                          </>
                         )}
                       </div>
                     </div>
