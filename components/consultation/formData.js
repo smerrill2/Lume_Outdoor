@@ -22,6 +22,7 @@ export const fixtureTypes = [
     id: 'v1-dropin',
     name: 'V1 — Drop-In Fixture',
     shortName: 'V1 Drop-In',
+    photo: '/dropin_light.png',
     description:
       'Versatile fixture you can adjust after installation. Change the beam angle and reposition as your landscape grows.',
     benefits: ['Adjustable beam angle', 'Repositionable post-install', 'Versatile placement'],
@@ -56,6 +57,7 @@ export const fixtureTypes = [
     id: 'v2-integrated',
     name: 'V2 — Integrated Fixture',
     shortName: 'V2 Integrated',
+    photo: '/integrated_light.png',
     description:
       'Fixed-mount fixture built directly into the landscape. Stronger construction with a clean, seamless look.',
     benefits: ['Structurally stronger', 'Seamless installation', 'Clean, minimal profile'],

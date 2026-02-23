@@ -138,72 +138,100 @@ export default function StoryScrollForm() {
   /* ======================================================================== */
 
   /* ── Fixture-type config panel (uplighting, pathway, deck, wash/area) ── */
-  const renderFixtureConfig = (service, config) => (
-    <>
-      {/* Step 1: Fixture Type */}
-      <div className="mb-8">
-        <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
-          Choose Your Fixture
-        </h4>
-        <div className="space-y-3">
-          {fixtureTypes.map((fixture) => {
-            const isActive = config.fixtureType === fixture.id;
-            return (
-              <button
-                key={fixture.id}
-                onClick={() => setFixtureType(service.id, fixture.id)}
-                className={`w-full text-left p-5 rounded-xl border transition-all ${
-                  isActive
-                    ? 'border-orange-500/40 bg-orange-500/10'
-                    : 'border-white/10 hover:border-white/20 bg-white/[0.02]'
-                }`}
-              >
-                <div className="flex items-start gap-4">
-                  <div
-                    className={`w-5 h-5 mt-0.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                      isActive ? 'border-orange-500 bg-orange-500' : 'border-white/20'
-                    }`}
-                  >
-                    {isActive && <Check className="w-3 h-3 text-white" />}
-                  </div>
-                  <div className="flex-1">
-                    <p className={`font-semibold text-sm ${isActive ? 'text-white' : 'text-white/70'}`}>
-                      {fixture.name}
-                    </p>
-                    <p className="text-xs text-white/30 mt-1">{fixture.description}</p>
-                    <div className="flex flex-wrap gap-1.5 mt-3">
-                      {fixture.benefits.map((benefit) => (
-                        <span
-                          key={benefit}
-                          className={`text-[10px] px-2 py-0.5 rounded-full border ${
-                            isActive
-                              ? 'border-orange-500/30 text-orange-300/80 bg-orange-500/5'
-                              : 'border-white/10 text-white/25'
-                          }`}
-                        >
-                          {benefit}
-                        </span>
-                      ))}
+  const renderFixtureConfig = (service, config) => {
+    const hasSelected = !!config.fixtureType;
+    const selectedFixture = hasSelected
+      ? fixtureTypes.find((f) => f.id === config.fixtureType)
+      : null;
+
+    return (
+      <>
+        {/* Step 1: Fixture Type — photo cards */}
+        <div className="mb-8">
+          <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
+            {hasSelected ? 'Your Fixture' : 'Choose Your Fixture'}
+          </h4>
+
+          <div className={`grid gap-3 transition-all duration-500 ${
+            hasSelected ? 'grid-cols-1' : 'grid-cols-2'
+          }`}>
+            {fixtureTypes.map((fixture) => {
+              const isActive = config.fixtureType === fixture.id;
+              const isHidden = hasSelected && !isActive;
+
+              if (isHidden) return null;
+
+              return (
+                <button
+                  key={fixture.id}
+                  onClick={() =>
+                    hasSelected && isActive
+                      ? setFixtureType(service.id, null)
+                      : setFixtureType(service.id, fixture.id)
+                  }
+                  className={`group relative overflow-hidden rounded-xl border transition-all duration-300 ${
+                    isActive
+                      ? 'border-orange-500/50 ring-1 ring-orange-500/20'
+                      : 'border-white/10 hover:border-white/25'
+                  }`}
+                >
+                  {/* Fixture photo */}
+                  <div className={`relative w-full transition-all duration-300 ${
+                    hasSelected ? 'aspect-[16/9]' : 'aspect-square'
+                  }`}>
+                    <Image
+                      src={fixture.photo}
+                      alt={fixture.name}
+                      fill
+                      className="object-cover"
+                      sizes={hasSelected ? '100%' : '50%'}
+                    />
+                    <div className={`absolute inset-0 transition-all duration-300 ${
+                      isActive
+                        ? 'bg-gradient-to-t from-black/80 via-black/20 to-transparent'
+                        : 'bg-gradient-to-t from-black/90 via-black/40 to-black/10 group-hover:from-black/70'
+                    }`} />
+
+                    {/* Check badge */}
+                    {isActive && (
+                      <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center">
+                        <Check className="w-4 h-4 text-white" />
+                      </div>
+                    )}
+
+                    {/* Name + description overlay */}
+                    <div className="absolute bottom-0 left-0 right-0 p-4">
+                      <p className="font-semibold text-white text-sm">{fixture.name}</p>
+                      <p className="text-[11px] text-white/40 mt-0.5 line-clamp-2">
+                        {fixture.description}
+                      </p>
                     </div>
                   </div>
-                </div>
-              </button>
-            );
-          })}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Tap to change hint */}
+          {hasSelected && (
+            <button
+              onClick={() => setFixtureType(service.id, null)}
+              className="mt-2 text-[10px] text-white/20 hover:text-white/40 transition-colors"
+            >
+              Tap to change fixture
+            </button>
+          )}
         </div>
-      </div>
 
-      {/* Step 2: Finish Selection */}
-      {config.fixtureType && (() => {
-        const selectedFixture = fixtureTypes.find((f) => f.id === config.fixtureType);
-        if (!selectedFixture) return null;
-
-        return (
-          <div className="mb-6">
+        {/* Step 2: Finish Selection (appears after fixture chosen) */}
+        {selectedFixture && (
+          <div className="mb-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
               Select Finish
             </h4>
-            <div className="grid grid-cols-2 gap-2">
+            <div className={`grid gap-2 ${
+              selectedFixture.finishes.length === 3 ? 'grid-cols-3' : 'grid-cols-2'
+            }`}>
               {selectedFixture.finishes.map((finish) => {
                 const isActive = config.finish === finish.id;
                 return (
@@ -258,70 +286,70 @@ export default function StoryScrollForm() {
                 ) : null;
               })()}
           </div>
-        );
-      })()}
+        )}
 
-      {/* Step 3: Aluminum Color picker */}
-      {config.finish === 'aluminum' && (
-        <div className="mb-6">
-          <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
-            Aluminum Color
-          </h4>
-          <div className="grid grid-cols-3 gap-2">
-            {aluminumColors.map((color) => {
-              const isActive = config.aluminumColor === color.id;
-              return (
-                <button
-                  key={color.id}
-                  onClick={() => setAluminumColor(service.id, color.id)}
-                  className={`text-center p-3 rounded-xl border transition-all ${
-                    isActive
-                      ? 'border-orange-500/40 bg-orange-500/10 ring-1 ring-orange-500/20'
-                      : 'border-white/10 hover:border-white/20 bg-white/[0.02]'
-                  }`}
-                >
-                  <div
-                    className={`w-8 h-8 rounded-full mx-auto mb-1.5 border-2 ${
-                      isActive ? 'border-orange-500' : 'border-white/10'
+        {/* Step 3: Aluminum Color picker */}
+        {config.finish === 'aluminum' && (
+          <div className="mb-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
+              Aluminum Color
+            </h4>
+            <div className="grid grid-cols-3 gap-2">
+              {aluminumColors.map((color) => {
+                const isActive = config.aluminumColor === color.id;
+                return (
+                  <button
+                    key={color.id}
+                    onClick={() => setAluminumColor(service.id, color.id)}
+                    className={`text-center p-3 rounded-xl border transition-all ${
+                      isActive
+                        ? 'border-orange-500/40 bg-orange-500/10 ring-1 ring-orange-500/20'
+                        : 'border-white/10 hover:border-white/20 bg-white/[0.02]'
                     }`}
-                    style={{ backgroundColor: color.swatch }}
-                  />
-                  <p className="text-xs text-white font-medium">{color.name}</p>
-                </button>
-              );
-            })}
+                  >
+                    <div
+                      className={`w-8 h-8 rounded-full mx-auto mb-1.5 border-2 ${
+                        isActive ? 'border-orange-500' : 'border-white/10'
+                      }`}
+                      style={{ backgroundColor: color.swatch }}
+                    />
+                    <p className="text-xs text-white font-medium">{color.name}</p>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Brass vs Aluminum comparison */}
-      {config.fixtureType && (
-        <div className="bg-white/[0.02] border border-white/5 rounded-xl p-4">
-          <p className="text-[10px] font-bold text-white/25 uppercase tracking-[0.15em] mb-2">
-            Brass vs Aluminum
-          </p>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <p className="text-[11px] text-orange-400/70 font-medium mb-1">Brass</p>
-              <ul className="text-[10px] text-white/30 space-y-0.5">
-                <li>Natural patina over time</li>
-                <li>Superior longevity</li>
-                <li>Premium look &amp; feel</li>
-              </ul>
-            </div>
-            <div>
-              <p className="text-[11px] text-white/50 font-medium mb-1">Aluminum</p>
-              <ul className="text-[10px] text-white/30 space-y-0.5">
-                <li>3 color options</li>
-                <li>Lightweight &amp; durable</li>
-                <li>Best value</li>
-              </ul>
+        {/* Brass vs Aluminum comparison */}
+        {selectedFixture && (
+          <div className="bg-white/[0.02] border border-white/5 rounded-xl p-4">
+            <p className="text-[10px] font-bold text-white/25 uppercase tracking-[0.15em] mb-2">
+              Brass vs Aluminum
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <p className="text-[11px] text-orange-400/70 font-medium mb-1">Brass</p>
+                <ul className="text-[10px] text-white/30 space-y-0.5">
+                  <li>Natural patina over time</li>
+                  <li>Superior longevity</li>
+                  <li>Premium look &amp; feel</li>
+                </ul>
+              </div>
+              <div>
+                <p className="text-[11px] text-white/50 font-medium mb-1">Aluminum</p>
+                <ul className="text-[10px] text-white/30 space-y-0.5">
+                  <li>3 color options</li>
+                  <li>Lightweight &amp; durable</li>
+                  <li>Best value</li>
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </>
-  );
+        )}
+      </>
+    );
+  };
 
   /* ── Tree-type config panel ── */
   const renderTreeConfig = (service, config) => (
