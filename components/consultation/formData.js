@@ -5,24 +5,34 @@ import {
   TreePine,
   LayoutGrid,
   Shield,
-  Sparkles,
   Lightbulb,
+  Sparkles,
 } from 'lucide-react';
 
-/* ── Shared fixture & finish data ── */
+/* ── Shared aluminum color lookup (for review cards / PDF summaries) ── */
 
-export const aluminumColors = [
-  { id: 'black', name: 'Black', swatch: '#1a1a1a' },
-  { id: 'white', name: 'White', swatch: '#f0f0f0' },
-  { id: 'sand', name: 'Sand', swatch: '#c2b280' },
+export const aluminumColorLookup = {
+  black: { id: 'black', name: 'Black', swatch: '#1a1a1a' },
+  aluminum: { id: 'aluminum', name: 'Aluminum', swatch: '#c0c0c0' },
+  sand: { id: 'sand', name: 'Textured Sand', swatch: '#c2b280' },
+};
+
+/* ── V2 aluminum colors (deck, wash, pool, security — all V2 integrated) ── */
+
+export const v2AluminumColors = [
+  { id: 'black', name: 'Black', photo: '/light_form/v2_lights/v2_lights_black_alaluminim.png' },
+  { id: 'aluminum', name: 'Aluminum', photo: '/light_form/v2_lights/v2_lights_aluminum.png' },
 ];
+
+/* ── Fixture types with per-fixture color options and pricing ── */
 
 export const fixtureTypes = [
   {
     id: 'v1-dropin',
     name: 'V1 — Drop-In Fixture',
     shortName: 'V1 Drop-In',
-    photo: '/dropin_light.png',
+    photo: '/light_form/v1_lights/v1_lights_scene_1.png',
+    basePrice: 150,
     description:
       'Versatile fixture you can adjust after installation. Change the beam angle and reposition as your landscape grows.',
     benefits: ['Adjustable beam angle', 'Repositionable post-install', 'Versatile placement'],
@@ -30,26 +40,31 @@ export const fixtureTypes = [
       {
         id: 'raw-brass',
         name: 'Raw Brass',
-        priceTier: '$$$',
-        swatch: '#4A3728',
+        price: 200,
+        photo: '/light_form/v1_lights/v1_lights_brass.png',
         description:
           'Solid brass that develops a rich natural patina over time. One-of-a-kind character.',
       },
       {
         id: 'artisan-brass',
         name: 'Artisan Brass',
-        priceTier: '$$',
-        swatch: '#8B6914',
+        price: 200,
+        photo: '/light_form/v1_lights/v1_lights_artisanal_bronze.png',
         description: 'Hand-finished brass with a warm, polished sheen. Premium craftsmanship.',
       },
       {
         id: 'aluminum',
         name: 'Aluminum',
-        priceTier: '$',
-        swatch: null,
+        price: 150,
+        isBase: true,
         hasColorOptions: true,
         description:
-          'Durable, lightweight aluminum available in 3 colors. Great value with solid performance.',
+          'Durable, lightweight aluminum available in multiple colors. Great value with solid performance.',
+        colorOptions: [
+          { id: 'black', name: 'Black', photo: '/light_form/v1_lights/v1_lights_black.png' },
+          { id: 'aluminum', name: 'Aluminum', photo: '/light_form/v1_lights/v1_lights_aluminum.png' },
+          { id: 'sand', name: 'Textured Sand', photo: '/light_form/v1_lights/v1_lights_textured_sand.png' },
+        ],
       },
     ],
   },
@@ -57,7 +72,8 @@ export const fixtureTypes = [
     id: 'v2-integrated',
     name: 'V2 — Integrated Fixture',
     shortName: 'V2 Integrated',
-    photo: '/integrated_light.png',
+    photo: '/light_form/v2_lights/v2_lights_scene_1.png',
+    basePrice: 170,
     description:
       'Fixed-mount fixture built directly into the landscape. Stronger construction with a clean, seamless look.',
     benefits: ['Structurally stronger', 'Seamless installation', 'Clean, minimal profile'],
@@ -65,49 +81,79 @@ export const fixtureTypes = [
       {
         id: 'raw-brass',
         name: 'Raw Brass',
-        priceTier: '$$',
-        swatch: '#4A3728',
+        price: 363,
+        photo: '/light_form/v2_lights/v2_lights_brass.png',
         description:
           'Solid brass that develops a rich natural patina over time. One-of-a-kind character.',
       },
       {
         id: 'aluminum',
         name: 'Aluminum',
-        priceTier: '$',
-        swatch: null,
         hasColorOptions: true,
         description:
-          'Durable, lightweight aluminum available in 3 colors. Great value with solid performance.',
+          'Durable, lightweight aluminum. Great value with solid performance.',
+        colorOptions: [
+          { id: 'black', name: 'Black', price: 170, isBase: true, photo: '/light_form/v2_lights/v2_lights_black_alaluminim.png' },
+          { id: 'aluminum', name: 'Stainless Aluminum', price: 290, photo: '/light_form/v2_lights/v2_lights_aluminum.png' },
+        ],
       },
     ],
   },
 ];
 
-/* ── Tree lighting styles ── */
+/* ── Tree focus options ── */
 
-export const treeLightingStyles = [
+export const treeFocusOptions = [
   {
-    id: 'dramatic',
-    name: 'Dramatic',
+    id: 'trunk',
+    name: 'Trunk Focused',
     description:
-      'Bold, high-contrast lighting for striking visual impact. Best for statement trees and focal points.',
-    recommended: true,
+      'Emphasizes the trunk and lower structure for a grounded, architectural look.',
   },
   {
-    id: 'soft',
-    name: 'Soft',
+    id: 'canopy',
+    name: 'Canopy Focused',
     description:
-      'Gentle, ambient glow that blends naturally with the landscape. Creates a warm, inviting atmosphere.',
+      'Illuminates the upper canopy and branches, creating a dramatic overhead glow.',
+  },
+  {
+    id: 'designers-choice',
+    name: "Designer's Discretion",
+    description:
+      'Let our installers choose the best approach based on your specific trees and landscape.',
+    recommended: true,
   },
 ];
 
+/* ── Deck light sizes ── */
+
+export const deckSizes = [
+  { id: 'small', name: 'Small' },
+  { id: 'large', name: 'Large' },
+];
+
+/* ── Educational tips ── */
+
+export const materialTip = {
+  title: 'Brass vs. Aluminum',
+  content:
+    "Brass is the gold standard for outdoor fixtures — it develops a natural protective patina and can last 20+ years with minimal maintenance. It's a premium investment that only gets better with age. Aluminum is budget-friendly, lightweight, and comes in multiple color options, but it's more susceptible to wear over time and may need replacement sooner.",
+};
+
+export const fixtureTip = {
+  title: 'Drop-In vs. Integrated',
+  content:
+    "Drop-in (V1) fixtures sit in the ground and can be repositioned or swapped out after installation — great if your landscape is still evolving. Integrated (V2) fixtures are built directly into the hardscape for a cleaner, permanent look with stronger structural integrity.",
+};
+
 /* ── Lighting service areas ── */
-/* configType: 'fixture' = V1/V2 fixture → finish flow */
-/* configType: 'tree'    = dramatic vs soft style */
-/* configType: 'generic' = legacy sub-options + material picker */
+/* configType: 'fixture'    = V1/V2 fixture → finish flow (uplighting, pathway)  */
+/* configType: 'tree'       = focus question only (trunk/canopy/designer)         */
+/* configType: 'deck'       = size + aluminum color (V2 integrated only)          */
+/* configType: 'color-only' = just aluminum color picker                          */
+/* configType: 'none'       = no config needed (just selecting it is enough)      */
 
 export const lightingServices = [
-  /* ── Primary areas ── */
   {
     id: 'uplighting',
     name: 'House Uplighting',
@@ -119,9 +165,9 @@ export const lightingServices = [
   {
     id: 'tree',
     name: 'Tree Uplighting',
-    description: 'In-ground dramatic or soft tree illumination',
+    description: 'In-ground well lights to showcase your trees',
     Icon: TreePine,
-    photo: "/SamProject/Drake's Home-09 (1).jpg",
+    photo: '/servicesphotos/outside.jpg',
     configType: 'tree',
   },
   {
@@ -129,7 +175,7 @@ export const lightingServices = [
     name: 'Pathway Lighting',
     description: 'Safe and beautiful walkway illumination',
     Icon: Route,
-    photo: '/servicesphotos/pathwaylighting.png',
+    photo: '/projects/NEWTON3.jpeg',
     configType: 'fixture',
   },
   {
@@ -137,84 +183,39 @@ export const lightingServices = [
     name: 'Deck & Patio',
     description: 'Perfect outdoor entertaining spaces',
     Icon: LayoutGrid,
-    photo: '/servicesphotos/deck&patio.jpg',
-    configType: 'fixture',
+    photo: '/light_form/v1_lights/v1_lights_scene_2.png',
+    configType: 'deck',
   },
   {
     id: 'wash-area',
     name: 'Wash / Area Lighting',
     description: 'Broad, even illumination for open spaces',
     Icon: Lightbulb,
-    photo: "/SamProject/Drake's Home-04 (1).jpg",
-    configType: 'fixture',
+    photo: "/SamProject/Drake's Home-05 (2).jpg",
+    configType: 'color-only',
   },
-  /* ── Secondary areas ── */
+  {
+    id: 'specialty',
+    name: 'Specialty / Wall Lighting',
+    description: 'Decorative wall lights and accent fixtures',
+    Icon: Sparkles,
+    photo: '/projects/BACKYARD_4.jpeg',
+    configType: 'none',
+  },
   {
     id: 'pool',
     name: 'Pool & Water Features',
     description: 'Stunning aquatic illumination',
     Icon: Waves,
     photo: '/servicesphotos/poolandspa.jpg',
-    configType: 'generic',
-    subOptions: [
-      { id: 'pool-underwater', name: 'Underwater Lighting', description: 'Illuminate from below the surface' },
-      { id: 'pool-poolside', name: 'Poolside Ambiance', description: 'Warm surrounding glow' },
-      { id: 'pool-fountain', name: 'Fountain & Water Feature', description: 'Dramatic water illumination' },
-    ],
+    configType: 'color-only',
   },
   {
     id: 'security',
     name: 'Security Lighting',
     description: 'Enhanced safety and protection',
     Icon: Shield,
-    photo: '/servicesphotos/securitylighting.png',
-    configType: 'generic',
-    subOptions: [
-      { id: 'security-motion', name: 'Motion-Activated', description: 'Triggers on movement detection' },
-      { id: 'security-flood', name: 'Floodlights', description: 'Broad area coverage' },
-      { id: 'security-perimeter', name: 'Perimeter Lighting', description: 'Property boundary illumination' },
-    ],
-  },
-  {
-    id: 'holiday',
-    name: 'Holiday Lighting',
-    description: 'Seasonal decorative displays',
-    Icon: Sparkles,
-    photo: '/servicesphotos/holiday.png',
-    configType: 'generic',
-    subOptions: [
-      { id: 'holiday-roofline', name: 'Roofline Display', description: 'Classic roofline outlines' },
-      { id: 'holiday-tree-wrap', name: 'Tree Wraps', description: 'Trunk and branch wrapping' },
-      { id: 'holiday-custom', name: 'Custom Display', description: 'Bespoke seasonal design' },
-    ],
-  },
-];
-
-/* ── Legacy material tiers (used by generic configType services) ── */
-
-export const materialTiers = [
-  {
-    id: 'aluminum',
-    name: 'Aluminum',
-    tier: 'Standard',
-    upcharge: 0,
-    description: 'Durable, lightweight fixtures with a clean modern finish. Great value with solid performance.',
-    features: ['Corrosion resistant', 'Lightweight design', 'Modern matte finish'],
-  },
-  {
-    id: 'brass',
-    name: 'Brass',
-    tier: 'Premium',
-    upcharge: 6.99,
-    description: 'Classic brass fixtures that develop a beautiful patina over time. Timeless elegance for your property.',
-    features: ['Natural patina aging', 'Superior durability', 'Timeless aesthetic'],
-  },
-  {
-    id: 'metallic-alloy',
-    name: 'Metallic Alloy',
-    tier: 'Elite',
-    upcharge: 18.0,
-    description: 'Top-of-the-line composite alloy fixtures. Maximum durability with a premium aesthetic.',
-    features: ['Maximum longevity', 'Premium brushed finish', 'Lifetime warranty'],
+    photo: '/light_form/MS-Knuckle/MS-Knuckle_scene_1.png',
+    configType: 'color-only',
   },
 ];

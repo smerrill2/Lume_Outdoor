@@ -5,16 +5,21 @@ import Image from 'next/image';
 import {
   Check,
   Plus,
-  ChevronDown,
   Send,
   ArrowDown,
+  Loader2,
+  CheckCircle,
+  Info,
 } from 'lucide-react';
 import {
   lightingServices,
-  materialTiers,
   fixtureTypes,
-  aluminumColors,
-  treeLightingStyles,
+  aluminumColorLookup,
+  v2AluminumColors,
+  treeFocusOptions,
+  deckSizes,
+  materialTip,
+  fixtureTip,
 } from './formData';
 
 /* ── Helper: initial config state per service type ── */
@@ -23,10 +28,14 @@ function initialConfigForService(service) {
     case 'fixture':
       return { fixtureType: null, finish: null, aluminumColor: null };
     case 'tree':
-      return { style: null };
-    case 'generic':
+      return { focus: null };
+    case 'deck':
+      return { size: null, aluminumColor: null };
+    case 'none':
+      return {};
+    case 'color-only':
     default:
-      return { subOptions: [], material: 'aluminum' };
+      return { aluminumColor: null };
   }
 }
 
@@ -41,6 +50,9 @@ export default function StoryScrollForm() {
     notes: '',
   });
   const [isSubmitVisible, setIsSubmitVisible] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState('idle');
+  const [submitError, setSubmitError] = useState(null);
 
   const configSectionRef = useRef(null);
   const contactSectionRef = useRef(null);
@@ -64,40 +76,19 @@ export default function StoryScrollForm() {
           ...configs,
           [serviceId]: initialConfigForService(service),
         }));
+        if (prev.size === 0) {
+          setTimeout(() => scrollToSection(configSectionRef), 300);
+        }
       }
       return next;
     });
   };
 
-  /* ── Generic config handlers ── */
-  const toggleSubOption = (serviceId, optionId) => {
-    setServiceConfigs((prev) => {
-      const config = prev[serviceId] || { subOptions: [], material: 'aluminum' };
-      const hasOption = config.subOptions.includes(optionId);
-      return {
-        ...prev,
-        [serviceId]: {
-          ...config,
-          subOptions: hasOption
-            ? config.subOptions.filter((id) => id !== optionId)
-            : [...config.subOptions, optionId],
-        },
-      };
-    });
-  };
-
-  const setMaterial = (serviceId, materialId) => {
-    setServiceConfigs((prev) => ({
-      ...prev,
-      [serviceId]: { ...prev[serviceId], material: materialId },
-    }));
-  };
-
-  /* ── Fixture config handlers (used by all fixture-type services) ── */
+  /* ── Config handlers ── */
   const setFixtureType = (serviceId, fixtureId) => {
     setServiceConfigs((prev) => ({
       ...prev,
-      [serviceId]: { fixtureType: fixtureId, finish: null, aluminumColor: null },
+      [serviceId]: { ...prev[serviceId], fixtureType: fixtureId, finish: null, aluminumColor: null },
     }));
   };
 
@@ -119,11 +110,17 @@ export default function StoryScrollForm() {
     }));
   };
 
-  /* ── Tree config handler ── */
-  const setTreeStyle = (serviceId, styleId) => {
+  const setTreeFocus = (serviceId, focusId) => {
     setServiceConfigs((prev) => ({
       ...prev,
-      [serviceId]: { ...prev[serviceId], style: styleId },
+      [serviceId]: { ...prev[serviceId], focus: focusId },
+    }));
+  };
+
+  const setDeckSize = (serviceId, sizeId) => {
+    setServiceConfigs((prev) => ({
+      ...prev,
+      [serviceId]: { ...prev[serviceId], size: sizeId },
     }));
   };
 
@@ -133,265 +130,121 @@ export default function StoryScrollForm() {
 
   const selectedServicesList = lightingServices.filter((s) => selectedServices.has(s.id));
 
-  /* ======================================================================== */
-  /*  CONFIG PANEL RENDERERS                                                  */
-  /* ======================================================================== */
+  /* ── Build a display summary string for a service's config ── */
+  const buildServiceSummary = (service, config) => {
+    if (!config) return 'No configuration selected';
 
-  /* ── Fixture-type config panel (uplighting, pathway, deck, wash/area) ── */
-  const renderFixtureConfig = (service, config) => {
-    const hasSelected = !!config.fixtureType;
-    const selectedFixture = hasSelected
-      ? fixtureTypes.find((f) => f.id === config.fixtureType)
-      : null;
+    if (service.configType === 'fixture') {
+      const fixture = fixtureTypes.find((f) => f.id === config.fixtureType);
+      const finish = fixture?.finishes.find((f) => f.id === config.finish);
+      const aluColor = aluminumColorLookup[config.aluminumColor];
+      let summary = '';
+      if (fixture) summary += fixture.shortName;
+      if (finish) {
+        summary += ` · ${finish.name}`;
+        if (finish.price) summary += ` (~$${finish.price}/light)`;
+      }
+      if (aluColor) summary += ` — ${aluColor.name}`;
+      return summary || 'No configuration selected';
+    }
 
-    return (
-      <>
-        {/* Step 1: Fixture Type — photo cards */}
-        <div className="mb-8">
-          <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
-            {hasSelected ? 'Your Fixture' : 'Choose Your Fixture'}
-          </h4>
+    if (service.configType === 'tree') {
+      const focus = treeFocusOptions.find((f) => f.id === config.focus);
+      return focus ? focus.name : 'No focus selected';
+    }
 
-          <div className={`grid gap-3 transition-all duration-500 ${
-            hasSelected ? 'grid-cols-1' : 'grid-cols-2'
-          }`}>
-            {fixtureTypes.map((fixture) => {
-              const isActive = config.fixtureType === fixture.id;
-              const isHidden = hasSelected && !isActive;
+    if (service.configType === 'deck') {
+      const size = deckSizes.find((s) => s.id === config.size);
+      const color = aluminumColorLookup[config.aluminumColor];
+      let parts = ['V2 Integrated'];
+      if (size) parts.push(size.name);
+      if (color) parts.push(color.name);
+      return parts.join(' · ');
+    }
 
-              if (isHidden) return null;
+    if (service.configType === 'none') {
+      return 'Selected';
+    }
 
-              return (
-                <button
-                  key={fixture.id}
-                  onClick={() =>
-                    hasSelected && isActive
-                      ? setFixtureType(service.id, null)
-                      : setFixtureType(service.id, fixture.id)
-                  }
-                  className={`group relative overflow-hidden rounded-xl border transition-all duration-300 ${
-                    isActive
-                      ? 'border-orange-500/50 ring-1 ring-orange-500/20'
-                      : 'border-white/10 hover:border-white/25'
-                  }`}
-                >
-                  {/* Fixture photo */}
-                  <div className={`relative w-full transition-all duration-300 ${
-                    hasSelected ? 'aspect-[16/9]' : 'aspect-square'
-                  }`}>
-                    <Image
-                      src={fixture.photo}
-                      alt={fixture.name}
-                      fill
-                      className="object-cover"
-                      sizes={hasSelected ? '100%' : '50%'}
-                    />
-                    <div className={`absolute inset-0 transition-all duration-300 ${
-                      isActive
-                        ? 'bg-gradient-to-t from-black/80 via-black/20 to-transparent'
-                        : 'bg-gradient-to-t from-black/90 via-black/40 to-black/10 group-hover:from-black/70'
-                    }`} />
-
-                    {/* Check badge */}
-                    {isActive && (
-                      <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center">
-                        <Check className="w-4 h-4 text-white" />
-                      </div>
-                    )}
-
-                    {/* Name + description overlay */}
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <p className="font-semibold text-white text-sm">{fixture.name}</p>
-                      <p className="text-[11px] text-white/40 mt-0.5 line-clamp-2">
-                        {fixture.description}
-                      </p>
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Tap to change hint */}
-          {hasSelected && (
-            <button
-              onClick={() => setFixtureType(service.id, null)}
-              className="mt-2 text-[10px] text-white/20 hover:text-white/40 transition-colors"
-            >
-              Tap to change fixture
-            </button>
-          )}
-        </div>
-
-        {/* Step 2: Finish Selection (appears after fixture chosen) */}
-        {selectedFixture && (
-          <div className="mb-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
-              Select Finish
-            </h4>
-            <div className={`grid gap-2 ${
-              selectedFixture.finishes.length === 3 ? 'grid-cols-3' : 'grid-cols-2'
-            }`}>
-              {selectedFixture.finishes.map((finish) => {
-                const isActive = config.finish === finish.id;
-                return (
-                  <button
-                    key={finish.id}
-                    onClick={() => setFinish(service.id, finish.id)}
-                    className={`text-center p-4 rounded-xl border transition-all ${
-                      isActive
-                        ? 'border-orange-500/40 bg-orange-500/10 ring-1 ring-orange-500/20'
-                        : 'border-white/10 hover:border-white/20 bg-white/[0.02]'
-                    }`}
-                  >
-                    <div className="flex items-center justify-center mb-2">
-                      {finish.swatch ? (
-                        <div
-                          className="w-8 h-8 rounded-full border border-white/10"
-                          style={{ backgroundColor: finish.swatch }}
-                        />
-                      ) : (
-                        <div className="flex -space-x-1">
-                          {aluminumColors.map((color) => (
-                            <div
-                              key={color.id}
-                              className="w-6 h-6 rounded-full border-2 border-[#0a0a0a]"
-                              style={{ backgroundColor: color.swatch }}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <p className="text-xs text-white font-medium">{finish.name}</p>
-                    <p
-                      className={`text-[11px] mt-0.5 font-mono tracking-wider ${
-                        isActive ? 'text-orange-400' : 'text-white/30'
-                      }`}
-                    >
-                      {finish.priceTier}
-                    </p>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Finish description */}
-            {config.finish &&
-              (() => {
-                const finishData = selectedFixture.finishes.find((f) => f.id === config.finish);
-                return finishData ? (
-                  <div className="mt-3 bg-white/[0.03] rounded-lg p-3 border border-white/5">
-                    <p className="text-[11px] text-white/35">{finishData.description}</p>
-                  </div>
-                ) : null;
-              })()}
-          </div>
-        )}
-
-        {/* Step 3: Aluminum Color picker */}
-        {config.finish === 'aluminum' && (
-          <div className="mb-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
-              Aluminum Color
-            </h4>
-            <div className="grid grid-cols-3 gap-2">
-              {aluminumColors.map((color) => {
-                const isActive = config.aluminumColor === color.id;
-                return (
-                  <button
-                    key={color.id}
-                    onClick={() => setAluminumColor(service.id, color.id)}
-                    className={`text-center p-3 rounded-xl border transition-all ${
-                      isActive
-                        ? 'border-orange-500/40 bg-orange-500/10 ring-1 ring-orange-500/20'
-                        : 'border-white/10 hover:border-white/20 bg-white/[0.02]'
-                    }`}
-                  >
-                    <div
-                      className={`w-8 h-8 rounded-full mx-auto mb-1.5 border-2 ${
-                        isActive ? 'border-orange-500' : 'border-white/10'
-                      }`}
-                      style={{ backgroundColor: color.swatch }}
-                    />
-                    <p className="text-xs text-white font-medium">{color.name}</p>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Brass vs Aluminum comparison */}
-        {selectedFixture && (
-          <div className="bg-white/[0.02] border border-white/5 rounded-xl p-4">
-            <p className="text-[10px] font-bold text-white/25 uppercase tracking-[0.15em] mb-2">
-              Brass vs Aluminum
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <p className="text-[11px] text-orange-400/70 font-medium mb-1">Brass</p>
-                <ul className="text-[10px] text-white/30 space-y-0.5">
-                  <li>Natural patina over time</li>
-                  <li>Superior longevity</li>
-                  <li>Premium look &amp; feel</li>
-                </ul>
-              </div>
-              <div>
-                <p className="text-[11px] text-white/50 font-medium mb-1">Aluminum</p>
-                <ul className="text-[10px] text-white/30 space-y-0.5">
-                  <li>3 color options</li>
-                  <li>Lightweight &amp; durable</li>
-                  <li>Best value</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        )}
-      </>
-    );
+    // color-only
+    const color = aluminumColorLookup[config.aluminumColor];
+    return color ? `Aluminum — ${color.name}` : 'No color selected';
   };
 
-  /* ── Tree-type config panel ── */
-  const renderTreeConfig = (service, config) => (
-    <div className="mb-8">
-      <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
-        Lighting Style
+  /* ── Submit consultation request ── */
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    const services = selectedServicesList.map((service) => ({
+      name: service.name,
+      configSummary: buildServiceSummary(service, serviceConfigs[service.id]),
+    }));
+
+    try {
+      const response = await fetch('/api/consultation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contactInfo, services }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to submit consultation.');
+      }
+
+      setSubmitStatus('success');
+    } catch (err) {
+      setSubmitStatus('error');
+      setSubmitError(err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  /* ======================================================================== */
+  /*  SHARED UI HELPERS                                                       */
+  /* ======================================================================== */
+
+  /* ── Educational info tip ── */
+  const InfoTip = ({ title, content }) => (
+    <div className="flex gap-3 p-4 rounded-xl bg-orange-500/[0.04] border border-orange-500/10 mb-6">
+      <Info className="w-4 h-4 text-orange-400/60 shrink-0 mt-0.5" />
+      <div>
+        <p className="text-[11px] font-semibold text-orange-400/60 mb-1">{title}</p>
+        <p className="text-[11px] text-white/30 leading-relaxed">{content}</p>
+      </div>
+    </div>
+  );
+
+  /* ── Aluminum color picker (shared by deck + color-only) ── */
+  const renderAluminumPicker = (serviceId, config) => (
+    <div>
+      <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-3">
+        Choose Your Color
       </h4>
-      <div className="space-y-3">
-        {treeLightingStyles.map((style) => {
-          const isActive = config.style === style.id;
+      <div className="flex flex-wrap gap-3">
+        {v2AluminumColors.map((color) => {
+          const isActive = config.aluminumColor === color.id;
           return (
             <button
-              key={style.id}
-              onClick={() => setTreeStyle(service.id, style.id)}
-              className={`w-full text-left p-5 rounded-xl border transition-all ${
-                isActive
-                  ? 'border-orange-500/40 bg-orange-500/10'
-                  : 'border-white/10 hover:border-white/20 bg-white/[0.02]'
-              }`}
+              key={color.id}
+              onClick={() => setAluminumColor(serviceId, color.id)}
+              className="flex flex-col items-center gap-2 group"
             >
-              <div className="flex items-start gap-4">
-                <div
-                  className={`w-5 h-5 mt-0.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                    isActive ? 'border-orange-500 bg-orange-500' : 'border-white/20'
-                  }`}
-                >
-                  {isActive && <Check className="w-3 h-3 text-white" />}
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className={`font-semibold text-sm ${isActive ? 'text-white' : 'text-white/70'}`}>
-                      {style.name}
-                    </p>
-                    {style.recommended && (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400 font-bold uppercase tracking-wider">
-                        Popular
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-white/30 mt-1">{style.description}</p>
-                </div>
+              <div
+                className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 ${
+                  isActive
+                    ? 'border-orange-500 ring-2 ring-orange-500/30 scale-105'
+                    : 'border-white/10 hover:border-white/25'
+                }`}
+              >
+                <Image src={color.photo} alt={color.name} fill className="object-cover" sizes="80px" />
+                {isActive && <div className="absolute inset-0 bg-orange-500/10" />}
               </div>
+              <p className={`text-xs font-medium ${isActive ? 'text-white' : 'text-white/60'}`}>
+                {color.name}
+              </p>
             </button>
           );
         })}
@@ -399,92 +252,324 @@ export default function StoryScrollForm() {
     </div>
   );
 
-  /* ── Generic config panel (pool, security, holiday) ── */
-  const renderGenericConfig = (service, config) => (
+  /* ── V1/V2 fixture type selector (shared by fixture + tree) ── */
+  const renderFixtureTypeSelector = (service, config) => {
+    const hasSelected = !!config.fixtureType;
+
+    return (
+      <div className="mb-6">
+        <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
+          {hasSelected ? 'Your Fixture' : 'Choose Your Fixture'}
+        </h4>
+        <div className="grid grid-cols-2 gap-3">
+          {fixtureTypes.map((fixture) => {
+            const isActive = config.fixtureType === fixture.id;
+            const isDimmed = hasSelected && !isActive;
+
+            return (
+              <button
+                key={fixture.id}
+                onClick={() => setFixtureType(service.id, isActive ? null : fixture.id)}
+                className={`group relative overflow-hidden rounded-xl border transition-all duration-300 ${
+                  isActive
+                    ? 'border-orange-500/50 ring-1 ring-orange-500/20'
+                    : isDimmed
+                      ? 'border-white/5 opacity-40'
+                      : 'border-white/10 hover:border-white/25'
+                }`}
+              >
+                <div className="relative w-full aspect-[4/3]">
+                  <Image
+                    src={fixture.photo}
+                    alt={fixture.name}
+                    fill
+                    className="object-cover"
+                    sizes="50%"
+                  />
+                  <div className={`absolute inset-0 transition-all duration-300 ${
+                    isActive
+                      ? 'bg-gradient-to-t from-black/80 via-black/20 to-transparent'
+                      : 'bg-gradient-to-t from-black/90 via-black/40 to-black/10 group-hover:from-black/70'
+                  }`} />
+
+                  {isActive && (
+                    <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center">
+                      <Check className="w-4 h-4 text-white" />
+                    </div>
+                  )}
+
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <p className="font-semibold text-white text-sm">{fixture.name}</p>
+                    <p className="text-[11px] text-white/40 mt-0.5 line-clamp-2">
+                      {fixture.description}
+                    </p>
+                    {fixture.basePrice && (
+                      <p className="text-[11px] text-orange-400 font-medium mt-1">
+                        Starting at ~${fixture.basePrice}/light
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  /* ── Finish selector with brass/aluminum swatches (shared by fixture + tree) ── */
+  const renderFinishSelector = (service, config) => {
+    const selectedFixture = config.fixtureType
+      ? fixtureTypes.find((f) => f.id === config.fixtureType)
+      : null;
+
+    if (!selectedFixture) return null;
+
+    const brassFinishes = selectedFixture.finishes.filter((f) => !f.hasColorOptions);
+    const hasAluminum = selectedFixture.finishes.some((f) => f.hasColorOptions);
+
+    const renderSwatchRow = (options) => (
+      <div className="flex flex-wrap gap-3">
+        {options.map((option) => (
+          <button
+            key={option.key}
+            onClick={option.onClick}
+            className="flex flex-col items-center gap-2 group"
+          >
+            <div
+              className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 ${
+                option.isActive
+                  ? 'border-orange-500 ring-2 ring-orange-500/30 scale-105'
+                  : 'border-white/10 hover:border-white/25'
+              }`}
+            >
+              {option.photo ? (
+                <Image
+                  src={option.photo}
+                  alt={option.name}
+                  fill
+                  className="object-cover"
+                  sizes="80px"
+                />
+              ) : (
+                <div className="w-full h-full bg-white/[0.03]" />
+              )}
+              {option.isActive && (
+                <div className="absolute inset-0 bg-orange-500/10" />
+              )}
+            </div>
+            <div className="text-center">
+              <p className={`text-xs font-medium ${option.isActive ? 'text-white' : 'text-white/60'}`}>
+                {option.name}
+              </p>
+              {option.priceLabel && (
+                <p className={`text-[10px] mt-0.5 ${option.isBase ? 'text-green-400/70' : 'text-orange-400/70'}`}>
+                  {option.priceLabel}
+                </p>
+              )}
+            </div>
+          </button>
+        ))}
+      </div>
+    );
+
+    const brassOptions = brassFinishes.map((f) => {
+      const upcharge = f.price && selectedFixture.basePrice ? f.price - selectedFixture.basePrice : 0;
+      return {
+        key: f.id,
+        photo: f.photo,
+        name: f.name,
+        isActive: config.finish === f.id,
+        priceLabel: upcharge > 0 ? `+$${upcharge}/light` : f.isBase ? 'Base Price' : null,
+        isBase: !!f.isBase,
+        onClick: () => {
+          setFinish(service.id, f.id);
+          setAluminumColor(service.id, null);
+        },
+      };
+    });
+
+    const aluminumFinish = selectedFixture.finishes.find((f) => f.hasColorOptions);
+    const aluminumOptions = hasAluminum && aluminumFinish?.colorOptions
+      ? aluminumFinish.colorOptions.map((c) => {
+          const colorPrice = c.price || aluminumFinish.price;
+          const upcharge = colorPrice && selectedFixture.basePrice ? colorPrice - selectedFixture.basePrice : 0;
+          return {
+            key: `aluminum-${c.id}`,
+            photo: c.photo,
+            name: c.name,
+            isActive: config.finish === 'aluminum' && config.aluminumColor === c.id,
+            priceLabel: c.isBase || aluminumFinish.isBase ? 'Base Price' : upcharge > 0 ? `+$${upcharge}/light` : null,
+            isBase: !!(c.isBase || aluminumFinish.isBase),
+            onClick: () => {
+              setFinish(service.id, 'aluminum');
+              setAluminumColor(service.id, c.id);
+            },
+          };
+        })
+      : [];
+
+    return (
+      <div className="mb-6 animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-5">
+        {/* Brass tier */}
+        {brassOptions.length > 0 && (
+          <div>
+            <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-3">
+              Brass
+            </h4>
+            {renderSwatchRow(brassOptions)}
+          </div>
+        )}
+
+        {/* Aluminum tier */}
+        {aluminumOptions.length > 0 && (
+          <div>
+            <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-3">
+              Aluminum
+            </h4>
+            {renderSwatchRow(aluminumOptions)}
+          </div>
+        )}
+
+        {/* Material tip after finish options */}
+        <InfoTip title={materialTip.title} content={materialTip.content} />
+      </div>
+    );
+  };
+
+  /* ======================================================================== */
+  /*  CONFIG PANEL RENDERERS                                                  */
+  /* ======================================================================== */
+
+  /* ── Fixture config (uplighting, pathway) ── */
+  const renderFixtureConfig = (service, config) => (
     <>
+      {renderFixtureTypeSelector(service, config)}
+      <InfoTip title={fixtureTip.title} content={fixtureTip.content} />
+      {renderFinishSelector(service, config)}
+    </>
+  );
+
+  /* ── Tree config (focus question only — uses in-ground well lights) ── */
+  const renderTreeConfig = (service, config) => (
+    <>
+      <p className="text-xs text-white/30 mb-6 italic">
+        Tree uplighting uses in-ground well lights. Choose how you&apos;d like your trees illuminated.
+      </p>
+
       <div className="mb-8">
         <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
-          What type?
+          Lighting Focus
         </h4>
-        <div className="space-y-2">
-          {service.subOptions?.map((option) => {
-            const isActive = config.subOptions?.includes(option.id);
+        <div className="space-y-3">
+          {treeFocusOptions.map((option) => {
+            const isActive = config.focus === option.id;
             return (
               <button
                 key={option.id}
-                onClick={() => toggleSubOption(service.id, option.id)}
-                className={`w-full text-left flex items-center gap-4 p-4 rounded-xl border transition-all ${
+                onClick={() => setTreeFocus(service.id, option.id)}
+                className={`w-full text-left p-5 rounded-xl border transition-all ${
                   isActive
                     ? 'border-orange-500/40 bg-orange-500/10'
                     : 'border-white/10 hover:border-white/20 bg-white/[0.02]'
                 }`}
               >
-                <div
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                    isActive ? 'border-orange-500 bg-orange-500' : 'border-white/20'
-                  }`}
-                >
-                  {isActive && <Check className="w-3 h-3 text-white" />}
-                </div>
-                <div>
-                  <p className={`font-medium text-sm ${isActive ? 'text-white' : 'text-white/60'}`}>
-                    {option.name}
-                  </p>
-                  <p className="text-xs text-white/25">{option.description}</p>
+                <div className="flex items-start gap-4">
+                  <div
+                    className={`w-5 h-5 mt-0.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                      isActive ? 'border-orange-500 bg-orange-500' : 'border-white/20'
+                    }`}
+                  >
+                    {isActive && <Check className="w-3 h-3 text-white" />}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className={`font-semibold text-sm ${isActive ? 'text-white' : 'text-white/70'}`}>
+                        {option.name}
+                      </p>
+                      {option.recommended && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400 font-bold uppercase tracking-wider">
+                          Popular
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-white/30 mt-1">{option.description}</p>
+                  </div>
                 </div>
               </button>
             );
           })}
         </div>
       </div>
+    </>
+  );
 
-      <div className="mb-6">
+  /* ── Deck config (size + aluminum color, V2 integrated) ── */
+  const renderDeckConfig = (service, config) => (
+    <>
+      <p className="text-xs text-white/30 mb-6 italic">
+        Deck &amp; patio fixtures use our V2 integrated design in aluminum.
+      </p>
+
+      {/* Size selector */}
+      <div className="mb-8">
         <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
-          Fixture Material
+          Fixture Size
         </h4>
-        <div className="grid grid-cols-3 gap-2">
-          {materialTiers.map((material) => {
-            const isActive = config.material === material.id;
+        <div className="grid grid-cols-2 gap-3">
+          {deckSizes.map((size) => {
+            const isActive = config.size === size.id;
             return (
               <button
-                key={material.id}
-                onClick={() => setMaterial(service.id, material.id)}
-                className={`text-center p-3 rounded-xl border transition-all ${
+                key={size.id}
+                onClick={() => setDeckSize(service.id, size.id)}
+                className={`text-center p-5 rounded-xl border transition-all ${
                   isActive
-                    ? 'border-[#1D4B26] bg-[#1D4B26]/15 ring-1 ring-[#1D4B26]/30'
+                    ? 'border-orange-500/40 bg-orange-500/10'
                     : 'border-white/10 hover:border-white/20 bg-white/[0.02]'
                 }`}
               >
-                <div
-                  className={`w-7 h-7 rounded-full mx-auto mb-1.5 flex items-center justify-center ${
-                    material.id === 'aluminum'
-                      ? 'bg-gradient-to-br from-gray-400 to-gray-500'
-                      : material.id === 'brass'
-                        ? 'bg-gradient-to-br from-amber-400 to-amber-600'
-                        : 'bg-gradient-to-br from-purple-400 to-purple-600'
-                  }`}
-                >
-                  {isActive && <Check className="w-3 h-3 text-white drop-shadow" />}
+                <div className="flex items-center justify-center gap-3">
+                  <div
+                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                      isActive ? 'border-orange-500 bg-orange-500' : 'border-white/20'
+                    }`}
+                  >
+                    {isActive && <Check className="w-3 h-3 text-white" />}
+                  </div>
+                  <p className={`font-semibold text-sm ${isActive ? 'text-white' : 'text-white/70'}`}>
+                    {size.name}
+                  </p>
                 </div>
-                <p className="text-xs text-white font-medium">{material.name}</p>
-                <p className={`text-[10px] mt-0.5 ${isActive ? 'text-orange-400' : 'text-white/30'}`}>
-                  {material.upcharge === 0 ? 'Included' : `+$${material.upcharge.toFixed(2)}`}
-                </p>
               </button>
             );
           })}
         </div>
-
-        {(() => {
-          const materialData = materialTiers.find((m) => m.id === config.material);
-          return materialData ? (
-            <div className="mt-3 bg-white/[0.03] rounded-lg p-3 border border-white/5">
-              <p className="text-[11px] text-white/35">{materialData.description}</p>
-            </div>
-          ) : null;
-        })()}
       </div>
+
+      {renderAluminumPicker(service.id, config)}
     </>
+  );
+
+  /* ── Color-only config (wash, pool, security) ── */
+  const renderColorOnlyConfig = (service, config) => (
+    <>
+      <p className="text-xs text-white/30 mb-6 italic">
+        These fixtures come in aluminum — just pick your color.
+      </p>
+      {renderAluminumPicker(service.id, config)}
+    </>
+  );
+
+  /* ── None config (specialty / wall lighting — no options needed) ── */
+  const renderNoneConfig = (service) => (
+    <div className="flex items-center gap-3 p-5 rounded-xl border border-green-500/20 bg-green-500/[0.04]">
+      <CheckCircle className="w-5 h-5 text-green-400 shrink-0" />
+      <p className="text-sm text-white/60">
+        {service.name} selected — no additional configuration needed.
+      </p>
+    </div>
   );
 
   /* ======================================================================== */
@@ -495,7 +580,7 @@ export default function StoryScrollForm() {
     const fixture = fixtureTypes.find((f) => f.id === config.fixtureType);
     const finish = fixture?.finishes.find((f) => f.id === config.finish);
     const aluColor = config.aluminumColor
-      ? aluminumColors.find((c) => c.id === config.aluminumColor)
+      ? aluminumColorLookup[config.aluminumColor]
       : null;
 
     return (
@@ -517,7 +602,9 @@ export default function StoryScrollForm() {
           {finish && (
             <>
               <p className="text-sm text-white font-medium">{finish.name}</p>
-              <p className="text-xs text-orange-400 font-mono">{finish.priceTier}</p>
+              {finish.price && (
+                <p className="text-xs text-orange-400">~${finish.price}/light</p>
+              )}
             </>
           )}
         </div>
@@ -526,7 +613,8 @@ export default function StoryScrollForm() {
   };
 
   const renderTreeReviewCard = (service, config) => {
-    const style = treeLightingStyles.find((s) => s.id === config.style);
+    const focus = treeFocusOptions.find((f) => f.id === config.focus);
+
     return (
       <div key={service.id} className="flex items-center gap-4 bg-white/[0.03] border border-white/10 rounded-xl p-4">
         <div className="relative w-14 h-14 rounded-lg overflow-hidden shrink-0">
@@ -534,14 +622,28 @@ export default function StoryScrollForm() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-white text-sm">{service.name}</p>
-          {style && <p className="text-xs text-white/40 mt-0.5">{style.name} style</p>}
+          {focus && <p className="text-xs text-white/40 mt-0.5">{focus.name}</p>}
         </div>
       </div>
     );
   };
 
-  const renderGenericReviewCard = (service, config) => {
-    const material = materialTiers.find((m) => m.id === config.material);
+  const renderNoneReviewCard = (service) => (
+    <div key={service.id} className="flex items-center gap-4 bg-white/[0.03] border border-white/10 rounded-xl p-4">
+      <div className="relative w-14 h-14 rounded-lg overflow-hidden shrink-0">
+        <Image src={service.photo} alt={service.name} fill className="object-cover" sizes="56px" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="font-semibold text-white text-sm">{service.name}</p>
+        <p className="text-xs text-white/40 mt-0.5">Selected</p>
+      </div>
+    </div>
+  );
+
+  const renderDeckReviewCard = (service, config) => {
+    const size = deckSizes.find((s) => s.id === config.size);
+    const color = aluminumColorLookup[config.aluminumColor];
+
     return (
       <div key={service.id} className="flex items-center gap-4 bg-white/[0.03] border border-white/10 rounded-xl p-4">
         <div className="relative w-14 h-14 rounded-lg overflow-hidden shrink-0">
@@ -549,23 +651,48 @@ export default function StoryScrollForm() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-white text-sm">{service.name}</p>
-          {config.subOptions?.length > 0 && (
-            <p className="text-xs text-white/40 mt-0.5">
-              {config.subOptions
-                .map((optId) => service.subOptions?.find((o) => o.id === optId)?.name)
-                .filter(Boolean)
-                .join(', ')}
-            </p>
-          )}
+          <p className="text-xs text-white/40 mt-0.5">
+            V2 Integrated
+            {size ? ` · ${size.name}` : ''}
+            {color ? ` · ${color.name}` : ''}
+          </p>
         </div>
         <div className="text-right shrink-0">
-          <p className="text-sm text-white font-medium">{material?.name}</p>
-          {material?.upcharge > 0 && (
-            <p className="text-xs text-orange-400">+${material.upcharge.toFixed(2)}/light</p>
-          )}
+          <p className="text-sm text-white font-medium">Aluminum</p>
+          <p className="text-xs text-orange-400 font-mono">$</p>
         </div>
       </div>
     );
+  };
+
+  const renderColorOnlyReviewCard = (service, config) => {
+    const color = aluminumColorLookup[config.aluminumColor];
+
+    return (
+      <div key={service.id} className="flex items-center gap-4 bg-white/[0.03] border border-white/10 rounded-xl p-4">
+        <div className="relative w-14 h-14 rounded-lg overflow-hidden shrink-0">
+          <Image src={service.photo} alt={service.name} fill className="object-cover" sizes="56px" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-white text-sm">{service.name}</p>
+          <p className="text-xs text-white/40 mt-0.5">
+            Aluminum{color ? ` — ${color.name}` : ''}
+          </p>
+        </div>
+      </div>
+    );
+  };
+
+  /* ── Route to the correct review card renderer ── */
+  const renderReviewCard = (service, config) => {
+    switch (service.configType) {
+      case 'fixture':    return renderFixtureReviewCard(service, config);
+      case 'tree':       return renderTreeReviewCard(service, config);
+      case 'deck':       return renderDeckReviewCard(service, config);
+      case 'color-only': return renderColorOnlyReviewCard(service, config);
+      case 'none':       return renderNoneReviewCard(service);
+      default:           return renderColorOnlyReviewCard(service, config);
+    }
   };
 
   /* ======================================================================== */
@@ -608,10 +735,10 @@ export default function StoryScrollForm() {
                 <button
                   key={service.id}
                   onClick={() => toggleService(service.id)}
-                  className={`group relative aspect-[3/4] rounded-xl overflow-hidden transition-all duration-300 ${
+                  className={`group relative aspect-[3/4] rounded-xl overflow-hidden transition-all duration-300 border border-white/[0.14] ${
                     isSelected
-                      ? 'ring-2 ring-orange-500 scale-[1.02]'
-                      : 'ring-1 ring-white/10 hover:ring-white/25'
+                      ? 'ring-2 ring-orange-500 scale-[1.02] border-transparent'
+                      : 'hover:border-white/25'
                   }`}
                 >
                   <Image
@@ -644,28 +771,14 @@ export default function StoryScrollForm() {
                   </div>
 
                   <div className="absolute bottom-0 left-0 right-0 p-3">
-                    <div className="w-7 h-7 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center mb-1.5">
-                      <IconComp className="w-3.5 h-3.5 text-white/80" />
-                    </div>
                     <p className="font-semibold text-white text-xs leading-tight">{service.name}</p>
-                    <p className="text-[10px] text-white/40 mt-0.5">{service.description}</p>
+                    <p className="text-[10px] text-white/40 mt-0.5 leading-tight line-clamp-2">{service.description}</p>
                   </div>
                 </button>
               );
             })}
           </div>
 
-          {selectedServices.size > 0 && (
-            <button
-              onClick={() => scrollToSection(configSectionRef)}
-              className="mt-10 flex flex-col items-center gap-2 text-orange-400 hover:text-orange-300 transition-colors animate-bounce"
-            >
-              <span className="text-xs font-medium">
-                Configure {selectedServices.size} area{selectedServices.size !== 1 ? 's' : ''}
-              </span>
-              <ChevronDown className="w-5 h-5" />
-            </button>
-          )}
         </div>
       </section>
 
@@ -691,18 +804,20 @@ export default function StoryScrollForm() {
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-[#0a0a0a]" />
 
                     <div className="absolute bottom-0 left-0 p-6 lg:p-10 lg:bottom-auto lg:top-1/2 lg:-translate-y-1/2">
-                      <span className="inline-block text-[10px] font-bold tracking-[0.2em] text-orange-400 uppercase mb-2">
-                        Area {serviceIndex + 1} of {selectedServicesList.length}
-                      </span>
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="w-10 h-10 rounded-xl bg-orange-500/80 flex items-center justify-center">
-                          <IconComp className="w-5 h-5 text-white" />
+                      <div className="inline-flex flex-col bg-black/50 backdrop-blur-md rounded-2xl px-5 py-4 border border-white/10">
+                        <span className="text-[10px] font-bold tracking-[0.2em] text-orange-400 uppercase mb-2">
+                          Area {serviceIndex + 1} of {selectedServicesList.length}
+                        </span>
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-10 h-10 rounded-xl bg-orange-500/80 flex items-center justify-center shrink-0">
+                            <IconComp className="w-5 h-5 text-white" />
+                          </div>
+                          <h3 className="text-2xl md:text-3xl font-bold text-white font-[family-name:var(--font-lora)]">
+                            {service.name}
+                          </h3>
                         </div>
-                        <h3 className="text-2xl md:text-3xl font-bold text-white font-[family-name:var(--font-lora)]">
-                          {service.name}
-                        </h3>
+                        <p className="text-sm text-white/50 max-w-xs">{service.description}</p>
                       </div>
-                      <p className="text-sm text-white/40 max-w-xs">{service.description}</p>
                     </div>
                   </div>
 
@@ -710,7 +825,9 @@ export default function StoryScrollForm() {
                   <div className="lg:w-1/2 p-6 lg:p-10 flex flex-col justify-center">
                     {service.configType === 'fixture' && renderFixtureConfig(service, config)}
                     {service.configType === 'tree' && renderTreeConfig(service, config)}
-                    {service.configType === 'generic' && renderGenericConfig(service, config)}
+                    {service.configType === 'deck' && renderDeckConfig(service, config)}
+                    {service.configType === 'color-only' && renderColorOnlyConfig(service, config)}
+                    {service.configType === 'none' && renderNoneConfig(service)}
                   </div>
                 </div>
 
@@ -848,9 +965,7 @@ export default function StoryScrollForm() {
               <div className="space-y-3">
                 {selectedServicesList.map((service) => {
                   const config = serviceConfigs[service.id] || {};
-                  if (service.configType === 'fixture') return renderFixtureReviewCard(service, config);
-                  if (service.configType === 'tree') return renderTreeReviewCard(service, config);
-                  return renderGenericReviewCard(service, config);
+                  return renderReviewCard(service, config);
                 })}
               </div>
             </div>
@@ -875,10 +990,42 @@ export default function StoryScrollForm() {
               </div>
             </div>
 
-            <button className="w-full bg-[#1D4B26] hover:bg-[#163d1e] text-white font-bold py-4 rounded-xl transition-colors flex items-center justify-center gap-3 text-lg shadow-lg shadow-[#1D4B26]/20">
-              <Send className="w-5 h-5" />
-              Submit Consultation Request
-            </button>
+            {submitStatus === 'success' ? (
+              <div className="text-center py-6">
+                <CheckCircle className="w-12 h-12 text-green-400 mx-auto mb-3" />
+                <p className="text-lg font-bold text-white mb-1">
+                  Consultation Submitted!
+                </p>
+                <p className="text-sm text-white/50">
+                  Check your email for a PDF summary of your selections.
+                </p>
+              </div>
+            ) : (
+              <>
+                <button
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className="w-full bg-[#1D4B26] hover:bg-[#163d1e] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl transition-colors flex items-center justify-center gap-3 text-lg shadow-lg shadow-[#1D4B26]/20"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-5 h-5" />
+                      Submit Consultation Request
+                    </>
+                  )}
+                </button>
+                {submitStatus === 'error' && (
+                  <p className="text-sm text-red-400 text-center mt-3">
+                    {submitError || 'Something went wrong. Please try again.'}
+                  </p>
+                )}
+              </>
+            )}
             <p className="text-xs text-white/20 text-center mt-4">
               You&apos;ll receive a PDF summary of your selections via email.
             </p>
