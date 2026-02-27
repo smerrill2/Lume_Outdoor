@@ -212,7 +212,7 @@ export default function StoryScrollForm() {
       <Info className="w-4 h-4 text-orange-400/60 shrink-0 mt-0.5" />
       <div>
         <p className="text-[11px] font-semibold text-orange-400/60 mb-1">{title}</p>
-        <p className="text-[11px] text-white/30 leading-relaxed">{content}</p>
+        <p className="text-[11px] text-white/50 leading-relaxed">{content}</p>
       </div>
     </div>
   );
@@ -220,7 +220,7 @@ export default function StoryScrollForm() {
   /* ── Aluminum color picker (shared by deck + color-only) ── */
   const renderAluminumPicker = (serviceId, config) => (
     <div>
-      <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-3">
+      <h4 className="text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-3">
         Choose Your Color
       </h4>
       <div className="flex flex-wrap gap-3">
@@ -258,7 +258,7 @@ export default function StoryScrollForm() {
 
     return (
       <div className="mb-6">
-        <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
+        <h4 className="text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-4">
           {hasSelected ? 'Your Fixture' : 'Choose Your Fixture'}
         </h4>
         <div className="grid grid-cols-2 gap-3">
@@ -289,7 +289,7 @@ export default function StoryScrollForm() {
                   <div className={`absolute inset-0 transition-all duration-300 ${
                     isActive
                       ? 'bg-gradient-to-t from-black/80 via-black/20 to-transparent'
-                      : 'bg-gradient-to-t from-black/90 via-black/40 to-black/10 group-hover:from-black/70'
+                      : 'bg-gradient-to-t from-black via-black/60 to-black/10 group-hover:from-black/80'
                   }`} />
 
                   {isActive && (
@@ -300,7 +300,7 @@ export default function StoryScrollForm() {
 
                   <div className="absolute bottom-0 left-0 right-0 p-4">
                     <p className="font-semibold text-white text-sm">{fixture.name}</p>
-                    <p className="text-[11px] text-white/40 mt-0.5 line-clamp-2">
+                    <p className="text-[11px] text-white/60 mt-0.5 line-clamp-2">
                       {fixture.description}
                     </p>
                     {fixture.basePrice && (
@@ -415,7 +415,7 @@ export default function StoryScrollForm() {
         {/* Brass tier */}
         {brassOptions.length > 0 && (
           <div>
-            <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-3">
+            <h4 className="text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-3">
               Brass
             </h4>
             {renderSwatchRow(brassOptions)}
@@ -425,7 +425,7 @@ export default function StoryScrollForm() {
         {/* Aluminum tier */}
         {aluminumOptions.length > 0 && (
           <div>
-            <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-3">
+            <h4 className="text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-3">
               Aluminum
             </h4>
             {renderSwatchRow(aluminumOptions)}
@@ -454,12 +454,12 @@ export default function StoryScrollForm() {
   /* ── Tree config (focus question only — uses in-ground well lights) ── */
   const renderTreeConfig = (service, config) => (
     <>
-      <p className="text-xs text-white/30 mb-6 italic">
+      <p className="text-xs text-white/50 mb-6 italic">
         Tree uplighting uses in-ground well lights. Choose how you&apos;d like your trees illuminated.
       </p>
 
       <div className="mb-8">
-        <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
+        <h4 className="text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-4">
           Lighting Focus
         </h4>
         <div className="space-y-3">
@@ -494,7 +494,7 @@ export default function StoryScrollForm() {
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-white/30 mt-1">{option.description}</p>
+                    <p className="text-xs text-white/50 mt-1">{option.description}</p>
                   </div>
                 </div>
               </button>
@@ -508,13 +508,13 @@ export default function StoryScrollForm() {
   /* ── Deck config (size + aluminum color, V2 integrated) ── */
   const renderDeckConfig = (service, config) => (
     <>
-      <p className="text-xs text-white/30 mb-6 italic">
+      <p className="text-xs text-white/50 mb-6 italic">
         Deck &amp; patio fixtures use our V2 integrated design in aluminum.
       </p>
 
       {/* Size selector */}
       <div className="mb-8">
-        <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
+        <h4 className="text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-4">
           Fixture Size
         </h4>
         <div className="grid grid-cols-2 gap-3">
@@ -555,7 +555,7 @@ export default function StoryScrollForm() {
   /* ── Color-only config (wash, pool, security) ── */
   const renderColorOnlyConfig = (service, config) => (
     <>
-      <p className="text-xs text-white/30 mb-6 italic">
+      <p className="text-xs text-white/50 mb-6 italic">
         These fixtures come in aluminum — just pick your color.
       </p>
       {renderAluminumPicker(service.id, config)}
@@ -591,7 +591,7 @@ export default function StoryScrollForm() {
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-white text-sm">{service.name}</p>
           {fixture && (
-            <p className="text-xs text-white/40 mt-0.5">
+            <p className="text-xs text-white/60 mt-0.5">
               {fixture.shortName}
               {finish ? ` · ${finish.name}` : ''}
               {aluColor ? ` (${aluColor.name})` : ''}
@@ -622,7 +622,7 @@ export default function StoryScrollForm() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-white text-sm">{service.name}</p>
-          {focus && <p className="text-xs text-white/40 mt-0.5">{focus.name}</p>}
+          {focus && <p className="text-xs text-white/60 mt-0.5">{focus.name}</p>}
         </div>
       </div>
     );
@@ -635,7 +635,7 @@ export default function StoryScrollForm() {
       </div>
       <div className="flex-1 min-w-0">
         <p className="font-semibold text-white text-sm">{service.name}</p>
-        <p className="text-xs text-white/40 mt-0.5">Selected</p>
+        <p className="text-xs text-white/60 mt-0.5">Selected</p>
       </div>
     </div>
   );
@@ -651,7 +651,7 @@ export default function StoryScrollForm() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-white text-sm">{service.name}</p>
-          <p className="text-xs text-white/40 mt-0.5">
+          <p className="text-xs text-white/60 mt-0.5">
             V2 Integrated
             {size ? ` · ${size.name}` : ''}
             {color ? ` · ${color.name}` : ''}
@@ -675,7 +675,7 @@ export default function StoryScrollForm() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-white text-sm">{service.name}</p>
-          <p className="text-xs text-white/40 mt-0.5">
+          <p className="text-xs text-white/60 mt-0.5">
             Aluminum{color ? ` — ${color.name}` : ''}
           </p>
         </div>
@@ -723,7 +723,7 @@ export default function StoryScrollForm() {
           <h2 className="text-3xl md:text-5xl font-bold text-white text-center mb-3 font-[family-name:var(--font-lora)] max-w-2xl">
             Select Your Lighting Areas
           </h2>
-          <p className="text-white/40 text-center text-sm mb-10 max-w-md">
+          <p className="text-white/60 text-center text-sm mb-10 max-w-md">
             Choose all the areas you&apos;d like to illuminate. You&apos;ll configure each one in the next section.
           </p>
 
@@ -752,7 +752,7 @@ export default function StoryScrollForm() {
                     className={`absolute inset-0 transition-colors duration-300 ${
                       isSelected
                         ? 'bg-gradient-to-t from-orange-900/80 via-black/30 to-black/20'
-                        : 'bg-gradient-to-t from-black/90 via-black/40 to-transparent'
+                        : 'bg-gradient-to-t from-black via-black/60 to-transparent'
                     }`}
                   />
 
@@ -772,7 +772,7 @@ export default function StoryScrollForm() {
 
                   <div className="absolute bottom-0 left-0 right-0 p-3">
                     <p className="font-semibold text-white text-xs leading-tight">{service.name}</p>
-                    <p className="text-[10px] text-white/40 mt-0.5 leading-tight line-clamp-2">{service.description}</p>
+                    <p className="text-[10px] text-white/60 mt-0.5 leading-tight line-clamp-2">{service.description}</p>
                   </div>
                 </button>
               );
@@ -861,13 +861,13 @@ export default function StoryScrollForm() {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 font-[family-name:var(--font-lora)]">
               Your Details
             </h2>
-            <p className="text-white/40 text-sm mb-8">
+            <p className="text-white/60 text-sm mb-8">
               We&apos;ll send you a consultation summary and schedule your free property visit.
             </p>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-2">
+                <label className="block text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-2">
                   Full Name *
                 </label>
                 <input
@@ -875,12 +875,12 @@ export default function StoryScrollForm() {
                   value={contactInfo.name}
                   onChange={(e) => setContactInfo({ ...contactInfo, name: e.target.value })}
                   placeholder="John Smith"
-                  className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder-white/20 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all"
+                  className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder-white/35 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-2">
+                  <label className="block text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-2">
                     Email *
                   </label>
                   <input
@@ -888,11 +888,11 @@ export default function StoryScrollForm() {
                     value={contactInfo.email}
                     onChange={(e) => setContactInfo({ ...contactInfo, email: e.target.value })}
                     placeholder="john@email.com"
-                    className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder-white/20 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all"
+                    className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder-white/35 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-2">
+                  <label className="block text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-2">
                     Phone *
                   </label>
                   <input
@@ -900,12 +900,12 @@ export default function StoryScrollForm() {
                     value={contactInfo.phone}
                     onChange={(e) => setContactInfo({ ...contactInfo, phone: e.target.value })}
                     placeholder="(316) 555-0100"
-                    className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder-white/20 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all"
+                    className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder-white/35 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-2">
+                <label className="block text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-2">
                   Property Address
                 </label>
                 <input
@@ -913,11 +913,11 @@ export default function StoryScrollForm() {
                   value={contactInfo.address}
                   onChange={(e) => setContactInfo({ ...contactInfo, address: e.target.value })}
                   placeholder="123 Main St, Wichita, KS"
-                  className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder-white/20 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all"
+                  className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder-white/35 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all"
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-2">
+                <label className="block text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-2">
                   Notes
                 </label>
                 <textarea
@@ -925,7 +925,7 @@ export default function StoryScrollForm() {
                   onChange={(e) => setContactInfo({ ...contactInfo, notes: e.target.value })}
                   rows={3}
                   placeholder="Tell us about your property, timeline, or requests..."
-                  className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder-white/20 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all resize-none"
+                  className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder-white/35 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all resize-none"
                 />
               </div>
             </div>
@@ -959,7 +959,7 @@ export default function StoryScrollForm() {
             </h2>
 
             <div className="mb-8">
-              <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
+              <h4 className="text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-4">
                 Lighting Areas ({selectedServicesList.length})
               </h4>
               <div className="space-y-3">
@@ -971,19 +971,19 @@ export default function StoryScrollForm() {
             </div>
 
             <div className="bg-white/[0.03] border border-white/10 rounded-xl p-5 mb-10">
-              <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-3">
+              <h4 className="text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-3">
                 Contact
               </h4>
               <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-sm">
-                <span className="text-white/30">Name</span>
+                <span className="text-white/50">Name</span>
                 <span className="text-white">{contactInfo.name}</span>
-                <span className="text-white/30">Email</span>
+                <span className="text-white/50">Email</span>
                 <span className="text-white">{contactInfo.email}</span>
-                <span className="text-white/30">Phone</span>
+                <span className="text-white/50">Phone</span>
                 <span className="text-white">{contactInfo.phone}</span>
                 {contactInfo.address && (
                   <>
-                    <span className="text-white/30">Address</span>
+                    <span className="text-white/50">Address</span>
                     <span className="text-white">{contactInfo.address}</span>
                   </>
                 )}
@@ -1026,7 +1026,7 @@ export default function StoryScrollForm() {
                 )}
               </>
             )}
-            <p className="text-xs text-white/20 text-center mt-4">
+            <p className="text-xs text-white/40 text-center mt-4">
               You&apos;ll receive a PDF summary of your selections via email.
             </p>
           </div>
