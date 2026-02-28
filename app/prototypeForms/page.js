@@ -15,7 +15,7 @@ export default function PrototypeFormsPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-5 font-[family-name:var(--font-lora)]">
             Consultation Form Design
           </h1>
-          <p className="text-lg text-white/40 max-w-2xl mx-auto">
+          <p className="text-lg text-white/60 max-w-2xl mx-auto">
             Vertical story scroll — select your areas upfront, then scroll
             through each one with a full-bleed photo + configuration panel.
           </p>
