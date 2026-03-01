@@ -735,126 +735,74 @@ export default function StoryScrollForm() {
   };
 
   /* ======================================================================== */
-  /*  REVIEW CARD RENDERERS                                                   */
+  /*  REVIEW CARD                                                              */
   /* ======================================================================== */
 
-  const renderFixtureReviewCard = (service, config) => {
-    const fixture = fixtureTypes.find((f) => f.id === config.fixtureType);
-    const finish = fixture?.finishes.find((f) => f.id === config.finish);
-    const aluColor = config.aluminumColor
-      ? aluminumColorLookup[config.aluminumColor]
-      : null;
-
-    return (
-      <div key={service.id} className="flex items-center gap-4 bg-white/[0.03] border border-white/10 rounded-xl p-4">
-        <div className="relative w-14 h-14 rounded-lg overflow-hidden shrink-0">
-          <Image src={service.photo} alt={service.name} fill className="object-cover" sizes="56px" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="font-semibold text-white text-sm">{service.name}</p>
-          {fixture && (
-            <p className="text-xs text-white/40 mt-0.5">
-              {fixture.shortName}
-              {finish ? ` · ${finish.name}` : ''}
-              {aluColor ? ` (${aluColor.name})` : ''}
-            </p>
-          )}
-        </div>
-        <div className="text-right shrink-0">
-          {finish && (
-            <>
-              <p className="text-sm text-white font-medium">{finish.name}</p>
-              {finish.price && (
-                <p className="text-xs text-orange-400">~${finish.price}/light</p>
-              )}
-            </>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  const renderTreeReviewCard = (service, config) => {
-    const focus = treeFocusOptions.find((f) => f.id === config.focus);
-
-    return (
-      <div key={service.id} className="flex items-center gap-4 bg-white/[0.03] border border-white/10 rounded-xl p-4">
-        <div className="relative w-14 h-14 rounded-lg overflow-hidden shrink-0">
-          <Image src={service.photo} alt={service.name} fill className="object-cover" sizes="56px" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="font-semibold text-white text-sm">{service.name}</p>
-          {focus && <p className="text-xs text-white/40 mt-0.5">{focus.name}</p>}
-        </div>
-      </div>
-    );
-  };
-
-  const renderNoneReviewCard = (service) => (
-    <div key={service.id} className="flex items-center gap-4 bg-white/[0.03] border border-white/10 rounded-xl p-4">
-      <div className="relative w-14 h-14 rounded-lg overflow-hidden shrink-0">
-        <Image src={service.photo} alt={service.name} fill className="object-cover" sizes="56px" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="font-semibold text-white text-sm">{service.name}</p>
-        <p className="text-xs text-white/40 mt-0.5">Selected</p>
-      </div>
-    </div>
-  );
-
-  const renderDeckReviewCard = (service, config) => {
-    const size = deckSizes.find((s) => s.id === config.size);
-    const color = aluminumColorLookup[config.aluminumColor];
-
-    return (
-      <div key={service.id} className="flex items-center gap-4 bg-white/[0.03] border border-white/10 rounded-xl p-4">
-        <div className="relative w-14 h-14 rounded-lg overflow-hidden shrink-0">
-          <Image src={service.photo} alt={service.name} fill className="object-cover" sizes="56px" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="font-semibold text-white text-sm">{service.name}</p>
-          <p className="text-xs text-white/40 mt-0.5">
-            V2 Integrated
-            {size ? ` · ${size.name}` : ''}
-            {color ? ` · ${color.name}` : ''}
-          </p>
-        </div>
-        <div className="text-right shrink-0">
-          <p className="text-sm text-white font-medium">Aluminum</p>
-          <p className="text-xs text-orange-400 font-mono">$</p>
-        </div>
-      </div>
-    );
-  };
-
-  const renderColorOnlyReviewCard = (service, config) => {
-    const color = aluminumColorLookup[config.aluminumColor];
-
-    return (
-      <div key={service.id} className="flex items-center gap-4 bg-white/[0.03] border border-white/10 rounded-xl p-4">
-        <div className="relative w-14 h-14 rounded-lg overflow-hidden shrink-0">
-          <Image src={service.photo} alt={service.name} fill className="object-cover" sizes="56px" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="font-semibold text-white text-sm">{service.name}</p>
-          <p className="text-xs text-white/40 mt-0.5">
-            Aluminum{color ? ` — ${color.name}` : ''}
-          </p>
-        </div>
-      </div>
-    );
-  };
-
-  /* ── Route to the correct review card renderer ── */
-  const renderReviewCard = (service, config) => {
+  /* ── Resolve the selected finish photo + label for any service ── */
+  const getSelectedFinishInfo = (service, config) => {
+    if (!config) return null;
     switch (service.configType) {
-      case 'fixture':    return renderFixtureReviewCard(service, config);
-      case 'tree':       return renderTreeReviewCard(service, config);
-      case 'deck':       return renderDeckReviewCard(service, config);
-      case 'color-only': return renderColorOnlyReviewCard(service, config);
-      case 'none':       return renderNoneReviewCard(service);
-      default:           return renderColorOnlyReviewCard(service, config);
+      case 'fixture': {
+        const fixture = fixtureTypes.find((f) => f.id === config.fixtureType);
+        if (!fixture) return null;
+        if (config.finish === 'aluminum' && config.aluminumColor) {
+          const aluFinish = fixture.finishes.find((f) => f.hasColorOptions);
+          const color = aluFinish?.colorOptions.find((c) => c.id === config.aluminumColor);
+          return color ? { photo: color.photo, label: `${fixture.shortName} · ${color.name}`, price: color.price } : null;
+        }
+        const finish = fixture.finishes.find((f) => f.id === config.finish);
+        return finish ? { photo: finish.photo, label: `${fixture.shortName} · ${finish.name}`, price: finish.price } : null;
+      }
+      case 'pathway': {
+        const allFinishes = [...pathwayFinishes.brass, ...pathwayFinishes.aluminum];
+        const finish = allFinishes.find((f) => f.id === config.finish);
+        return finish ? { photo: finish.photo, label: finish.name, price: finish.price, whiteBg: finish.whiteBg } : null;
+      }
+      case 'specialty': {
+        const fixture = specialtyFixtures.find((f) => f.id === config.fixtureType);
+        if (!fixture || !config.finish) return null;
+        const finishId = config.finish.replace(`${config.fixtureType}-`, '');
+        const allFinishes = [...fixture.finishes.brass, ...fixture.finishes.aluminum];
+        const finish = allFinishes.find((f) => f.id === finishId);
+        return finish ? { photo: finish.photo, label: `${fixture.name} · ${finish.name}`, whiteBg: finish.whiteBg } : null;
+      }
+      case 'tree': {
+        const focus = treeFocusOptions.find((f) => f.id === config.focus);
+        return { photo: '/light_form/well_light/well_light.webp', label: focus?.name || 'Well Light', whiteBg: true };
+      }
+      case 'deck':
+      case 'color-only': {
+        const color = v2AluminumColors.find((c) => c.id === config.aluminumColor);
+        return color ? { photo: color.photo, label: color.name, price: color.price } : null;
+      }
+      case 'none':
+      default:
+        return null;
     }
+  };
+
+  /* ── Unified review card ── */
+  const renderReviewCard = (service, config) => {
+    const finishInfo = getSelectedFinishInfo(service, config);
+    return (
+      <div key={service.id} className="flex items-center gap-4 bg-white/[0.03] border border-white/10 rounded-xl p-4">
+        <div className="relative w-14 h-14 rounded-lg overflow-hidden shrink-0">
+          <Image src={service.photo} alt={service.name} fill className="object-cover" sizes="56px" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-white text-sm">{service.name}</p>
+          {finishInfo && <p className="text-xs text-white/40 mt-0.5">{finishInfo.label}</p>}
+          {finishInfo?.price && <p className="text-[10px] text-white/30 mt-0.5">~${finishInfo.price}/light</p>}
+          {!finishInfo && service.configNote && <p className="text-xs text-white/30 mt-0.5 line-clamp-1">{service.configNote}</p>}
+          {!finishInfo && !service.configNote && <p className="text-xs text-white/40 mt-0.5">Selected</p>}
+        </div>
+        {finishInfo && (
+          <div className={`relative w-12 h-12 rounded-lg overflow-hidden shrink-0 border border-white/10 ${finishInfo.whiteBg ? 'bg-white' : ''}`}>
+            <Image src={finishInfo.photo} alt={finishInfo.label} fill className="object-contain" sizes="48px" />
+          </div>
+        )}
+      </div>
+    );
   };
 
   /* ======================================================================== */
