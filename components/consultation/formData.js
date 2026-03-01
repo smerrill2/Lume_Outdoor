@@ -143,7 +143,7 @@ export const materialTip = {
 export const fixtureTip = {
   title: 'Drop-In vs. Integrated',
   content:
-    "Drop-in (V1) fixtures sit in the ground and can be repositioned or swapped out after installation — great if your landscape is still evolving. Integrated (V2) fixtures are built directly into the hardscape for a cleaner, permanent look with stronger structural integrity.",
+    'V1 can be moved or swapped after install — good if your yard is still changing. V2 mounts flush for a cleaner, permanent look.',
 };
 
 /* ── Lighting service areas ── */
@@ -152,6 +152,52 @@ export const fixtureTip = {
 /* configType: 'deck'       = size + aluminum color (V2 integrated only)          */
 /* configType: 'color-only' = just aluminum color picker                          */
 /* configType: 'none'       = no config needed (just selecting it is enough)      */
+
+/* ── Specialty fixture options (X5 + C1 spotlights) ── */
+export const specialtyFixtures = [
+  {
+    id: 'x5',
+    name: 'X5 Spotlight',
+    photo: '/light_form/X5_spotlight/X5_spotlight_aluminum.png',
+    whiteBg: true,
+    description: 'Versatile spotlight for accent and wall lighting.',
+    finishes: {
+      brass: [
+        { id: 'artisanal-bronze', name: 'Artisanal Bronze', photo: '/light_form/X5_spotlight/X5_spotlight_artisanal_bronze.png', whiteBg: true },
+      ],
+      aluminum: [
+        { id: 'black', name: 'Black', photo: '/light_form/X5_spotlight/X5_spotlight_black.png', whiteBg: true },
+        { id: 'aluminum', name: 'Aluminum', photo: '/light_form/X5_spotlight/X5_spotlight_aluminum.png', whiteBg: true },
+      ],
+    },
+  },
+  {
+    id: 'c1',
+    name: 'C1 Spotlight',
+    photo: '/light_form/c1_spotlight/c1_spotlight_artisanal_bronze.png',
+    description: 'Compact spotlight with a clean, low-profile design.',
+    finishes: {
+      brass: [
+        { id: 'artisanal-bronze', name: 'Artisanal Bronze', photo: '/light_form/c1_spotlight/c1_spotlight_artisanal_bronze.png', whiteBg: true },
+      ],
+      aluminum: [
+        { id: 'black', name: 'Black', photo: '/light_form/c1_spotlight/c1_spotlight_black.png', whiteBg: true },
+        { id: 'aluminum', name: 'Aluminum', photo: '/light_form/c1_spotlight/c1_spotlight_aluminum.png', whiteBg: true },
+      ],
+    },
+  },
+];
+
+/* ── Pathway fixture finishes (P14) ── */
+export const pathwayFinishes = {
+  brass: [
+    { id: 'architectural-bronze', name: 'Architectural Bronze', photo: '/light_form/p14/P14-Path-Light-in-Architectural-Bronze.png' },
+  ],
+  aluminum: [
+    { id: 'black', name: 'Black', photo: '/light_form/p14/P14-Path-Light-in-Black.png' },
+    { id: 'matte-black', name: 'Matte Black', photo: '/light_form/p14/P14-Black.png', whiteBg: true },
+  ],
+};
 
 export const lightingServices = [
   {
@@ -176,7 +222,7 @@ export const lightingServices = [
     description: 'Safe and beautiful walkway illumination',
     Icon: Route,
     photo: '/projects/NEWTON3.jpeg',
-    configType: 'fixture',
+    configType: 'pathway',
   },
   {
     id: 'deck',
@@ -200,7 +246,7 @@ export const lightingServices = [
     description: 'Decorative wall lights and accent fixtures',
     Icon: Sparkles,
     photo: '/projects/BACKYARD_4.jpeg',
-    configType: 'none',
+    configType: 'specialty',
   },
   {
     id: 'pool',
@@ -216,6 +262,7 @@ export const lightingServices = [
     description: 'Enhanced safety and protection',
     Icon: Shield,
     photo: '/light_form/MS-Knuckle/MS-Knuckle_scene_1.png',
-    configType: 'color-only',
+    configType: 'none',
+    configNote: "Security lighting is a specific plan tailored to your house. We'll reach out with more information once you've submitted.",
   },
 ];

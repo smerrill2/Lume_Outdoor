@@ -20,6 +20,8 @@ import {
   deckSizes,
   materialTip,
   fixtureTip,
+  pathwayFinishes,
+  specialtyFixtures,
 } from './formData';
 
 /* ── Helper: initial config state per service type ── */
@@ -27,6 +29,10 @@ function initialConfigForService(service) {
   switch (service.configType) {
     case 'fixture':
       return { fixtureType: null, finish: null, aluminumColor: null };
+    case 'pathway':
+      return { finish: null };
+    case 'specialty':
+      return { fixtureType: null, finish: null };
     case 'tree':
       return { focus: null };
     case 'deck':
@@ -51,6 +57,7 @@ export default function StoryScrollForm() {
   });
   const [isSubmitVisible, setIsSubmitVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showConfigError, setShowConfigError] = useState(false);
   const [submitStatus, setSubmitStatus] = useState('idle');
   const [submitError, setSubmitError] = useState(null);
 
@@ -126,6 +133,30 @@ export default function StoryScrollForm() {
 
   const scrollToSection = (ref) => {
     ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  /* ── Check if a service's config is fully complete ── */
+  const isServiceConfigComplete = (service, config) => {
+    if (!config) return false;
+    switch (service.configType) {
+      case 'fixture': {
+        if (!config.fixtureType || !config.finish) return false;
+        if (config.finish === 'aluminum' && !config.aluminumColor) return false;
+        return true;
+      }
+      case 'pathway':
+        return !!config.finish;
+      case 'specialty':
+        return !!config.fixtureType && !!config.finish;
+      case 'tree':
+        return !!config.focus;
+      case 'deck':
+      case 'color-only':
+        return !!config.aluminumColor;
+      case 'none':
+      default:
+        return true;
+    }
   };
 
   const selectedServicesList = lightingServices.filter((s) => selectedServices.has(s.id));
@@ -207,50 +238,53 @@ export default function StoryScrollForm() {
   /* ======================================================================== */
 
   /* ── Educational info tip ── */
-  const InfoTip = ({ title, content }) => (
-    <div className="flex gap-3 p-4 rounded-xl bg-orange-500/[0.04] border border-orange-500/10 mb-6">
-      <Info className="w-4 h-4 text-orange-400/60 shrink-0 mt-0.5" />
+  const InfoTip = ({ title, content, neutral = false }) => (
+    <div className={`flex gap-3 p-4 rounded-xl mb-6 ${neutral ? 'bg-white/[0.03] border border-white/10' : 'bg-orange-500/[0.04] border border-orange-500/10'}`}>
+      <Info className={`w-4 h-4 shrink-0 mt-0.5 ${neutral ? 'text-white/30' : 'text-orange-400/60'}`} />
       <div>
-        <p className="text-[11px] font-semibold text-orange-400/60 mb-1">{title}</p>
-        <p className="text-[11px] text-white/50 leading-relaxed">{content}</p>
+        <p className={`text-[11px] font-semibold mb-1 ${neutral ? 'text-white/50' : 'text-orange-400/60'}`}>{title}</p>
+        <p className="text-[11px] text-white/40 leading-relaxed">{content}</p>
       </div>
     </div>
   );
 
   /* ── Aluminum color picker (shared by deck + color-only) ── */
-  const renderAluminumPicker = (serviceId, config) => (
-    <div>
-      <h4 className="text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-3">
-        Choose Your Color
-      </h4>
-      <div className="flex flex-wrap gap-3">
-        {v2AluminumColors.map((color) => {
-          const isActive = config.aluminumColor === color.id;
-          return (
-            <button
-              key={color.id}
-              onClick={() => setAluminumColor(serviceId, color.id)}
-              className="flex flex-col items-center gap-2 group"
-            >
-              <div
-                className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 ${
-                  isActive
-                    ? 'border-orange-500 ring-2 ring-orange-500/30 scale-105'
-                    : 'border-white/10 hover:border-white/25'
-                }`}
+  const renderAluminumPicker = (serviceId, config) => {
+    return (
+      <div>
+        <p className="text-[11px] text-white/25 mb-4">Brass fixtures are not available for this application — aluminum only.</p>
+        <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-3">
+          Choose Your Color
+        </h4>
+        <div className="flex flex-wrap gap-3">
+          {v2AluminumColors.map((color) => {
+            const isActive = config.aluminumColor === color.id;
+            return (
+              <button
+                key={color.id}
+                onClick={() => setAluminumColor(serviceId, color.id)}
+                className="flex flex-col items-center gap-2 group"
               >
-                <Image src={color.photo} alt={color.name} fill className="object-cover" sizes="80px" />
-                {isActive && <div className="absolute inset-0 bg-orange-500/10" />}
-              </div>
-              <p className={`text-xs font-medium ${isActive ? 'text-white' : 'text-white/60'}`}>
-                {color.name}
-              </p>
-            </button>
-          );
-        })}
+                <div
+                  className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 ${
+                    isActive
+                      ? 'border-orange-500 ring-2 ring-orange-500/30 scale-105'
+                      : 'border-white/10 hover:border-white/25'
+                  }`}
+                >
+                  <Image src={color.photo} alt={color.name} fill className="object-cover" sizes="80px" />
+                  {isActive && <div className="absolute inset-0 bg-orange-500/10" />}
+                </div>
+                <p className={`text-xs font-medium ${isActive ? 'text-white' : 'text-white/60'}`}>
+                  {color.name}
+                </p>
+              </button>
+            );
+          })}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   /* ── V1/V2 fixture type selector (shared by fixture + tree) ── */
   const renderFixtureTypeSelector = (service, config) => {
@@ -258,7 +292,7 @@ export default function StoryScrollForm() {
 
     return (
       <div className="mb-6">
-        <h4 className="text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-4">
+        <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
           {hasSelected ? 'Your Fixture' : 'Choose Your Fixture'}
         </h4>
         <div className="grid grid-cols-2 gap-3">
@@ -289,7 +323,7 @@ export default function StoryScrollForm() {
                   <div className={`absolute inset-0 transition-all duration-300 ${
                     isActive
                       ? 'bg-gradient-to-t from-black/80 via-black/20 to-transparent'
-                      : 'bg-gradient-to-t from-black via-black/60 to-black/10 group-hover:from-black/80'
+                      : 'bg-gradient-to-t from-black/90 via-black/40 to-black/10 group-hover:from-black/70'
                   }`} />
 
                   {isActive && (
@@ -300,14 +334,9 @@ export default function StoryScrollForm() {
 
                   <div className="absolute bottom-0 left-0 right-0 p-4">
                     <p className="font-semibold text-white text-sm">{fixture.name}</p>
-                    <p className="text-[11px] text-white/60 mt-0.5 line-clamp-2">
+                    <p className="text-[11px] text-white/40 mt-0.5 line-clamp-2">
                       {fixture.description}
                     </p>
-                    {fixture.basePrice && (
-                      <p className="text-[11px] text-orange-400 font-medium mt-1">
-                        Starting at ~${fixture.basePrice}/light
-                      </p>
-                    )}
                   </div>
                 </div>
               </button>
@@ -414,26 +443,25 @@ export default function StoryScrollForm() {
       <div className="mb-6 animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-5">
         {/* Brass tier */}
         {brassOptions.length > 0 && (
-          <div>
-            <h4 className="text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-3">
-              Brass
-            </h4>
+          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+            <div className="mb-3">
+              <h4 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.15em]">Brass</h4>
+              <p className="text-[11px] text-white/30 mt-0.5">Develops a patina over time. Lasts decades with no upkeep.</p>
+            </div>
             {renderSwatchRow(brassOptions)}
           </div>
         )}
 
         {/* Aluminum tier */}
         {aluminumOptions.length > 0 && (
-          <div>
-            <h4 className="text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-3">
-              Aluminum
-            </h4>
+          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+            <div className="mb-3">
+              <h4 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.15em]">Aluminum</h4>
+              <p className="text-[11px] text-white/30 mt-0.5">Budget-friendly, lightweight, available in multiple colors.</p>
+            </div>
             {renderSwatchRow(aluminumOptions)}
           </div>
         )}
-
-        {/* Material tip after finish options */}
-        <InfoTip title={materialTip.title} content={materialTip.content} />
       </div>
     );
   };
@@ -445,8 +473,8 @@ export default function StoryScrollForm() {
   /* ── Fixture config (uplighting, pathway) ── */
   const renderFixtureConfig = (service, config) => (
     <>
+      <InfoTip title={fixtureTip.title} content={fixtureTip.content} neutral />
       {renderFixtureTypeSelector(service, config)}
-      <InfoTip title={fixtureTip.title} content={fixtureTip.content} />
       {renderFinishSelector(service, config)}
     </>
   );
@@ -454,12 +482,21 @@ export default function StoryScrollForm() {
   /* ── Tree config (focus question only — uses in-ground well lights) ── */
   const renderTreeConfig = (service, config) => (
     <>
-      <p className="text-xs text-white/50 mb-6 italic">
-        Tree uplighting uses in-ground well lights. Choose how you&apos;d like your trees illuminated.
-      </p>
+      <div className="mb-6">
+        <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-3">Fixture</h4>
+        <div className="flex items-center gap-3">
+          <div className="relative w-20 h-20 rounded-xl overflow-hidden border border-white/10 shrink-0 bg-white">
+            <Image src="/light_form/well_light/well_light.webp" alt="In-ground well light" fill className="object-cover" sizes="80px" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-white/70">In-Ground Well Light</p>
+            <p className="text-[11px] text-white/30 mt-0.5">Fixed fixture, installed flush with the ground.</p>
+          </div>
+        </div>
+      </div>
 
       <div className="mb-8">
-        <h4 className="text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-4">
+        <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
           Lighting Focus
         </h4>
         <div className="space-y-3">
@@ -494,7 +531,7 @@ export default function StoryScrollForm() {
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-white/50 mt-1">{option.description}</p>
+                    <p className="text-xs text-white/30 mt-1">{option.description}</p>
                   </div>
                 </div>
               </button>
@@ -505,72 +542,157 @@ export default function StoryScrollForm() {
     </>
   );
 
-  /* ── Deck config (size + aluminum color, V2 integrated) ── */
-  const renderDeckConfig = (service, config) => (
-    <>
-      <p className="text-xs text-white/50 mb-6 italic">
-        Deck &amp; patio fixtures use our V2 integrated design in aluminum.
-      </p>
+  /* ── Pathway config (P14 fixture — brass or aluminum) ── */
+  const renderPathwayConfig = (service, config) => {
+    const renderSwatchRow = (options) => (
+      <div className="flex flex-wrap gap-3">
+        {options.map((finish) => {
+          const isActive = config.finish === finish.id;
+          return (
+            <button
+              key={finish.id}
+              onClick={() => setServiceConfigs((prev) => ({ ...prev, [service.id]: { finish: finish.id } }))}
+              className="flex flex-col items-center gap-2 group"
+            >
+              <div className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 ${isActive ? 'border-orange-500 ring-2 ring-orange-500/30 scale-105' : 'border-white/10 hover:border-white/25'} ${finish.whiteBg ? 'bg-white' : ''}`}>
+                <Image src={finish.photo} alt={finish.name} fill className="object-contain" sizes="80px" />
+                {isActive && <div className="absolute inset-0 bg-orange-500/10" />}
+              </div>
+              <p className={`text-xs font-medium ${isActive ? 'text-white' : 'text-white/60'}`}>{finish.name}</p>
+            </button>
+          );
+        })}
+      </div>
+    );
 
-      {/* Size selector */}
-      <div className="mb-8">
-        <h4 className="text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-4">
-          Fixture Size
-        </h4>
-        <div className="grid grid-cols-2 gap-3">
-          {deckSizes.map((size) => {
-            const isActive = config.size === size.id;
-            return (
-              <button
-                key={size.id}
-                onClick={() => setDeckSize(service.id, size.id)}
-                className={`text-center p-5 rounded-xl border transition-all ${
-                  isActive
-                    ? 'border-orange-500/40 bg-orange-500/10'
-                    : 'border-white/10 hover:border-white/20 bg-white/[0.02]'
-                }`}
-              >
-                <div className="flex items-center justify-center gap-3">
-                  <div
-                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                      isActive ? 'border-orange-500 bg-orange-500' : 'border-white/20'
-                    }`}
-                  >
-                    {isActive && <Check className="w-3 h-3 text-white" />}
-                  </div>
-                  <p className={`font-semibold text-sm ${isActive ? 'text-white' : 'text-white/70'}`}>
-                    {size.name}
-                  </p>
-                </div>
-              </button>
-            );
-          })}
+    return (
+      <div className="space-y-4">
+        <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+          <div className="mb-3">
+            <h4 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.15em]">Brass</h4>
+            <p className="text-[11px] text-white/30 mt-0.5">Develops a patina over time. Lasts decades with no upkeep.</p>
+          </div>
+          {renderSwatchRow(pathwayFinishes.brass)}
+        </div>
+        <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+          <div className="mb-3">
+            <h4 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.15em]">Aluminum</h4>
+            <p className="text-[11px] text-white/30 mt-0.5">Budget-friendly, lightweight, available in multiple colors.</p>
+          </div>
+          {renderSwatchRow(pathwayFinishes.aluminum)}
         </div>
       </div>
+    );
+  };
 
-      {renderAluminumPicker(service.id, config)}
-    </>
-  );
+  /* ── Deck config (color only, V2 integrated) ── */
+  const renderDeckConfig = (service, config) => renderAluminumPicker(service.id, config);
 
   /* ── Color-only config (wash, pool, security) ── */
-  const renderColorOnlyConfig = (service, config) => (
-    <>
-      <p className="text-xs text-white/50 mb-6 italic">
-        These fixtures come in aluminum — just pick your color.
-      </p>
-      {renderAluminumPicker(service.id, config)}
-    </>
-  );
+  const renderColorOnlyConfig = (service, config) => renderAluminumPicker(service.id, config);
 
-  /* ── None config (specialty / wall lighting — no options needed) ── */
+  /* ── None config ── */
   const renderNoneConfig = (service) => (
-    <div className="flex items-center gap-3 p-5 rounded-xl border border-green-500/20 bg-green-500/[0.04]">
-      <CheckCircle className="w-5 h-5 text-green-400 shrink-0" />
-      <p className="text-sm text-white/60">
-        {service.name} selected — no additional configuration needed.
-      </p>
+    <div className="p-5 rounded-xl border border-white/10 bg-white/[0.02] space-y-3">
+      <div className="flex items-center gap-3">
+        <CheckCircle className="w-5 h-5 text-green-400 shrink-0" />
+        <p className="text-sm font-medium text-white/70">{service.name} added</p>
+      </div>
+      {service.configNote && (
+        <p className="text-[12px] text-white/35 leading-relaxed">{service.configNote}</p>
+      )}
     </div>
   );
+
+  /* ── Specialty config (X5 + C1 spotlights) ── */
+  const renderSpecialtyConfig = (service, config) => {
+    const selectedFixture = specialtyFixtures.find((f) => f.id === config.fixtureType);
+
+    const renderSwatchRow = (finishes) => (
+      <div className="flex flex-wrap gap-3">
+        {finishes.map((finish) => {
+          const isActive = config.finish === `${config.fixtureType}-${finish.id}`;
+          return (
+            <button
+              key={finish.id}
+              onClick={() => setServiceConfigs((prev) => ({
+                ...prev,
+                [service.id]: { ...prev[service.id], finish: `${config.fixtureType}-${finish.id}` },
+              }))}
+              className="flex flex-col items-center gap-2 group"
+            >
+              <div className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 ${isActive ? 'border-orange-500 ring-2 ring-orange-500/30 scale-105' : 'border-white/10 hover:border-white/25'} ${finish.whiteBg ? 'bg-white' : ''}`}>
+                <Image src={finish.photo} alt={finish.name} fill className="object-contain" sizes="80px" />
+                {isActive && <div className="absolute inset-0 bg-orange-500/10" />}
+              </div>
+              <p className={`text-xs font-medium ${isActive ? 'text-white' : 'text-white/60'}`}>{finish.name}</p>
+            </button>
+          );
+        })}
+      </div>
+    );
+
+    return (
+      <div className="space-y-5">
+        {/* Fixture type selector */}
+        <div>
+          <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-3">Choose Your Fixture</h4>
+          <div className="grid grid-cols-2 gap-3">
+            {specialtyFixtures.map((fixture) => {
+              const isActive = config.fixtureType === fixture.id;
+              const isDimmed = config.fixtureType && !isActive;
+              return (
+                <button
+                  key={fixture.id}
+                  onClick={() => setServiceConfigs((prev) => ({
+                    ...prev,
+                    [service.id]: { fixtureType: isActive ? null : fixture.id, finish: null },
+                  }))}
+                  className={`group relative overflow-hidden rounded-xl border transition-all duration-300 ${
+                    isActive ? 'border-orange-500/50 ring-1 ring-orange-500/20' : isDimmed ? 'border-white/5 opacity-40' : 'border-white/10 hover:border-white/25'
+                  }`}
+                >
+                  <div className={`relative w-full aspect-[4/3] ${fixture.whiteBg ? 'bg-white' : ''}`}>
+                    <Image src={fixture.photo} alt={fixture.name} fill className={fixture.whiteBg ? 'object-contain p-4' : 'object-cover'} sizes="50%" />
+                    <div className={`absolute inset-0 transition-all duration-300 ${isActive ? 'bg-gradient-to-t from-black/80 via-black/20 to-transparent' : 'bg-gradient-to-t from-black/90 via-black/40 to-black/10'}`} />
+                    {isActive && (
+                      <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center">
+                        <Check className="w-4 h-4 text-white" />
+                      </div>
+                    )}
+                    <div className="absolute bottom-0 left-0 right-0 p-3">
+                      <p className="font-semibold text-white text-sm">{fixture.name}</p>
+                      <p className="text-[11px] text-white/50 mt-0.5">{fixture.description}</p>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Finish selector — shown after fixture is picked */}
+        {selectedFixture && (
+          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+              <div className="mb-3">
+                <h4 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.15em]">Brass</h4>
+                <p className="text-[11px] text-white/30 mt-0.5">Develops a patina over time. Lasts decades with no upkeep.</p>
+              </div>
+              {renderSwatchRow(selectedFixture.finishes.brass)}
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+              <div className="mb-3">
+                <h4 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.15em]">Aluminum</h4>
+                <p className="text-[11px] text-white/30 mt-0.5">Budget-friendly, lightweight, available in multiple colors.</p>
+              </div>
+              {renderSwatchRow(selectedFixture.finishes.aluminum)}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   /* ======================================================================== */
   /*  REVIEW CARD RENDERERS                                                   */
@@ -591,7 +713,7 @@ export default function StoryScrollForm() {
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-white text-sm">{service.name}</p>
           {fixture && (
-            <p className="text-xs text-white/60 mt-0.5">
+            <p className="text-xs text-white/40 mt-0.5">
               {fixture.shortName}
               {finish ? ` · ${finish.name}` : ''}
               {aluColor ? ` (${aluColor.name})` : ''}
@@ -622,7 +744,7 @@ export default function StoryScrollForm() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-white text-sm">{service.name}</p>
-          {focus && <p className="text-xs text-white/60 mt-0.5">{focus.name}</p>}
+          {focus && <p className="text-xs text-white/40 mt-0.5">{focus.name}</p>}
         </div>
       </div>
     );
@@ -635,7 +757,7 @@ export default function StoryScrollForm() {
       </div>
       <div className="flex-1 min-w-0">
         <p className="font-semibold text-white text-sm">{service.name}</p>
-        <p className="text-xs text-white/60 mt-0.5">Selected</p>
+        <p className="text-xs text-white/40 mt-0.5">Selected</p>
       </div>
     </div>
   );
@@ -651,7 +773,7 @@ export default function StoryScrollForm() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-white text-sm">{service.name}</p>
-          <p className="text-xs text-white/60 mt-0.5">
+          <p className="text-xs text-white/40 mt-0.5">
             V2 Integrated
             {size ? ` · ${size.name}` : ''}
             {color ? ` · ${color.name}` : ''}
@@ -675,7 +797,7 @@ export default function StoryScrollForm() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-white text-sm">{service.name}</p>
-          <p className="text-xs text-white/60 mt-0.5">
+          <p className="text-xs text-white/40 mt-0.5">
             Aluminum{color ? ` — ${color.name}` : ''}
           </p>
         </div>
@@ -723,7 +845,7 @@ export default function StoryScrollForm() {
           <h2 className="text-3xl md:text-5xl font-bold text-white text-center mb-3 font-[family-name:var(--font-lora)] max-w-2xl">
             Select Your Lighting Areas
           </h2>
-          <p className="text-white/60 text-center text-sm mb-10 max-w-md">
+          <p className="text-white/40 text-center text-sm mb-10 max-w-md">
             Choose all the areas you&apos;d like to illuminate. You&apos;ll configure each one in the next section.
           </p>
 
@@ -752,7 +874,7 @@ export default function StoryScrollForm() {
                     className={`absolute inset-0 transition-colors duration-300 ${
                       isSelected
                         ? 'bg-gradient-to-t from-orange-900/80 via-black/30 to-black/20'
-                        : 'bg-gradient-to-t from-black via-black/60 to-transparent'
+                        : 'bg-gradient-to-t from-black/90 via-black/40 to-transparent'
                     }`}
                   />
 
@@ -772,7 +894,7 @@ export default function StoryScrollForm() {
 
                   <div className="absolute bottom-0 left-0 right-0 p-3">
                     <p className="font-semibold text-white text-xs leading-tight">{service.name}</p>
-                    <p className="text-[10px] text-white/60 mt-0.5 leading-tight line-clamp-2">{service.description}</p>
+                    <p className="text-[10px] text-white/40 mt-0.5 leading-tight line-clamp-2">{service.description}</p>
                   </div>
                 </button>
               );
@@ -824,6 +946,8 @@ export default function StoryScrollForm() {
                   {/* Config half */}
                   <div className="lg:w-1/2 p-6 lg:p-10 flex flex-col justify-center">
                     {service.configType === 'fixture' && renderFixtureConfig(service, config)}
+                    {service.configType === 'pathway' && renderPathwayConfig(service, config)}
+                    {service.configType === 'specialty' && renderSpecialtyConfig(service, config)}
                     {service.configType === 'tree' && renderTreeConfig(service, config)}
                     {service.configType === 'deck' && renderDeckConfig(service, config)}
                     {service.configType === 'color-only' && renderColorOnlyConfig(service, config)}
@@ -861,13 +985,13 @@ export default function StoryScrollForm() {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 font-[family-name:var(--font-lora)]">
               Your Details
             </h2>
-            <p className="text-white/60 text-sm mb-8">
+            <p className="text-white/40 text-sm mb-8">
               We&apos;ll send you a consultation summary and schedule your free property visit.
             </p>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-2">
+                <label className="block text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-2">
                   Full Name *
                 </label>
                 <input
@@ -875,12 +999,12 @@ export default function StoryScrollForm() {
                   value={contactInfo.name}
                   onChange={(e) => setContactInfo({ ...contactInfo, name: e.target.value })}
                   placeholder="John Smith"
-                  className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder-white/35 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all"
+                  className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder-white/20 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-2">
+                  <label className="block text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-2">
                     Email *
                   </label>
                   <input
@@ -888,11 +1012,11 @@ export default function StoryScrollForm() {
                     value={contactInfo.email}
                     onChange={(e) => setContactInfo({ ...contactInfo, email: e.target.value })}
                     placeholder="john@email.com"
-                    className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder-white/35 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all"
+                    className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder-white/20 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-2">
+                  <label className="block text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-2">
                     Phone *
                   </label>
                   <input
@@ -900,12 +1024,12 @@ export default function StoryScrollForm() {
                     value={contactInfo.phone}
                     onChange={(e) => setContactInfo({ ...contactInfo, phone: e.target.value })}
                     placeholder="(316) 555-0100"
-                    className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder-white/35 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all"
+                    className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder-white/20 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-2">
+                <label className="block text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-2">
                   Property Address
                 </label>
                 <input
@@ -913,11 +1037,11 @@ export default function StoryScrollForm() {
                   value={contactInfo.address}
                   onChange={(e) => setContactInfo({ ...contactInfo, address: e.target.value })}
                   placeholder="123 Main St, Wichita, KS"
-                  className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder-white/35 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all"
+                  className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder-white/20 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all"
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-2">
+                <label className="block text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-2">
                   Notes
                 </label>
                 <textarea
@@ -925,22 +1049,36 @@ export default function StoryScrollForm() {
                   onChange={(e) => setContactInfo({ ...contactInfo, notes: e.target.value })}
                   rows={3}
                   placeholder="Tell us about your property, timeline, or requests..."
-                  className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder-white/35 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all resize-none"
+                  className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder-white/20 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all resize-none"
                 />
               </div>
             </div>
 
             {contactInfo.name && contactInfo.email && contactInfo.phone && (
-              <button
-                onClick={() => {
-                  setIsSubmitVisible(true);
-                  setTimeout(() => scrollToSection(reviewSectionRef), 100);
-                }}
-                className="mt-8 w-full flex items-center justify-center gap-2 text-orange-400 hover:text-orange-300 transition-colors text-sm font-medium"
-              >
-                <span>Review &amp; Submit</span>
-                <ArrowDown className="w-4 h-4 animate-bounce" />
-              </button>
+              <div className="mt-8">
+                {showConfigError && (
+                  <p className="text-xs text-red-400 text-center mb-3 animate-in fade-in duration-150">
+                    One or more lighting areas still need a selection.
+                  </p>
+                )}
+                <button
+                  onClick={() => {
+                    const allComplete = selectedServicesList.every(
+                      (s) => isServiceConfigComplete(s, serviceConfigs[s.id])
+                    );
+                    if (!allComplete) {
+                      setShowConfigError(true);
+                      setTimeout(() => setShowConfigError(false), 2500);
+                      return;
+                    }
+                    setIsSubmitVisible(true);
+                    setTimeout(() => scrollToSection(reviewSectionRef), 100);
+                  }}
+                  className="w-full flex items-center justify-center bg-orange-500 hover:bg-orange-400 active:bg-orange-600 transition-colors text-white font-semibold text-sm py-4 rounded-xl"
+                >
+                  Review &amp; Submit
+                </button>
+              </div>
             )}
           </div>
         </section>
@@ -959,7 +1097,7 @@ export default function StoryScrollForm() {
             </h2>
 
             <div className="mb-8">
-              <h4 className="text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-4">
+              <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
                 Lighting Areas ({selectedServicesList.length})
               </h4>
               <div className="space-y-3">
@@ -971,19 +1109,19 @@ export default function StoryScrollForm() {
             </div>
 
             <div className="bg-white/[0.03] border border-white/10 rounded-xl p-5 mb-10">
-              <h4 className="text-[11px] font-bold text-white/50 uppercase tracking-[0.15em] mb-3">
+              <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-3">
                 Contact
               </h4>
               <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-sm">
-                <span className="text-white/50">Name</span>
+                <span className="text-white/30">Name</span>
                 <span className="text-white">{contactInfo.name}</span>
-                <span className="text-white/50">Email</span>
+                <span className="text-white/30">Email</span>
                 <span className="text-white">{contactInfo.email}</span>
-                <span className="text-white/50">Phone</span>
+                <span className="text-white/30">Phone</span>
                 <span className="text-white">{contactInfo.phone}</span>
                 {contactInfo.address && (
                   <>
-                    <span className="text-white/50">Address</span>
+                    <span className="text-white/30">Address</span>
                     <span className="text-white">{contactInfo.address}</span>
                   </>
                 )}
@@ -1026,7 +1164,7 @@ export default function StoryScrollForm() {
                 )}
               </>
             )}
-            <p className="text-xs text-white/40 text-center mt-4">
+            <p className="text-xs text-white/20 text-center mt-4">
               You&apos;ll receive a PDF summary of your selections via email.
             </p>
           </div>
