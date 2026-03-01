@@ -20,8 +20,8 @@ export const aluminumColorLookup = {
 /* ── V2 aluminum colors (deck, wash, pool, security — all V2 integrated) ── */
 
 export const v2AluminumColors = [
-  { id: 'black', name: 'Black', photo: '/light_form/v2_lights/v2_lights_black_alaluminim.png' },
-  { id: 'aluminum', name: 'Aluminum', photo: '/light_form/v2_lights/v2_lights_aluminum.png' },
+  { id: 'black', name: 'Black', photo: '/light_form/v2_lights/v2_lights_black_alaluminim.png', price: 170 },
+  { id: 'aluminum', name: 'Aluminum', photo: '/light_form/v2_lights/v2_lights_aluminum.png', price: 290 },
 ];
 
 /* ── Fixture types with per-fixture color options and pricing ── */
@@ -191,11 +191,11 @@ export const specialtyFixtures = [
 /* ── Pathway fixture finishes (P14) ── */
 export const pathwayFinishes = {
   brass: [
-    { id: 'architectural-bronze', name: 'Architectural Bronze', photo: '/light_form/p14/P14-Path-Light-in-Architectural-Bronze.png' },
+    { id: 'architectural-bronze', name: 'Architectural Bronze', photo: '/light_form/p14/P14-Path-Light-in-Architectural-Bronze.png', price: 218 },
   ],
   aluminum: [
-    { id: 'black', name: 'Black', photo: '/light_form/p14/P14-Path-Light-in-Black.png' },
-    { id: 'matte-black', name: 'Matte Black', photo: '/light_form/p14/P14-Black.png', whiteBg: true },
+    { id: 'black', name: 'Black', photo: '/light_form/p14/P14-Path-Light-in-Black.png', price: 218 },
+    { id: 'matte-black', name: 'Matte Black', photo: '/light_form/p14/P14-Black.png', whiteBg: true, price: 218 },
   ],
 };
 

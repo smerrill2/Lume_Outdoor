@@ -132,7 +132,21 @@ export default function StoryScrollForm() {
   };
 
   const scrollToSection = (ref) => {
-    ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!ref.current) return;
+    const targetY = ref.current.getBoundingClientRect().top + window.scrollY;
+    const startY = window.scrollY;
+    const distance = targetY - startY;
+    const duration = 1100;
+    let startTime = null;
+    const easeInOutCubic = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    const step = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      window.scrollTo(0, startY + distance * easeInOutCubic(progress));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
   };
 
   /* ── Check if a service's config is fully complete ── */
@@ -259,11 +273,12 @@ export default function StoryScrollForm() {
         <div className="flex flex-wrap gap-3">
           {v2AluminumColors.map((color) => {
             const isActive = config.aluminumColor === color.id;
+            const hasSelection = !!config.aluminumColor;
             return (
               <button
                 key={color.id}
                 onClick={() => setAluminumColor(serviceId, color.id)}
-                className="flex flex-col items-center gap-2 group"
+                className={`flex flex-col items-center gap-2 group transition-opacity duration-200 ${hasSelection && !isActive ? 'opacity-40' : ''}`}
               >
                 <div
                   className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 ${
@@ -278,6 +293,7 @@ export default function StoryScrollForm() {
                 <p className={`text-xs font-medium ${isActive ? 'text-white' : 'text-white/60'}`}>
                   {color.name}
                 </p>
+                {color.price && <p className="text-[10px] text-white/40">~${color.price}/light</p>}
               </button>
             );
           })}
@@ -295,7 +311,7 @@ export default function StoryScrollForm() {
         <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
           {hasSelected ? 'Your Fixture' : 'Choose Your Fixture'}
         </h4>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-3">
           {fixtureTypes.map((fixture) => {
             const isActive = config.fixtureType === fixture.id;
             const isDimmed = hasSelected && !isActive;
@@ -304,40 +320,27 @@ export default function StoryScrollForm() {
               <button
                 key={fixture.id}
                 onClick={() => setFixtureType(service.id, isActive ? null : fixture.id)}
-                className={`group relative overflow-hidden rounded-xl border transition-all duration-300 ${
+                className={`w-full flex items-start gap-4 p-4 rounded-xl border transition-all duration-300 text-left ${
                   isActive
-                    ? 'border-orange-500/50 ring-1 ring-orange-500/20'
+                    ? 'border-orange-500/50 bg-orange-500/[0.06]'
                     : isDimmed
                       ? 'border-white/5 opacity-40'
-                      : 'border-white/10 hover:border-white/25'
+                      : 'border-white/10 hover:border-white/25 bg-white/[0.02]'
                 }`}
               >
-                <div className="relative w-full aspect-[4/3]">
-                  <Image
-                    src={fixture.photo}
-                    alt={fixture.name}
-                    fill
-                    className="object-cover"
-                    sizes="50%"
-                  />
-                  <div className={`absolute inset-0 transition-all duration-300 ${
-                    isActive
-                      ? 'bg-gradient-to-t from-black/80 via-black/20 to-transparent'
-                      : 'bg-gradient-to-t from-black/90 via-black/40 to-black/10 group-hover:from-black/70'
-                  }`} />
-
-                  {isActive && (
-                    <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center">
-                      <Check className="w-4 h-4 text-white" />
-                    </div>
-                  )}
-
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <p className="font-semibold text-white text-sm">{fixture.name}</p>
-                    <p className="text-[11px] text-white/40 mt-0.5 line-clamp-2">
-                      {fixture.description}
-                    </p>
+                <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0">
+                  <Image src={fixture.photo} alt={fixture.name} fill className="object-cover" sizes="64px" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className={`font-semibold text-sm ${isActive ? 'text-white' : 'text-white/70'}`}>{fixture.name}</p>
+                    {isActive && (
+                      <div className="w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center shrink-0">
+                        <Check className="w-3 h-3 text-white" />
+                      </div>
+                    )}
                   </div>
+                  <p className="text-[11px] text-white/40 mt-1 leading-relaxed">{fixture.description}</p>
                 </div>
               </button>
             );
@@ -358,13 +361,15 @@ export default function StoryScrollForm() {
     const brassFinishes = selectedFixture.finishes.filter((f) => !f.hasColorOptions);
     const hasAluminum = selectedFixture.finishes.some((f) => f.hasColorOptions);
 
-    const renderSwatchRow = (options) => (
+    const renderSwatchRow = (options) => {
+      const hasSelection = !!config.finish;
+      return (
       <div className="flex flex-wrap gap-3">
         {options.map((option) => (
           <button
             key={option.key}
             onClick={option.onClick}
-            className="flex flex-col items-center gap-2 group"
+            className={`flex flex-col items-center gap-2 group transition-opacity duration-200 ${hasSelection && !option.isActive ? 'opacity-40' : ''}`}
           >
             <div
               className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 ${
@@ -393,7 +398,7 @@ export default function StoryScrollForm() {
                 {option.name}
               </p>
               {option.priceLabel && (
-                <p className={`text-[10px] mt-0.5 ${option.isBase ? 'text-green-400/70' : 'text-orange-400/70'}`}>
+                <p className="text-[10px] mt-0.5 text-white/40">
                   {option.priceLabel}
                 </p>
               )}
@@ -402,6 +407,7 @@ export default function StoryScrollForm() {
         ))}
       </div>
     );
+    };
 
     const brassOptions = brassFinishes.map((f) => {
       const upcharge = f.price && selectedFixture.basePrice ? f.price - selectedFixture.basePrice : 0;
@@ -410,7 +416,7 @@ export default function StoryScrollForm() {
         photo: f.photo,
         name: f.name,
         isActive: config.finish === f.id,
-        priceLabel: upcharge > 0 ? `+$${upcharge}/light` : f.isBase ? 'Base Price' : null,
+        priceLabel: f.price ? `~$${f.price}/light` : null,
         isBase: !!f.isBase,
         onClick: () => {
           setFinish(service.id, f.id);
@@ -429,7 +435,7 @@ export default function StoryScrollForm() {
             photo: c.photo,
             name: c.name,
             isActive: config.finish === 'aluminum' && config.aluminumColor === c.id,
-            priceLabel: c.isBase || aluminumFinish.isBase ? 'Base Price' : upcharge > 0 ? `+$${upcharge}/light` : null,
+            priceLabel: colorPrice ? `~$${colorPrice}/light` : null,
             isBase: !!(c.isBase || aluminumFinish.isBase),
             onClick: () => {
               setFinish(service.id, 'aluminum');
@@ -439,27 +445,46 @@ export default function StoryScrollForm() {
         })
       : [];
 
+    const minBrassPrice = brassFinishes.length
+      ? Math.min(...brassFinishes.map((f) => f.price).filter(Boolean))
+      : null;
+    const aluminumFinishObj = selectedFixture.finishes.find((f) => f.hasColorOptions);
+    const alumPrices = aluminumFinishObj?.colorOptions
+      ?.map((c) => c.price ?? aluminumFinishObj.price ?? selectedFixture.basePrice)
+      .filter(Boolean) ?? [];
+    const minAlumPrice = alumPrices.length ? Math.min(...alumPrices) : selectedFixture.basePrice;
+
     return (
       <div className="mb-6 animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-5">
-        {/* Brass tier */}
-        {brassOptions.length > 0 && (
+        {/* Aluminum tier — shown first as base */}
+        {aluminumOptions.length > 0 && (
           <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
-            <div className="mb-3">
-              <h4 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.15em]">Brass</h4>
-              <p className="text-[11px] text-white/30 mt-0.5">Develops a patina over time. Lasts decades with no upkeep.</p>
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <h4 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.15em]">Aluminum</h4>
+                <p className="text-[11px] text-white/30 mt-0.5">Budget-friendly, lightweight, multiple colors.</p>
+              </div>
+              {minAlumPrice > 0 && (
+                <span className="text-[10px] text-white/40 whitespace-nowrap ml-3 mt-0.5">Base · ~${minAlumPrice}/light</span>
+              )}
             </div>
-            {renderSwatchRow(brassOptions)}
+            {renderSwatchRow(aluminumOptions)}
           </div>
         )}
 
-        {/* Aluminum tier */}
-        {aluminumOptions.length > 0 && (
+        {/* Brass tier — upgrade */}
+        {brassOptions.length > 0 && (
           <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
-            <div className="mb-3">
-              <h4 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.15em]">Aluminum</h4>
-              <p className="text-[11px] text-white/30 mt-0.5">Budget-friendly, lightweight, available in multiple colors.</p>
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <h4 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.15em]">Brass</h4>
+                <p className="text-[11px] text-white/30 mt-0.5">Develops a patina over time. Lasts decades with no upkeep.</p>
+              </div>
+              {minBrassPrice > 0 && minAlumPrice > 0 && (
+                <span className="text-[10px] text-orange-400/60 whitespace-nowrap ml-3 mt-0.5">+${minBrassPrice - minAlumPrice} upgrade</span>
+              )}
             </div>
-            {renderSwatchRow(aluminumOptions)}
+            {renderSwatchRow(brassOptions)}
           </div>
         )}
       </div>
@@ -544,7 +569,9 @@ export default function StoryScrollForm() {
 
   /* ── Pathway config (P14 fixture — brass or aluminum) ── */
   const renderPathwayConfig = (service, config) => {
-    const renderSwatchRow = (options) => (
+    const renderSwatchRow = (options) => {
+      const hasSelection = !!config.finish;
+      return (
       <div className="flex flex-wrap gap-3">
         {options.map((finish) => {
           const isActive = config.finish === finish.id;
@@ -552,18 +579,20 @@ export default function StoryScrollForm() {
             <button
               key={finish.id}
               onClick={() => setServiceConfigs((prev) => ({ ...prev, [service.id]: { finish: finish.id } }))}
-              className="flex flex-col items-center gap-2 group"
+              className={`flex flex-col items-center gap-2 group transition-opacity duration-200 ${hasSelection && !isActive ? 'opacity-40' : ''}`}
             >
               <div className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 ${isActive ? 'border-orange-500 ring-2 ring-orange-500/30 scale-105' : 'border-white/10 hover:border-white/25'} ${finish.whiteBg ? 'bg-white' : ''}`}>
                 <Image src={finish.photo} alt={finish.name} fill className="object-contain" sizes="80px" />
                 {isActive && <div className="absolute inset-0 bg-orange-500/10" />}
               </div>
               <p className={`text-xs font-medium ${isActive ? 'text-white' : 'text-white/60'}`}>{finish.name}</p>
+              {finish.price && <p className="text-[10px] text-white/40">~${finish.price}/light</p>}
             </button>
           );
         })}
       </div>
     );
+    };
 
     return (
       <div className="space-y-4">
@@ -608,7 +637,9 @@ export default function StoryScrollForm() {
   const renderSpecialtyConfig = (service, config) => {
     const selectedFixture = specialtyFixtures.find((f) => f.id === config.fixtureType);
 
-    const renderSwatchRow = (finishes) => (
+    const renderSwatchRow = (finishes) => {
+      const hasSelection = !!config.finish;
+      return (
       <div className="flex flex-wrap gap-3">
         {finishes.map((finish) => {
           const isActive = config.finish === `${config.fixtureType}-${finish.id}`;
@@ -619,7 +650,7 @@ export default function StoryScrollForm() {
                 ...prev,
                 [service.id]: { ...prev[service.id], finish: `${config.fixtureType}-${finish.id}` },
               }))}
-              className="flex flex-col items-center gap-2 group"
+              className={`flex flex-col items-center gap-2 group transition-opacity duration-200 ${hasSelection && !isActive ? 'opacity-40' : ''}`}
             >
               <div className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 ${isActive ? 'border-orange-500 ring-2 ring-orange-500/30 scale-105' : 'border-white/10 hover:border-white/25'} ${finish.whiteBg ? 'bg-white' : ''}`}>
                 <Image src={finish.photo} alt={finish.name} fill className="object-contain" sizes="80px" />
@@ -631,6 +662,7 @@ export default function StoryScrollForm() {
         })}
       </div>
     );
+    };
 
     return (
       <div className="space-y-5">
@@ -674,19 +706,27 @@ export default function StoryScrollForm() {
         {/* Finish selector — shown after fixture is picked */}
         {selectedFixture && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            {/* Aluminum first as base */}
             <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
-              <div className="mb-3">
-                <h4 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.15em]">Brass</h4>
-                <p className="text-[11px] text-white/30 mt-0.5">Develops a patina over time. Lasts decades with no upkeep.</p>
-              </div>
-              {renderSwatchRow(selectedFixture.finishes.brass)}
-            </div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
-              <div className="mb-3">
-                <h4 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.15em]">Aluminum</h4>
-                <p className="text-[11px] text-white/30 mt-0.5">Budget-friendly, lightweight, available in multiple colors.</p>
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h4 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.15em]">Aluminum</h4>
+                  <p className="text-[11px] text-white/30 mt-0.5">Budget-friendly, lightweight, multiple colors.</p>
+                </div>
+                <span className="text-[10px] text-white/40 whitespace-nowrap ml-3 mt-0.5">Base price</span>
               </div>
               {renderSwatchRow(selectedFixture.finishes.aluminum)}
+            </div>
+            {/* Brass as upgrade */}
+            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h4 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.15em]">Brass</h4>
+                  <p className="text-[11px] text-white/30 mt-0.5">Develops a patina over time. Lasts decades with no upkeep.</p>
+                </div>
+                <span className="text-[10px] text-orange-400/60 whitespace-nowrap ml-3 mt-0.5">Upgrade</span>
+              </div>
+              {renderSwatchRow(selectedFixture.finishes.brass)}
             </div>
           </div>
         )}
