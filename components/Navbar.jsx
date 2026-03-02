@@ -88,16 +88,16 @@ function Navbar() {
             {/* Logo - Left aligned with projects section */}
             <Link href="/" className="relative z-10 flex items-center justify-center flex-shrink-0 -ml-1 sm:ml-0 h-full">
               <div className="relative h-14 md:h-20 w-40 md:w-52 md:mt-0" style={{marginTop: '15px', marginLeft: '-10px', transform: 'scale(1.1)'}}>
-                <Image 
-                  src={logoUrl} 
-                  alt="Lume Outdoors Logo" 
+                <Image
+                  src={logoUrl}
+                  alt="Lume Outdoors Logo"
                   fill
+                  unoptimized
                   className="object-contain cursor-pointer hover:opacity-80 transition-opacity"
                   style={{
                     filter: "brightness(0) invert(1)",
                   }}
                   priority
-                  quality={85}
                   sizes="(max-width: 768px) 176px, 208px"
                 />
               </div>

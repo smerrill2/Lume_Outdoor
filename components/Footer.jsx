@@ -40,10 +40,11 @@ const Footer = () => {
           <div className="space-y-4">
             <Link href="/" className="inline-block">
               <div className="relative h-14 md:h-20 w-40 md:w-52">
-                <Image 
-                  src={logoUrl} 
-                  alt="Lume Outdoor" 
+                <Image
+                  src={logoUrl}
+                  alt="Lume Outdoor"
                   fill
+                  unoptimized
                   className="object-contain brightness-0 invert hover:opacity-80 transition-opacity cursor-pointer"
                 />
               </div>
