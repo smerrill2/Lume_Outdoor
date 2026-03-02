@@ -191,7 +191,8 @@ export const specialtyFixtures = [
 /* ── Pathway fixture finishes (P14) ── */
 export const pathwayFinishes = {
   brass: [
-    { id: 'architectural-bronze', name: 'Architectural Bronze', photo: '/light_form/p14/P14-Path-Light-in-Architectural-Bronze.png', price: 218 },
+    { id: 'tiki-light', name: '7" Tiki Light', photo: '/light_form/pathlights/7in_tiki_light.png', price: 218, whiteBg: true },
+    { id: 'brass-villa', name: 'Brass Villa', photo: '/light_form/pathlights/Brass_villa.png', price: 218, whiteBg: true },
   ],
   aluminum: [
     { id: 'black', name: 'Black', photo: '/light_form/p14/P14-Path-Light-in-Black.png', price: 218 },

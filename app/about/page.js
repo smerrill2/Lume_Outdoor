@@ -148,103 +148,45 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Meet the Owners */}
+      {/* Meet the Owner */}
       <section className="py-20 px-4 bg-white">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
-            Meet the Owners
+            Meet the Owner
           </h2>
-          
-          <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
-            {/* Drake's Bio */}
-            <div
-              ref={el => ownerRefs.current[0] = el}
-              className="bg-gray-50 rounded-2xl p-8 md:p-10"
-            >
-              <div className="mb-6">
-                <Image 
-                  src="/drake-photo.jpg" 
-                  alt="Drake Zogleman"
-                  width={128}
-                  height={128}
-                  className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
-                  quality={75}
-                  loading="lazy"
-                  placeholder="blur"
-                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
-                />
-                <h3 className="text-2xl font-bold text-center mb-2">Drake Zogleman</h3>
-                <p className="text-orange-500 font-medium text-center">Co-Owner & Lead Designer</p>
-              </div>
-              
-              <div className="space-y-4 text-gray-600">
-                <p>
-                  From a young age, I&apos;ve had a passion for working outdoors and bringing landscapes to life. I started in landscaping back in 6th grade, hauling a trailer with my mower and growing my own small business. That passion led me to take on the full-time care of my high school campus, Trinity Academy, maintaining over 85 acres of property.
-                </p>
-                <p>
-                  After graduation, I explored the corporate route, earning my insurance license — but quickly realized it wasn&apos;t the path for me. I wanted something hands-on, creative, and meaningful. That&apos;s when I found my calling in landscape lighting — a perfect blend of art, design, and technical work that allows me to create lasting impact for homeowners.
-                </p>
-                <p>
-                  I launched Lūme Outdoor Lighting to bring high-end, custom lighting solutions to Wichita and the surrounding areas. My mission is simple: to help homeowners see their property in a new light — literally. Every job I take on is personal. I treat each design as a creative extension of myself and take pride in making sure every detail is done right.
-                </p>
-                <p className="italic font-medium text-gray-800">
-                  &quot;If you&apos;re looking for lighting that doesn&apos;t just illuminate, but transforms — I&apos;d love to work with you.&quot;
-                </p>
-              </div>
-            </div>
 
-            {/* Talan's Bio */}
-            <div
-              ref={el => ownerRefs.current[1] = el}
-              className="bg-gray-50 rounded-2xl p-8 md:p-10"
-            >
-              <div className="mb-6">
-                <Image 
-                  src="/talon-photo.png" 
-                  alt="Talan Cary"
-                  width={128}
-                  height={128}
-                  className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
-                  quality={75}
-                  loading="lazy"
-                  placeholder="blur"
-                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
-                />
-                <h3 className="text-2xl font-bold text-center mb-2">Talan Cary</h3>
-                <p className="text-orange-500 font-medium text-center">Co-Owner & Operations Director</p>
-              </div>
-              
-              <div className="space-y-4 text-gray-600">
-                <p>
-                  I started Lume with a vision: to elevate the outdoor lighting industry by combining high-end professionalism with a deep understanding of our local community. With over five years of experience in outdoor lighting, landscaping, and sprinkler systems—as well as holding a real estate license—I bring a unique perspective on how to increase both the beauty and value of a property.
-                </p>
-                <p>
-                  At Lume, we take pride in doing things differently. What sets us apart is our commitment to quality—from the durability and performance of our products to the precision and care we put into every installation. We&apos;re not just in the business of lighting homes; we&apos;re in the business of helping our city shine, one property at a time.
-                </p>
-                <p className="italic font-medium text-gray-800">
-                  &quot;Whether you&apos;re looking to enhance your home&apos;s curb appeal, create safer walkways, or bring your outdoor spaces to life after dark, Lume is here to make it happen—with professionalism, passion, and a personal touch.&quot;
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Childhood friends note */}
-          <div className="text-center mt-16 max-w-4xl mx-auto">
-            <div className="bg-white rounded-2xl p-8 shadow-lg">
-              <h3 className="text-2xl font-bold mb-6">A Friendship Built on Trust</h3>
-              <Image 
-                src="/childhood-photo.jpg" 
-                alt="Drake and Talan in 6th grade"
-                width={448}
-                height={336}
-                className="w-full max-w-md mx-auto rounded-lg mb-6 shadow-md"
+          <div
+            ref={el => ownerRefs.current[0] = el}
+            className="bg-gray-50 rounded-2xl p-8 md:p-10"
+          >
+            <div className="mb-6">
+              <Image
+                src="/drake-photo.jpg"
+                alt="Drake Zogleman"
+                width={128}
+                height={128}
+                className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
                 quality={75}
                 loading="lazy"
                 placeholder="blur"
                 blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
               />
-              <p className="text-gray-600 text-lg italic">
-                Drake and Talan have been friends since 6th grade, bringing decades of trust and teamwork to every project they undertake together.
+              <h3 className="text-2xl font-bold text-center mb-2">Drake Zogleman</h3>
+              <p className="text-orange-500 font-medium text-center">Owner & Lead Designer</p>
+            </div>
+
+            <div className="space-y-4 text-gray-600">
+              <p>
+                From a young age, I&apos;ve had a passion for working outdoors and bringing landscapes to life. I started in landscaping back in 6th grade, hauling a trailer with my mower and growing my own small business. That passion led me to take on the full-time care of my high school campus, Trinity Academy, maintaining over 85 acres of property.
+              </p>
+              <p>
+                After graduation, I explored the corporate route, earning my insurance license — but quickly realized it wasn&apos;t the path for me. I wanted something hands-on, creative, and meaningful. That&apos;s when I found my calling in landscape lighting — a perfect blend of art, design, and technical work that allows me to create lasting impact for homeowners.
+              </p>
+              <p>
+                I launched Lūme Outdoor Lighting to bring high-end, custom lighting solutions to Wichita and the surrounding areas. My mission is simple: to help homeowners see their property in a new light — literally. Every job I take on is personal. I treat each design as a creative extension of myself and take pride in making sure every detail is done right.
+              </p>
+              <p className="italic font-medium text-gray-800">
+                &quot;If you&apos;re looking for lighting that doesn&apos;t just illuminate, but transforms — I&apos;d love to work with you.&quot;
               </p>
             </div>
           </div>

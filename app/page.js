@@ -138,38 +138,10 @@ export default function Home() {
             </h2>
             
             {/* Company Logos with Links */}
-            <div className="flex flex-wrap justify-center items-center gap-24 md:gap-32 lg:gap-40">
-              <a 
-                href="https://eliteelectriccompany.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="h-16 w-48 flex items-center justify-center hover:scale-105 transition-transform duration-300"
-              >
-                <Image
-                  src="/logos/elite.png"
-                  alt="Elite Electric Company"
-                  width={192}
-                  height={64}
-                  className="object-contain"
-                />
-              </a>
-              <a 
-                href="https://www.midwestlakesidesolutions.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="h-16 w-48 flex items-center justify-center hover:scale-105 transition-transform duration-300"
-              >
-                <Image
-                  src="/logos/lakeside-logo.png"
-                  alt="Lakeside Solutions"
-                  width={192}
-                  height={64}
-                  className="object-contain"
-                />
-              </a>
-              <a 
-                href="https://www.realproducersmagazine.com/home/wichita" 
-                target="_blank" 
+            <div className="flex flex-wrap justify-center items-center">
+              <a
+                href="https://www.realproducersmagazine.com/home/wichita"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="h-18 w-55 flex items-center justify-center hover:scale-105 transition-transform duration-300"
               >
