@@ -229,7 +229,7 @@ export default function AboutPage() {
           </p>
           <Button 
             className="bg-white text-orange-500 hover:bg-gray-100 px-8 py-3 text-lg font-medium"
-            onClick={() => window.location.href = '/consultation'}
+            onClick={() => { if (typeof window.gtag_report_conversion === 'function') window.gtag_report_conversion(); window.location.href = '/consultation'; }}
           >
             Schedule Your Free Consultation <ArrowRight className="ml-2 h-5 w-5" />
           </Button>

@@ -155,7 +155,7 @@ function ServicesGrid() {
         {/* Call to Action */}
         <div className="text-center mt-16">
           <Button
-            onClick={() => router.push('/consultation')}
+            onClick={() => { if (typeof window.gtag_report_conversion === 'function') window.gtag_report_conversion(); router.push('/consultation'); }}
             className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 text-lg rounded-lg font-medium"
           >
             Schedule Today

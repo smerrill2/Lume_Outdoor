@@ -239,6 +239,9 @@ export default function StoryScrollForm() {
       }
 
       setSubmitStatus('success');
+      if (typeof window.gtag_report_conversion === 'function') {
+        window.gtag_report_conversion();
+      }
     } catch (err) {
       setSubmitStatus('error');
       setSubmitError(err.message);
