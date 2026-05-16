@@ -118,7 +118,7 @@ const FAQ = () => {
             Still have questions? We&apos;re here to help!
           </p>
           <button
-            onClick={() => window.location.href = '/?view=consultation'}
+            onClick={() => { if (typeof window.gtag_report_conversion === 'function') window.gtag_report_conversion(); window.location.href = '/?view=consultation'; }}
             className="inline-flex items-center px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors"
           >
             Schedule Your Free Consultation

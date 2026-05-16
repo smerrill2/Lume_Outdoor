@@ -47,6 +47,7 @@ function ServicePage({ slug }) {
   }, [slug]);
 
   const scrollToContact = () => {
+    if (typeof window.gtag_report_conversion === 'function') window.gtag_report_conversion();
     router.push('/consultation');
   };
 

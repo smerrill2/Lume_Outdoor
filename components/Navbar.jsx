@@ -149,7 +149,7 @@ function Navbar() {
               
               <Button 
                 className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-lg font-medium ml-8"
-                onClick={() => router.push('/consultation')}
+                onClick={() => { if (typeof window.gtag_report_conversion === 'function') window.gtag_report_conversion(); router.push('/consultation'); }}
               >
                 Schedule Consultation
               </Button>
@@ -197,7 +197,7 @@ function Navbar() {
           >
             <Button 
               className="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-lg"
-              onClick={() => router.push('/consultation')}
+              onClick={() => { if (typeof window.gtag_report_conversion === 'function') window.gtag_report_conversion(); router.push('/consultation'); }}
             >
               Schedule Light Consultation
             </Button>

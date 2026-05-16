@@ -160,7 +160,7 @@ const Footer = () => {
             </ul>
 
             <button
-              onClick={() => window.location.href = '/?view=consultation'}
+              onClick={() => { if (typeof window.gtag_report_conversion === 'function') window.gtag_report_conversion(); window.location.href = '/?view=consultation'; }}
               className="mt-6 w-full relative group overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-orange-500 transition-transform group-hover:scale-105"></div>
