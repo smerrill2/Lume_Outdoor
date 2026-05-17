@@ -97,7 +97,6 @@ export default function ProjectsPage() {
           </p>
           <Link
             href="/consultation"
-            onClick={() => { if (typeof window.gtag_report_conversion === 'function') window.gtag_report_conversion(); }}
             className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-lg font-medium transition-colors"
           >
             Schedule Free Consultation
