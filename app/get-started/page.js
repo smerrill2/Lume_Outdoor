@@ -6,14 +6,9 @@ import { Star, Phone, ArrowRight, CheckCircle } from 'lucide-react';
 
 const beforeAfterPairs = [
   {
-    before: '/placeholder.jpg',
-    after: '/projects/BACKYARD_1.jpeg',
-    label: 'Backyard Transformation',
-  },
-  {
-    before: '/placeholder.jpg',
-    after: '/projects/NEWTON1.jpeg',
-    label: 'Architectural Lighting',
+    before: '/before-after/before.png',
+    after: '/before-after/after.png',
+    label: 'Same Home. Same Evening. Lume Lighting.',
   },
 ];
 
@@ -212,7 +207,7 @@ export default function PMaxLandingPage() {
               Drag the slider to see what professional outdoor lighting does for a home.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="max-w-4xl mx-auto">
             {beforeAfterPairs.map((pair, index) => (
               <BeforeAfterSlider key={index} {...pair} />
             ))}
