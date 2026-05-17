@@ -105,7 +105,8 @@ export default function RootLayout({ children }) {
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', 'AW-17048667028');
-            
+            gtag('config', 'G-G88VKQDXHY');
+
             // Conversion tracking function
             window.gtag_report_conversion = function(url) {
               var callback = function () {
