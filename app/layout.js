@@ -72,7 +72,8 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${montserrat.variable} ${inter.variable}`}>
-      <head>
+      <head />
+      <body>
         {process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID && (
           <>
             <Script id="fb-pixel" strategy="afterInteractive">
@@ -107,7 +108,6 @@ export default function RootLayout({ children }) {
             gtag('config', 'AW-17048667028');
             gtag('config', 'G-G88VKQDXHY');
 
-            // Conversion tracking function
             window.gtag_report_conversion = function(url) {
               var callback = function () {
                 if (typeof(url) != 'undefined') {
@@ -124,9 +124,6 @@ export default function RootLayout({ children }) {
             }
           `}
         </Script>
-        {/** Meta Pixel is already installed above using NEXT_PUBLIC_FACEBOOK_PIXEL_ID. Removed duplicate hardcoded instance to prevent double events. */}
-      </head>
-      <body>
         <Navbar />
         <main>{children}</main>
         <Footer />
