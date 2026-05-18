@@ -40,10 +40,9 @@ const Footer = () => {
           <div className="space-y-4">
             <Link href="/" className="inline-block">
               <img
-                src="/LogoLume.svg"
+                src="/lume-logo-white-transparent.png"
                 alt="Lume Outdoor"
                 className="h-16 md:h-20 w-auto object-contain hover:opacity-80 transition-opacity cursor-pointer"
-                style={{ filter: "brightness(0) invert(1)" }}
               />
             </Link>
             <p className="text-neutral-300 text-sm leading-relaxed">

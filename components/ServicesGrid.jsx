@@ -31,6 +31,9 @@ const featuredServices = [
 function ServicesGrid() {
   const router = useRouter();
   const handleServiceClick = (serviceId) => {
+    if (typeof window.fbq === 'function') {
+      window.fbq('track', 'ViewContent', { content_name: serviceId });
+    }
     router.push(`/services/${serviceId}`);
   };
 

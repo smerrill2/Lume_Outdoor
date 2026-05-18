@@ -64,11 +64,12 @@ const JobberFormEmbed = ({ formId = 'homepage-jobber-form' }) => {
         
         // Add click handler for conversion tracking
         submitButton.addEventListener('click', (e) => {
-          // Call the conversion tracking function
           if (typeof window.gtag_report_conversion === 'function') {
             window.gtag_report_conversion();
           }
-          // Don't prevent default - let the form submit normally
+          if (typeof window.fbq === 'function') {
+            window.fbq('track', 'Lead');
+          }
         });
         
         // Stop observing once we've found and handled the button

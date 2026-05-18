@@ -74,7 +74,7 @@ function PreviousWorkShowcase() {
                     </div>
 
                     <div className="flex items-center text-gray-900 font-semibold text-xs tracking-wide group-hover:text-gray-600 transition-colors duration-300">
-                      View Project <ArrowRight className="w-4 h-4 ml-1.5 group-hover:translate-x-2 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]" />
+                      View Project <ArrowRight className="w-4 h-4 ml-1.5 group-hover:translate-x-2 transition-transform duration-300 ease-out" />
                     </div>
                   </div>
                 </div>

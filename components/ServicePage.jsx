@@ -48,6 +48,7 @@ function ServicePage({ slug }) {
 
   const scrollToContact = () => {
     if (typeof window.gtag_report_conversion === 'function') window.gtag_report_conversion();
+    if (typeof window.fbq === 'function') window.fbq('track', 'Schedule');
     router.push('/consultation');
   };
 

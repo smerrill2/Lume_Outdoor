@@ -262,6 +262,9 @@ export default function StoryScrollForm() {
       if (typeof window.gtag_report_conversion === 'function') {
         window.gtag_report_conversion();
       }
+      if (typeof window.fbq === 'function') {
+        window.fbq('track', 'Lead');
+      }
     } catch (err) {
       setSubmitStatus('error');
       setSubmitError(err.message);

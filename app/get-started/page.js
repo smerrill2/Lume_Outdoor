@@ -126,6 +126,9 @@ export default function PMaxLandingPage() {
     if (typeof window.gtag_report_conversion === 'function') {
       window.gtag_report_conversion();
     }
+    if (typeof window.fbq === 'function') {
+      window.fbq('track', 'Schedule');
+    }
     window.location.href = '/consultation';
   };
 

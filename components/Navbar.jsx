@@ -86,14 +86,13 @@ function Navbar() {
             {/* Logo */}
             <Link href="/" className="relative z-10 flex h-full flex-shrink-0 items-center">
               <Image
-                src="/Lumepng.png"
+                src="/lume-logo-white-transparent.png"
                 alt="Lume Outdoors Logo"
-                width={1018}
-                height={548}
+                width={930}
+                height={346}
                 priority
                 unoptimized
-                className="h-auto w-[132px] cursor-pointer object-contain transition-opacity hover:opacity-80 sm:w-[170px] md:w-[206px]"
-                style={{ filter: 'brightness(0) invert(1)' }}
+                className="h-auto w-[96px] cursor-pointer object-contain transition-opacity hover:opacity-80 sm:w-[112px] md:w-[132px]"
               />
             </Link>
 
