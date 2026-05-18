@@ -20,8 +20,8 @@ export const aluminumColorLookup = {
 /* ── V2 aluminum colors (deck, wash, pool, security — all V2 integrated) ── */
 
 export const v2AluminumColors = [
-  { id: 'black', name: 'Black', photo: '/light_form/v2_lights/v2_lights_black_alaluminim.png', price: 170 },
-  { id: 'aluminum', name: 'Aluminum', photo: '/light_form/v2_lights/v2_lights_aluminum.png', price: 290 },
+  { id: 'black', name: 'Black', photo: '/light_form/v2_lights/v2_lights_black_alaluminim.png', upcharge: 0 },
+  { id: 'aluminum', name: 'Aluminum', photo: '/light_form/v2_lights/v2_lights_aluminum.png', upcharge: 120 },
 ];
 
 /* ── Fixture types with per-fixture color options and pricing ── */
@@ -31,8 +31,8 @@ export const fixtureTypes = [
     id: 'v1-dropin',
     name: 'V1 — Drop-In Fixture',
     shortName: 'V1 Drop-In',
-    photo: '/light_form/v1_lights/v1_lights_scene_1.png',
     basePrice: 150,
+    photo: '/light_form/v1_lights/v1_lights_scene_1.png',
     description:
       'Versatile fixture you can adjust after installation. Change the beam angle and reposition as your landscape grows.',
     benefits: ['Adjustable beam angle', 'Repositionable post-install', 'Versatile placement'],
@@ -40,7 +40,7 @@ export const fixtureTypes = [
       {
         id: 'raw-brass',
         name: 'Raw Brass',
-        price: 200,
+        upcharge: 50,
         photo: '/light_form/v1_lights/v1_lights_brass.png',
         description:
           'Solid brass that develops a rich natural patina over time. One-of-a-kind character.',
@@ -48,14 +48,14 @@ export const fixtureTypes = [
       {
         id: 'artisan-brass',
         name: 'Artisan Brass',
-        price: 200,
+        upcharge: 50,
         photo: '/light_form/v1_lights/v1_lights_artisanal_bronze.png',
         description: 'Hand-finished brass with a warm, polished sheen. Premium craftsmanship.',
       },
       {
         id: 'aluminum',
         name: 'Aluminum',
-        price: 150,
+        upcharge: 0,
         isBase: true,
         hasColorOptions: true,
         description:
@@ -72,16 +72,16 @@ export const fixtureTypes = [
     id: 'v2-integrated',
     name: 'V2 — Integrated Fixture',
     shortName: 'V2 Integrated',
-    photo: '/light_form/v2_lights/v2_lights_scene_1.png',
     basePrice: 170,
+    photo: '/light_form/v2_lights/v2_lights_scene_1.png',
     description:
       'Fixed-mount fixture built directly into the landscape. Stronger construction with a clean, seamless look.',
     benefits: ['Structurally stronger', 'Seamless installation', 'Clean, minimal profile'],
     finishes: [
       {
-        id: 'raw-brass',
-        name: 'Raw Brass',
-        price: 363,
+        id: 'solid-brass',
+        name: 'Solid Brass',
+        upcharge: 190,
         photo: '/light_form/v2_lights/v2_lights_brass.png',
         description:
           'Solid brass that develops a rich natural patina over time. One-of-a-kind character.',
@@ -89,12 +89,13 @@ export const fixtureTypes = [
       {
         id: 'aluminum',
         name: 'Aluminum',
+        upcharge: 0,
         hasColorOptions: true,
         description:
           'Durable, lightweight aluminum. Great value with solid performance.',
         colorOptions: [
-          { id: 'black', name: 'Black', price: 170, isBase: true, photo: '/light_form/v2_lights/v2_lights_black_alaluminim.png' },
-          { id: 'aluminum', name: 'Stainless Aluminum', price: 290, photo: '/light_form/v2_lights/v2_lights_aluminum.png' },
+          { id: 'black', name: 'Black', upcharge: 0, isBase: true, photo: '/light_form/v2_lights/v2_lights_black_alaluminim.png' },
+          { id: 'aluminum', name: 'Stainless Aluminum', upcharge: 120, photo: '/light_form/v2_lights/v2_lights_aluminum.png' },
         ],
       },
     ],
@@ -153,52 +154,186 @@ export const fixtureTip = {
 /* configType: 'color-only' = just aluminum color picker                          */
 /* configType: 'none'       = no config needed (just selecting it is enough)      */
 
-/* ── Specialty fixture options (X5 + C1 spotlights) ── */
-export const specialtyFixtures = [
+/* ── Wall Washer fixture options (Mini + Large) ── */
+export const wallWasherFixtures = [
   {
-    id: 'x5',
-    name: 'X5 Spotlight',
-    photo: '/light_form/X5_spotlight/X5_spotlight_aluminum.png',
+    id: 'ww-mini',
+    name: 'Wall Washer Mini',
+    basePrice: 85,
+    photo: '/light_form/wallwasher_mini/ww_mini_black.png',
     whiteBg: true,
-    description: 'Versatile spotlight for accent and wall lighting.',
+    description: 'Compact wall wash light for accent and ambient lighting.',
     finishes: {
       brass: [
-        { id: 'artisanal-bronze', name: 'Artisanal Bronze', photo: '/light_form/X5_spotlight/X5_spotlight_artisanal_bronze.png', whiteBg: true },
+        { id: 'solid-brass', name: 'Solid Brass', upcharge: 24, photo: '/light_form/wallwasher_mini/ww_mini_brass.png', whiteBg: true },
       ],
       aluminum: [
-        { id: 'black', name: 'Black', photo: '/light_form/X5_spotlight/X5_spotlight_black.png', whiteBg: true },
-        { id: 'aluminum', name: 'Aluminum', photo: '/light_form/X5_spotlight/X5_spotlight_aluminum.png', whiteBg: true },
+        { id: 'black', name: 'Black', upcharge: 0, photo: '/light_form/wallwasher_mini/ww_mini_black.png', whiteBg: true },
+        { id: 'arch-bronze', name: 'Architectural Bronze', upcharge: 0, photo: '/light_form/wallwasher_mini/ww_mini_aluminum_bronze.png', whiteBg: true },
+        { id: 'stainless', name: 'Stainless Aluminum', upcharge: 12, photo: '/light_form/wallwasher_mini/ww_mini_stainless_aluminum.png', whiteBg: true },
       ],
     },
   },
   {
-    id: 'c1',
-    name: 'C1 Spotlight',
-    photo: '/light_form/c1_spotlight/c1_spotlight_artisanal_bronze.png',
-    description: 'Compact spotlight with a clean, low-profile design.',
+    id: 'ww-large',
+    name: 'Wall Washer Large',
+    basePrice: 182,
+    photo: '/light_form/wallwasher/wallwasher_black.png',
+    whiteBg: true,
+    description: 'Full-size wall wash light for broader coverage.',
     finishes: {
-      brass: [
-        { id: 'artisanal-bronze', name: 'Artisanal Bronze', photo: '/light_form/c1_spotlight/c1_spotlight_artisanal_bronze.png', whiteBg: true },
-      ],
+      brass: [],
       aluminum: [
-        { id: 'black', name: 'Black', photo: '/light_form/c1_spotlight/c1_spotlight_black.png', whiteBg: true },
-        { id: 'aluminum', name: 'Aluminum', photo: '/light_form/c1_spotlight/c1_spotlight_aluminum.png', whiteBg: true },
+        { id: 'black', name: 'Black', upcharge: 0, photo: '/light_form/wallwasher/wallwasher_black.png', whiteBg: true },
       ],
     },
   },
 ];
 
-/* ── Pathway fixture finishes (P14) ── */
-export const pathwayFinishes = {
-  brass: [
-    { id: 'tiki-light', name: '7" Tiki Light', photo: '/light_form/pathlights/7in_tiki_light.png', price: 218, whiteBg: true },
-    { id: 'brass-villa', name: 'Brass Villa', photo: '/light_form/pathlights/Brass_villa.png', price: 218, whiteBg: true },
-  ],
-  aluminum: [
-    { id: 'black', name: 'Black', photo: '/light_form/p14/P14-Path-Light-in-Black.png', price: 218 },
-    { id: 'matte-black', name: 'Matte Black', photo: '/light_form/p14/P14-Black.png', whiteBg: true, price: 218 },
-  ],
-};
+/* ── Deck Light fixture options (Mini + Large) ── */
+export const deckLightFixtures = [
+  {
+    id: 'dl-mini',
+    name: 'Deck Light Mini',
+    basePrice: 61,
+    photo: '/light_form/decklight_mini/decklight_mini_black.jpg',
+    whiteBg: true,
+    description: 'Compact deck light for railings, steps, and tight spaces.',
+    finishes: {
+      brass: [
+        { id: 'solid-brass', name: 'Solid Brass', upcharge: 24, photo: '/light_form/decklight_mini/decklight_mini_brass.jpg', whiteBg: true },
+      ],
+      aluminum: [
+        { id: 'black', name: 'Black', upcharge: 0, photo: '/light_form/decklight_mini/decklight_mini_black.jpg', whiteBg: true },
+        { id: 'arch-bronze', name: 'Architectural Bronze', upcharge: 0, photo: '/light_form/decklight_mini/decklight_mini_architectural_bronze.jpg', whiteBg: true },
+        { id: 'stainless', name: 'Stainless Aluminum', upcharge: 12, photo: '/light_form/decklight_mini/decklight_mini_stainless_aluminum.jpg', whiteBg: true },
+      ],
+    },
+  },
+  {
+    id: 'dl-large',
+    name: 'Deck Light Large',
+    basePrice: 85,
+    photo: '/light_form/decklight/decklight_black.jpg',
+    whiteBg: true,
+    description: 'Full-size deck light for broader illumination.',
+    finishes: {
+      brass: [],
+      aluminum: [
+        { id: 'arch-bronze', name: 'Architectural Bronze', upcharge: 0, photo: '/light_form/decklight/decklight_stainless_bronze.jpg', whiteBg: true },
+        { id: 'black', name: 'Black', upcharge: 0, photo: '/light_form/decklight/decklight_black.jpg', whiteBg: true },
+      ],
+    },
+  },
+];
+
+/* ── Pathway fixture options (pick style → pick finish) ── */
+export const pathwayFixtures = [
+  {
+    id: 'p14',
+    name: 'P14 Path Light',
+    basePrice: 218,
+    photo: '/light_form/p14/P14-Path-Light-in-Black.png',
+    whiteBg: true,
+    description: 'Classic mushroom-style path light.',
+    finishes: {
+      brass: [],
+      aluminum: [
+        { id: 'black', name: 'Black', upcharge: 0, photo: '/light_form/p14/P14-Path-Light-in-Black.png', whiteBg: true },
+        { id: 'matte-black', name: 'Matte Black', upcharge: 0, photo: '/light_form/p14/P14-Black.png', whiteBg: true },
+      ],
+    },
+  },
+  {
+    id: 'p11',
+    name: 'P11 Path Light',
+    basePrice: 218,
+    photo: '/light_form/p11/P11_black.png',
+    whiteBg: true,
+    description: 'Modern angular path light.',
+    finishes: {
+      brass: [],
+      aluminum: [
+        { id: 'black', name: 'Black', upcharge: 0, photo: '/light_form/p11/P11_black.png', whiteBg: true },
+        { id: 'arch-bronze', name: 'Architectural Bronze', upcharge: 0, photo: '/light_form/p11/P11-Architectural-Bronze.png', whiteBg: true },
+        { id: 'stainless', name: 'Stainless Aluminum', upcharge: 0, photo: '/light_form/p11/P11-Stainless-Aluminum.png', whiteBg: true },
+      ],
+    },
+  },
+  {
+    id: 'p4',
+    name: 'P4 Path Light',
+    basePrice: 218,
+    photo: '/light_form/p4/p4_stainless_aluminum.png',
+    whiteBg: true,
+    description: 'Sleek minimal path light.',
+    finishes: {
+      brass: [],
+      aluminum: [
+        { id: 'stainless', name: 'Stainless Aluminum', upcharge: 0, photo: '/light_form/p4/p4_stainless_aluminum.png', whiteBg: true },
+      ],
+    },
+  },
+  {
+    id: 'tropical-leaf',
+    name: 'Tropical Leaf',
+    basePrice: 218,
+    photo: '/light_form/tropical_leaf/tropical_leaf_black.png',
+    whiteBg: true,
+    description: 'Nature-inspired leaf design path light.',
+    finishes: {
+      brass: [],
+      aluminum: [
+        { id: 'black', name: 'Black', upcharge: 0, photo: '/light_form/tropical_leaf/tropical_leaf_black.png', whiteBg: true },
+        { id: 'arch-bronze', name: 'Architectural Bronze', upcharge: 0, photo: '/light_form/tropical_leaf/tropical_leaf_archetectural_bronze.png', whiteBg: true },
+        { id: 'silver', name: 'Silver', upcharge: 0, photo: '/light_form/tropical_leaf/tropical_leaf_silver.png', whiteBg: true },
+        { id: 'stainless', name: 'Stainless Steel', upcharge: 0, photo: '/light_form/tropical_leaf/tropical_leaf_stainless_steel.png', whiteBg: true },
+      ],
+    },
+  },
+  {
+    id: 'tiki-light',
+    name: '7" Tiki Light',
+    basePrice: 218,
+    photo: '/light_form/pathlights/7in_tiki_light.png',
+    whiteBg: true,
+    description: 'Traditional tiki-style brass path light.',
+    finishes: {
+      brass: [
+        { id: 'brass', name: 'Brass', upcharge: 0, photo: '/light_form/pathlights/7in_tiki_light.png', whiteBg: true },
+      ],
+      aluminum: [],
+    },
+  },
+  {
+    id: 'brass-villa',
+    name: 'Brass Villa',
+    basePrice: 218,
+    photo: '/light_form/pathlights/Brass_villa.png',
+    whiteBg: true,
+    description: 'Elegant villa-style brass path light.',
+    finishes: {
+      brass: [
+        { id: 'brass', name: 'Brass', upcharge: 0, photo: '/light_form/pathlights/Brass_villa.png', whiteBg: true },
+      ],
+      aluminum: [],
+    },
+  },
+  {
+    id: 'brass-mushroom',
+    name: 'Brass Mushroom',
+    basePrice: 218,
+    photo: '/light_form/pathlights/mushroom_brass.png',
+    whiteBg: true,
+    description: 'Classic mushroom-style brass path light.',
+    finishes: {
+      brass: [
+        { id: 'brass', name: 'Brass', upcharge: 0, photo: '/light_form/pathlights/mushroom_brass.png', whiteBg: true },
+      ],
+      aluminum: [],
+    },
+  },
+];
 
 export const lightingServices = [
   {
@@ -206,7 +341,7 @@ export const lightingServices = [
     name: 'House Uplighting',
     description: "Highlight your home's facade and architectural features",
     Icon: Building2,
-    photo: "/SamProject/Drake's Home-04 (1).jpg",
+    photo: "/projects/SamProject/drakes-home-04.jpg",
     configType: 'fixture',
   },
   {
@@ -214,7 +349,8 @@ export const lightingServices = [
     name: 'Tree Uplighting',
     description: 'In-ground well lights to showcase your trees',
     Icon: TreePine,
-    photo: '/servicesphotos/outside.jpg',
+    photo: '/servicesphotos/tree_lighting.jpeg',
+    basePrice: 117,
     configType: 'tree',
   },
   {
@@ -222,7 +358,7 @@ export const lightingServices = [
     name: 'Pathway Lighting',
     description: 'Safe and beautiful walkway illumination',
     Icon: Route,
-    photo: '/projects/NEWTON3.jpeg',
+    photo: '/projects/newton_project/NEWTON3.jpeg',
     configType: 'pathway',
   },
   {
@@ -230,24 +366,25 @@ export const lightingServices = [
     name: 'Deck & Patio',
     description: 'Perfect outdoor entertaining spaces',
     Icon: LayoutGrid,
-    photo: '/light_form/v1_lights/v1_lights_scene_2.png',
-    configType: 'deck',
+    photo: '/servicesphotos/deck_lighting.jpeg',
+    configType: 'deck-fixture',
   },
   {
     id: 'wash-area',
     name: 'Wash / Area Lighting',
     description: 'Broad, even illumination for open spaces',
     Icon: Lightbulb,
-    photo: "/SamProject/Drake's Home-05 (2).jpg",
-    configType: 'color-only',
+    photo: "/projects/SamProject/drakes-home-05.jpg",
+    configType: 'specialty',
   },
   {
-    id: 'specialty',
-    name: 'Specialty / Wall Lighting',
-    description: 'Decorative wall lights and accent fixtures',
+    id: 'rock-wall',
+    name: 'Rock Wall Lighting',
+    description: 'Accent lighting designed for stone and rock surfaces',
     Icon: Sparkles,
-    photo: '/projects/BACKYARD_4.jpeg',
-    configType: 'specialty',
+    photo: '/servicesphotos/rockwall.jpeg',
+    configType: 'none',
+    configNote: "Rock wall lighting is tailored to your specific wall. We'll reach out with more details once you've submitted.",
   },
   {
     id: 'pool',

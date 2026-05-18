@@ -119,7 +119,8 @@ const FAQ = () => {
           </p>
           <button
             onClick={() => { if (typeof window.gtag_report_conversion === 'function') window.gtag_report_conversion(); window.location.href = '/?view=consultation'; }}
-            className="inline-flex items-center px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors"
+            className="inline-flex items-center px-6 py-3 text-white font-medium rounded-lg transition-all hover:brightness-110"
+            style={{ backgroundColor: '#C96A1B' }}
           >
             Schedule Your Free Consultation
           </button>

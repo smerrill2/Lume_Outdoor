@@ -92,8 +92,8 @@ const ContactFormWithJobber = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Contact Information */}
-          <div className="lg:col-span-1 space-y-6">
+          {/* Contact Information - Desktop Only */}
+          <div className="hidden lg:block lg:col-span-1 space-y-6">
             {contactInfo.map((info, index) => {
               const Icon = info.icon;
               return (
@@ -104,7 +104,7 @@ const ContactFormWithJobber = () => {
                 >
                   <div className="flex items-start space-x-4">
                     <div className="flex-shrink-0">
-                      <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: '#C96A1B' }}>
                         <Icon className="w-6 h-6 text-white" />
                       </div>
                     </div>
@@ -155,8 +155,8 @@ const ContactFormWithJobber = () => {
 
           {/* Jobber Form */}
           <div ref={formContainerRef} className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-lg p-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Request Your Free Consultation</h3>
+            <div className="bg-white rounded-lg shadow-lg p-2 sm:p-4 lg:p-8">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6 px-2 sm:px-0">Request Your Free Consultation</h3>
               <SimpleJobberForm />
             </div>
           </div>

@@ -1,122 +1,198 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
-import { Star, Quote } from 'lucide-react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Testimonials = () => {
-  const sectionRef = useRef(null);
-  const titleRef = useRef(null);
-  const subtitleRef = useRef(null);
-  const cardsRef = useRef([]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [direction, setDirection] = useState(0);
+  const startX = useRef(0);
+  const isDragging = useRef(false);
 
   const testimonials = [
     {
       id: 1,
       name: "Samantha L.",
-      location: "City View Street, Wichita",
+      location: "Wichita, KS",
       rating: 5,
-      text: "Lume Outdoor completely transformed our home's curb appeal. Their design sense is impeccable, and the quality of the lighting has exceeded our expectations. Our home now has a warm, inviting glow every evening. The team was professional and the process was seamless.",
-      project: "Brick Home Transformation"
+      text: "Lume Outdoor completely transformed our home's curb appeal. Their design sense is impeccable, and the quality of the lighting has exceeded our expectations.",
     },
     {
       id: 2,
       name: "John & Maria R.",
       location: "Eastborough, Wichita",
       rating: 5,
-      text: "The architectural lighting Lume installed has added a new dimension to our property. The subtle, elegant illumination highlights the unique features of our home beautifully. We are thrilled with the result and have received numerous compliments from our neighbors.",
-      project: "Modern Architectural Highlight"
+      text: "The architectural lighting has added a new dimension to our property. The subtle, elegant illumination highlights the unique features of our home beautifully.",
     },
     {
       id: 3,
-      name: "David Chen",
+      name: "Mike Thompson",
       location: "Andover, KS",
       rating: 5,
-      text: "Our backyard and patio have become our favorite part of our home, thanks to Lume. The landscape lighting has created a magical resort-like atmosphere. It's perfect for entertaining guests or simply relaxing after a long day. A fantastic investment.",
-      project: "Patio & Garden Oasis"
+      text: "Glad I finally called Lume — the patio looks incredible at night now. We're out there grilling and hanging out way more than we used to.",
     }
   ];
 
-  // Placeholder for future testimonials
-  const comingSoonSlots = [
-  ];
+  const goTo = useCallback((newIndex, dir) => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setDirection(dir);
+    setActiveIndex(newIndex);
+    setTimeout(() => setIsAnimating(false), 500);
+  }, [isAnimating]);
 
+  const goNext = useCallback(() => {
+    const nextIndex = (activeIndex + 1) % testimonials.length;
+    goTo(nextIndex, 1);
+  }, [activeIndex, testimonials.length, goTo]);
+
+  const goPrev = useCallback(() => {
+    const prevIndex = (activeIndex - 1 + testimonials.length) % testimonials.length;
+    goTo(prevIndex, -1);
+  }, [activeIndex, testimonials.length, goTo]);
+
+  const handleSwipe = (endX) => {
+    const diff = startX.current - endX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) goNext();
+      else goPrev();
+    }
+  };
+
+  // Touch events (mobile)
+  const handleTouchStart = (e) => {
+    startX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e) => {
+    handleSwipe(e.changedTouches[0].clientX);
+  };
+
+  // Mouse events (desktop drag)
+  const handleMouseDown = (e) => {
+    startX.current = e.clientX;
+    isDragging.current = true;
+  };
+
+  const handleMouseUp = (e) => {
+    if (!isDragging.current) return;
+    isDragging.current = false;
+    handleSwipe(e.clientX);
+  };
+
+  const handleMouseLeave = () => {
+    isDragging.current = false;
+  };
+
+  // Auto-advance every 6 seconds
   useEffect(() => {
-    // No animations - elements stay visible
-  }, []);
+    const timer = setInterval(goNext, 6000);
+    return () => clearInterval(timer);
+  }, [goNext]);
 
   const renderStars = (rating) => {
     return Array.from({ length: 5 }, (_, index) => (
       <Star
         key={index}
-        className={`w-5 h-5 ${
-          index < rating ? 'fill-orange-500 text-orange-500' : 'text-gray-300'
+        className={`w-3.5 h-3.5 ${
+          index < rating ? 'fill-orange-500 text-orange-500' : 'text-white/20'
         }`}
       />
     ));
   };
 
+  const currentTestimonial = testimonials[activeIndex];
+
   return (
-    <section ref={sectionRef} id="testimonials" className="py-12 sm:py-16 md:py-20 px-4 bg-gradient-to-b from-amber-50/40 via-orange-50/20 to-white">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12 md:mb-16">
-          <h2 ref={titleRef} className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+    <section id="testimonials" className="py-24 md:py-28 px-4 bg-neutral-900">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-14 md:mb-20">
+          <h2 className="text-3xl md:text-4xl font-light text-white">
             What Our Clients Say
           </h2>
-          <p ref={subtitleRef} className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto px-4">
-            Discover why homeowners trust Lume Outdoor for their premium landscape lighting needs
-          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Actual Testimonial */}
-          {testimonials.map((testimonial, index) => (
-            <div
-              key={testimonial.id}
-              ref={el => cardsRef.current[index] = el}
-              className="bg-white rounded-lg p-6 sm:p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 relative"
-            >
-              <Quote className="absolute top-4 right-4 w-8 sm:w-12 h-8 sm:h-12 text-orange-100" />
-              <div className="flex mb-4">
-                {renderStars(testimonial.rating)}
-              </div>
-              <p className="text-gray-700 mb-6 italic text-sm sm:text-base">&quot;{testimonial.text}&quot;</p>
-              <div className="border-t pt-4">
-                <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
-                <p className="text-sm text-gray-600">{testimonial.location}</p>
-                <p className="text-sm text-orange-600 mt-1">{testimonial.project}</p>
-              </div>
-            </div>
-          ))}
+        <div
+          className="relative text-center min-h-[200px] md:min-h-[220px] flex items-center justify-center cursor-grab active:cursor-grabbing select-none"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
+        >
+          {/* Quote Content */}
+          <div
+            key={activeIndex}
+            className="animate-fadeSlide"
+          >
+            <p className="text-xl md:text-2xl lg:text-3xl font-light text-white/80 leading-relaxed md:leading-relaxed tracking-tight italic max-w-3xl mx-auto">
+              &ldquo;{currentTestimonial.text}&rdquo;
+            </p>
 
-          {/* Coming Soon Placeholders */}
-          {comingSoonSlots.map((slot, index) => (
-            <div
-              key={slot.id}
-              ref={el => cardsRef.current[testimonials.length + index] = el}
-              className="bg-white/50 border-2 border-dashed border-gray-300 rounded-lg p-6 sm:p-8 flex flex-col items-center justify-center text-center"
-            >
-              <Quote className="w-8 sm:w-12 h-8 sm:h-12 text-gray-300 mb-4" />
-              <p className="text-gray-500 font-medium">{slot.text}</p>
-              <div className="flex mt-4">
-                {renderStars(0)}
+            <div className="mt-8 flex items-center justify-center gap-4">
+              <div className="w-10 h-px bg-white/20" />
+              <div>
+                <div className="flex justify-center gap-0.5 mb-1.5">
+                  {renderStars(currentTestimonial.rating)}
+                </div>
+                <span className="text-xs font-light tracking-wide text-white/50 uppercase">
+                  {currentTestimonial.name} &mdash; {currentTestimonial.location}
+                </span>
               </div>
+              <div className="w-10 h-px bg-white/20" />
             </div>
-          ))}
+          </div>
         </div>
 
-        <div className="text-center mt-12">
-          <p className="text-gray-600 text-sm sm:text-base">
-            Ready to transform your outdoor space? 
-            <a href="#contact" className="text-orange-600 font-semibold block sm:inline mt-2 sm:mt-0 sm:ml-2 hover:text-orange-700 transition-colors">
-              Get Your Free Consultation
-            </a>
-          </p>
+        {/* Navigation */}
+        <div className="flex items-center justify-center gap-8 mt-12">
+          <button
+            onClick={goPrev}
+            className="text-white/30 hover:text-white/70 transition-colors duration-300"
+            aria-label="Previous testimonial"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+
+          <div className="flex gap-2">
+            {testimonials.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goTo(index, index > activeIndex ? 1 : -1)}
+                className={`h-px transition-all duration-500 ${
+                  index === activeIndex ? 'w-8 bg-white/60' : 'w-4 bg-white/20 hover:bg-white/30'
+                }`}
+                aria-label={`Go to testimonial ${index + 1}`}
+              />
+            ))}
+          </div>
+
+          <button
+            onClick={goNext}
+            className="text-white/30 hover:text-white/70 transition-colors duration-300"
+            aria-label="Next testimonial"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes fadeSlide {
+          from {
+            opacity: 0;
+            transform: translateY(8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fadeSlide {
+          animation: fadeSlide 0.5s ease-out forwards;
+        }
+      `}</style>
     </section>
   );
 };

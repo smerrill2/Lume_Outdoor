@@ -1,19 +1,10 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { MapPin, Clock, Award } from 'lucide-react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
 
 const ServiceAreaMap = () => {
-  const sectionRef = useRef(null);
-  const titleRef = useRef(null);
-  const mapContainerRef = useRef(null);
   const mapAreaRef = useRef(null);
   const mapInstanceRef = useRef(null);
-  const infoCardsRef = useRef([]);
   const [mapLoaded, setMapLoaded] = useState(false);
 
   const serviceAreas = [
@@ -29,31 +20,9 @@ const ServiceAreaMap = () => {
     { name: "Valley Center", lat: 37.8347, lng: -97.3734 },
   ];
 
-  // Outer boundary cities ordered clockwise for the service area polygon
   const boundaryOrder = [
     "Valley Center", "El Dorado", "Andover", "Derby",
     "Haysville", "Goddard", "Maize"
-  ];
-
-  const serviceStats = [
-    {
-      icon: MapPin,
-      title: "Service Radius",
-      value: "30+ Miles",
-      description: "Covering Wichita and surrounding areas"
-    },
-    {
-      icon: Clock,
-      title: "Response Time",
-      value: "24-48 Hours",
-      description: "Quick consultation scheduling"
-    },
-    {
-      icon: Award,
-      title: "Projects Completed",
-      value: "500+",
-      description: "Trusted by Kansas homeowners"
-    }
   ];
 
   const initializeMap = () => {
@@ -68,7 +37,7 @@ const ServiceAreaMap = () => {
         {
           featureType: "all",
           elementType: "geometry",
-          stylers: [{ color: "#242f3e" }]
+          stylers: [{ color: "#1a1a1a" }]
         },
         {
           featureType: "all",
@@ -78,17 +47,17 @@ const ServiceAreaMap = () => {
         {
           featureType: "administrative",
           elementType: "labels.text.fill",
-          stylers: [{ color: "#746855" }]
+          stylers: [{ color: "#6b6b6b" }]
         },
         {
           featureType: "road",
           elementType: "geometry",
-          stylers: [{ color: "#38414e" }]
+          stylers: [{ color: "#2a2a2a" }]
         },
         {
           featureType: "water",
           elementType: "geometry",
-          stylers: [{ color: "#17263c" }]
+          stylers: [{ color: "#111111" }]
         }
       ]
     });
@@ -97,34 +66,31 @@ const ServiceAreaMap = () => {
 
     const bounds = new window.google.maps.LatLngBounds();
 
-    // Add markers for each service area city
     serviceAreas.forEach((area) => {
       const position = { lat: area.lat, lng: area.lng };
       bounds.extend(position);
 
-      const marker = new window.google.maps.Marker({
+      new window.google.maps.Marker({
         position,
         map,
         title: area.name,
         icon: {
           path: window.google.maps.SymbolPath.CIRCLE,
-          scale: area.name === "Wichita" ? 8 : 6,
-          fillColor: area.name === "Wichita" ? '#f97316' : '#fb923c',
-          fillOpacity: 1,
+          scale: area.name === "Wichita" ? 7 : 5,
+          fillColor: area.name === "Wichita" ? '#ffffff' : '#999999',
+          fillOpacity: area.name === "Wichita" ? 0.9 : 0.6,
           strokeColor: '#ffffff',
-          strokeWeight: 2,
+          strokeWeight: 1,
         },
         label: {
           text: area.name,
           color: '#ffffff',
-          fontSize: area.name === "Wichita" ? '13px' : '11px',
-          fontWeight: area.name === "Wichita" ? '700' : '500',
-          className: 'map-label',
+          fontSize: area.name === "Wichita" ? '12px' : '10px',
+          fontWeight: area.name === "Wichita" ? '500' : '300',
         },
       });
     });
 
-    // Draw polygon connecting outer boundary cities
     const polygonCoords = boundaryOrder.map((cityName) => {
       const city = serviceAreas.find((a) => a.name === cityName);
       return { lat: city.lat, lng: city.lng };
@@ -132,19 +98,17 @@ const ServiceAreaMap = () => {
 
     new window.google.maps.Polygon({
       paths: polygonCoords,
-      strokeColor: '#f97316',
-      strokeOpacity: 0.8,
-      strokeWeight: 2,
-      fillColor: '#f97316',
-      fillOpacity: 0.1,
+      strokeColor: '#ffffff',
+      strokeOpacity: 0.2,
+      strokeWeight: 1,
+      fillColor: '#ffffff',
+      fillOpacity: 0.05,
       map,
     });
 
-    // Fit map to show all markers with some padding
     map.fitBounds(bounds, { top: 40, right: 40, bottom: 40, left: 40 });
   };
 
-  // Load Google Maps script
   useEffect(() => {
     if (window.google?.maps) {
       setMapLoaded(true);
@@ -168,150 +132,84 @@ const ServiceAreaMap = () => {
     };
   }, []);
 
-  // Initialize map once script is loaded and DOM element exists
   useEffect(() => {
     if (mapLoaded) {
       initializeMap();
     }
   }, [mapLoaded]);
 
-  // GSAP Animations
-  useEffect(() => {
-    const section = sectionRef.current;
-    const title = titleRef.current;
-    const mapContainer = mapContainerRef.current;
-    const infoCards = infoCardsRef.current;
-
-    gsap.set([title, mapContainer], { opacity: 0, y: 30 });
-    gsap.set(infoCards, { opacity: 0, x: -30 });
-
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: 'top 70%',
-        end: 'bottom 20%',
-        toggleActions: 'play none none reverse'
-      }
-    });
-
-    tl.to(title, { opacity: 1, y: 0, duration: 0.8 })
-      .to(mapContainer, { opacity: 1, y: 0, duration: 1 }, '-=0.6')
-      .to(infoCards, {
-        opacity: 1,
-        x: 0,
-        duration: 0.8,
-        stagger: 0.15,
-        ease: 'power3.out'
-      }, '-=0.6');
-
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, []);
-
   return (
-    <section ref={sectionRef} id="service-area" className="py-12 sm:py-16 md:py-20 px-4 bg-gray-900 text-white">
-      <div className="max-w-7xl mx-auto">
-        <h2 ref={titleRef} className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-12 md:mb-16">
-          Our Service Area
-        </h2>
+    <section id="service-area" className="py-24 md:py-28 px-4 bg-neutral-900">
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-14 md:mb-20">
+          <h2 className="text-3xl md:text-4xl font-light text-white">
+            Service Area
+          </h2>
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Map Container */}
-          <div ref={mapContainerRef} className="lg:col-span-2">
-            <div className="bg-gray-800 rounded-lg overflow-hidden shadow-2xl h-64 sm:h-80 md:h-96 lg:h-full min-h-[400px] relative">
-              {/* Placeholder shown while map loads */}
+        {/* Map + Side Tiles */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-4">
+          {/* Map */}
+          <div className="lg:col-span-2 rounded-xl overflow-hidden">
+            <div className="relative h-72 sm:h-80 md:h-full min-h-[350px] bg-neutral-800">
               {!mapLoaded && (
-                <div className="absolute inset-0 z-10 w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden">
-                  <div className="absolute inset-0">
-                    <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl"></div>
-                    <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-orange-500/10 rounded-full blur-3xl"></div>
-                  </div>
-
-                  <div className="text-center relative z-10 p-6">
-                    <div className="flex items-center justify-center mb-4">
-                      <div className="relative">
-                        <MapPin className="w-16 h-16 sm:w-20 sm:h-20 text-orange-500" />
-                        <div className="absolute inset-0 animate-ping">
-                          <MapPin className="w-16 h-16 sm:w-20 sm:h-20 text-orange-500 opacity-40" />
-                        </div>
-                      </div>
-                    </div>
-                    <h3 className="text-2xl sm:text-3xl font-bold mb-2 text-white">Proudly Serving</h3>
-                    <p className="text-orange-400 text-lg sm:text-xl font-semibold mb-6">Wichita Metro & Surrounding Areas</p>
-
-                    <div className="max-w-md mx-auto">
-                      <div className="grid grid-cols-2 gap-3 mb-6">
-                        <div className="col-span-2 bg-orange-500/20 backdrop-blur-sm border border-orange-500/30 rounded-lg p-3">
-                          <h4 className="text-orange-500 font-bold text-lg mb-1">Primary Service Area</h4>
-                          <p className="text-white text-xl font-semibold">Wichita</p>
-                        </div>
-
-                        {serviceAreas.slice(1, 7).map((area, index) => (
-                          <div key={index} className="bg-gray-700/50 backdrop-blur-sm border border-gray-600 rounded-lg p-2 hover:bg-gray-700/70 transition-colors">
-                            <div className="flex items-center justify-center">
-                              <div className="w-2 h-2 bg-orange-500 rounded-full mr-2 animate-pulse"></div>
-                              <span className="text-gray-100 font-medium">{area.name}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="text-center">
-                        <p className="text-gray-400 text-sm mb-2">Also Serving:</p>
-                        <div className="flex flex-wrap justify-center gap-2">
-                          {serviceAreas.slice(7).map((area, index) => (
-                            <span key={index} className="text-xs text-gray-300 bg-gray-700/30 px-2 py-1 rounded">
-                              {area.name}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center">
+                  <p className="text-sm font-light text-white/40 tracking-wide">Loading map...</p>
                 </div>
               )}
-              {/* Map always in DOM so ref is available for Google Maps init */}
               <div ref={mapAreaRef} className="w-full h-full" />
             </div>
           </div>
 
-          {/* Info Cards */}
-          <div className="space-y-6">
-            {serviceStats.map((stat, index) => {
-              const Icon = stat.icon;
-              return (
-                <div
-                  key={index}
-                  ref={el => infoCardsRef.current[index] = el}
-                  className="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-colors duration-300"
-                >
-                  <div className="flex items-start space-x-4">
-                    <div className="flex-shrink-0">
-                      <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center">
-                        <Icon className="w-6 h-6 text-white" />
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-xl sm:text-2xl font-bold text-orange-500 mb-1">{stat.value}</h3>
-                      <h4 className="text-base sm:text-lg font-semibold mb-1">{stat.title}</h4>
-                      <p className="text-gray-400 text-xs sm:text-sm">{stat.description}</p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-
-            <div className="bg-orange-500 rounded-lg p-4 sm:p-6 mt-6 sm:mt-8">
-              <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3">Ready to Light Up Your Property?</h3>
-              <p className="text-white/90 mb-4 text-sm sm:text-base">
-                We serve all neighborhoods within our service area with the same dedication to excellence.
+          {/* Side Tiles */}
+          <div className="grid grid-cols-2 lg:grid-cols-1 gap-3 md:gap-4">
+            {/* Service Radius */}
+            <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 md:p-8 flex flex-col justify-between">
+              <div>
+                <span className="text-4xl md:text-5xl font-extralight text-white/80 block mb-1">
+                  30+
+                </span>
+                <span className="text-[10px] font-light tracking-[0.2em] text-white/40 uppercase">
+                  Mile Radius
+                </span>
+              </div>
+              <p className="text-xs font-light text-white/25 leading-relaxed mt-4">
+                If it&apos;s in the metro, we&apos;re there.
               </p>
-              <button 
-                onClick={() => document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })}
-                className="w-full bg-white text-orange-600 py-2.5 sm:py-3 rounded-md font-semibold text-sm sm:text-base hover:bg-gray-100 transition-colors duration-300">
-                Check Service Availability
-              </button>
+            </div>
+
+            {/* Response Time */}
+            <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 md:p-8 flex flex-col justify-between">
+              <div>
+                <span className="text-4xl md:text-5xl font-extralight text-white/80 block mb-1">
+                  24-48
+                </span>
+                <span className="text-[10px] font-light tracking-[0.2em] text-white/40 uppercase">
+                  Hour Response
+                </span>
+              </div>
+              <p className="text-xs font-light text-white/25 leading-relaxed mt-4">
+                Quick consultation scheduling.
+              </p>
+            </div>
+
+            {/* Cities Served */}
+            <div className="col-span-2 lg:col-span-1 bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 md:p-8 text-center">
+              <span className="text-[10px] font-light tracking-[0.3em] text-white/30 uppercase block mb-4">
+                Proudly Serving
+              </span>
+              <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5">
+                {serviceAreas.map((area, index) => (
+                  <span
+                    key={index}
+                    className={`text-xs font-light tracking-wide ${
+                      area.name === "Wichita" ? 'text-white/60' : 'text-white/30'
+                    }`}
+                  >
+                    {area.name}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </div>

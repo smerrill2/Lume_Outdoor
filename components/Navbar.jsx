@@ -6,18 +6,16 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
-import { useImage } from '@/lib/imageConfig';
 
 function Navbar() {
-  const logoUrl = useImage('logo', 'svg');
   const router = useRouter();
   
   const navItems = [
     { name: 'Home', href: '/' },
     { name: 'About Us', href: '/about' },
-    { 
-      name: 'Services', 
-      href: '#services',
+    {
+      name: 'Services',
+      href: '/services',
       isDropdown: true,
       dropdownItems: [
         { name: 'Residential Landscape', href: '/services/residential-landscape' },
@@ -78,31 +76,27 @@ function Navbar() {
       <header 
         ref={headerRef} 
         className={`fixed top-0 left-0 w-full z-50 isolation-isolate will-change-transform [transform:translateZ(0)] transition-all duration-300 ${
-          isScrolled 
-            ? 'bg-black/20 backdrop-blur-md border-b border-white/10 shadow-lg' 
+          isScrolled
+            ? 'bg-black/20 backdrop-blur-md border-b border-white/10 shadow-lg'
             : 'bg-black/10 backdrop-blur-sm border-b border-white/5'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20 md:h-24">
-            {/* Logo - Left aligned with projects section */}
-            <Link href="/" className="relative z-10 flex items-center justify-center flex-shrink-0 -ml-1 sm:ml-0 h-full">
-              <div className="relative h-14 md:h-20 w-40 md:w-52 md:mt-0" style={{marginTop: '15px', marginLeft: '-10px', transform: 'scale(1.1)'}}>
-                <Image
-                  src={logoUrl}
-                  alt="Lume Outdoors Logo"
-                  fill
-                  unoptimized
-                  className="object-contain cursor-pointer hover:opacity-80 transition-opacity"
-                  style={{
-                    filter: "brightness(0) invert(1)",
-                  }}
-                  priority
-                  sizes="(max-width: 768px) 176px, 208px"
-                />
-              </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 md:h-[77px]">
+            {/* Logo */}
+            <Link href="/" className="relative z-10 flex h-full flex-shrink-0 items-center">
+              <Image
+                src="/Lumepng.png"
+                alt="Lume Outdoors Logo"
+                width={1018}
+                height={548}
+                priority
+                unoptimized
+                className="h-auto w-[132px] cursor-pointer object-contain transition-opacity hover:opacity-80 sm:w-[170px] md:w-[206px]"
+                style={{ filter: 'brightness(0) invert(1)' }}
+              />
             </Link>
-            
+
             {/* Desktop Navigation & CTA - Grouped and aligned right */}
             <div className="hidden lg:flex items-center justify-end flex-1 ml-8">
               <nav className="flex items-center justify-center space-x-8">
@@ -111,7 +105,7 @@ function Navbar() {
                     return (
                       <div key={item.name} className="relative group py-4">
                         <button
-                          className="text-white hover:text-orange-500 transition-colors font-medium flex items-center"
+                          className="text-white hover:text-orange-500 transition-colors font-light flex items-center"
                           onClick={(e) => handleNavClick(e, item.href)}
                         >
                           {item.name}
@@ -123,7 +117,7 @@ function Navbar() {
                               <Link
                                 key={dropdownItem.name}
                                 href={dropdownItem.href}
-                                className="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100"
+                                className="text-neutral-700 block px-4 py-2 text-sm hover:bg-neutral-100"
                                 onClick={(e) => handleNavClick(e, dropdownItem.href)}
                               >
                                 {dropdownItem.name}
@@ -138,7 +132,7 @@ function Navbar() {
                     <Link
                       key={item.name}
                       href={item.href}
-                      className="text-white hover:text-orange-500 transition-colors font-medium"
+                      className="text-white hover:text-orange-500 transition-colors font-light"
                       onClick={(e) => handleNavClick(e, item.href)}
                     >
                       {item.name}
@@ -147,8 +141,9 @@ function Navbar() {
                 })}
               </nav>
               
-              <Button 
-                className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-lg font-medium ml-8"
+              <Button
+                className="text-white px-6 py-2.5 rounded-lg font-light ml-8 hover:brightness-110 transition-all"
+                style={{ backgroundColor: '#C96A1B' }}
                 onClick={() => { if (typeof window.gtag_report_conversion === 'function') window.gtag_report_conversion(); router.push('/consultation'); }}
               >
                 Schedule Consultation
@@ -172,7 +167,7 @@ function Navbar() {
 
       {/* Mobile Menu - Only shown on mobile */}
       <div
-        className={`lg:hidden fixed inset-0 bg-gray-900/95 backdrop-blur-md z-40 transform transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`lg:hidden fixed inset-0 bg-neutral-900/95 backdrop-blur-md z-40 transform transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
         <div className="h-full flex flex-col justify-center items-center pt-16">
           <nav className="text-center">
@@ -183,7 +178,7 @@ function Navbar() {
                 >
                   <Link
                     href={item.href}
-                    className="text-white text-2xl font-medium hover:text-orange-500 transition-colors block py-2"
+                    className="text-white text-2xl font-light hover:text-orange-500 transition-colors block py-2"
                     onClick={(e) => handleNavClick(e, item.href)}
                   >
                     {item.name}
@@ -195,8 +190,9 @@ function Navbar() {
           <div 
             className="mt-12"
           >
-            <Button 
-              className="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-lg"
+            <Button
+              className="px-6 py-3 text-white rounded-lg text-lg hover:brightness-110 transition-all"
+              style={{ backgroundColor: '#C96A1B' }}
               onClick={() => { if (typeof window.gtag_report_conversion === 'function') window.gtag_report_conversion(); router.push('/consultation'); }}
             >
               Schedule Light Consultation

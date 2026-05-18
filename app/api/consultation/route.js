@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { createServiceClient } from '@/lib/supabase';
 import React from 'react';
 import {
   Document,
@@ -224,6 +225,21 @@ export async function POST(request) {
         { error: 'At least one service must be selected.' },
         { status: 400 },
       );
+    }
+
+    /* ── Persist to Supabase (graceful — emails still send on failure) ── */
+    try {
+      const supabase = createServiceClient();
+      await supabase.from('consultation_submissions').insert({
+        customer_name: contactInfo.name,
+        customer_email: contactInfo.email,
+        customer_phone: contactInfo.phone,
+        customer_address: contactInfo.address || null,
+        customer_notes: contactInfo.notes || null,
+        services,
+      });
+    } catch (dbError) {
+      console.error('Supabase insert error (non-blocking):', dbError);
     }
 
     const date = new Date().toLocaleDateString('en-US', {

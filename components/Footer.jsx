@@ -27,7 +27,7 @@ const Footer = () => {
   };
 
   return (
-    <footer ref={footerRef} className="relative bg-gradient-to-b from-gray-900 to-black text-white overflow-hidden">
+    <footer ref={footerRef} className="relative bg-gradient-to-b from-neutral-900 to-black text-white overflow-hidden">
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Top decorative element */}
@@ -39,17 +39,14 @@ const Footer = () => {
           {/* Company Info */}
           <div className="space-y-4">
             <Link href="/" className="inline-block">
-              <div className="relative h-14 md:h-20 w-40 md:w-52">
-                <Image
-                  src={logoUrl}
-                  alt="Lume Outdoor"
-                  fill
-                  unoptimized
-                  className="object-contain brightness-0 invert hover:opacity-80 transition-opacity cursor-pointer"
-                />
-              </div>
+              <img
+                src="/LogoLume.svg"
+                alt="Lume Outdoor"
+                className="h-16 md:h-20 w-auto object-contain hover:opacity-80 transition-opacity cursor-pointer"
+                style={{ filter: "brightness(0) invert(1)" }}
+              />
             </Link>
-            <p className="text-gray-300 text-sm leading-relaxed">
+            <p className="text-neutral-300 text-sm leading-relaxed">
               Illuminating outdoor spaces with premium lighting solutions that transform your property into a nighttime masterpiece.
             </p>
             <div className="flex space-x-4 pt-2">
@@ -84,7 +81,7 @@ const Footer = () => {
                 <li key={service.id}>
                   <Link
                     href={`/services/${service.id}`}
-                    className="group flex items-center text-gray-300 hover:text-orange-400 transition-colors text-sm"
+                    className="group flex items-center text-neutral-300 hover:text-orange-400 transition-colors text-sm"
                   >
                     <span className="w-1 h-1 bg-orange-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                     {service.name}
@@ -109,7 +106,7 @@ const Footer = () => {
                   <Link
                     href={link.href}
                     onClick={(e) => link.href.startsWith('#') && handleNavClick(e, link.href)}
-                    className="group flex items-center text-gray-300 hover:text-orange-400 transition-colors text-sm"
+                    className="group flex items-center text-neutral-300 hover:text-orange-400 transition-colors text-sm"
                   >
                     <span className="w-1 h-1 bg-orange-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                     {link.label}
@@ -119,7 +116,7 @@ const Footer = () => {
               <li>
                 <button
                   onClick={scrollToContact}
-                  className="group flex items-center text-gray-300 hover:text-orange-400 transition-colors text-sm text-left"
+                  className="group flex items-center text-neutral-300 hover:text-orange-400 transition-colors text-sm text-left"
                 >
                   <span className="w-1 h-1 bg-orange-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                   Contact Us
@@ -135,7 +132,7 @@ const Footer = () => {
               <li className="flex items-start space-x-3">
                 <Phone className="w-4 h-4 mt-0.5 flex-shrink-0 text-white" />
                 <div>
-                  <p className="text-sm text-gray-400">24/7 Support</p>
+                  <p className="text-sm text-neutral-400">24/7 Support</p>
                   <a href="tel:+13166551270" className="text-white hover:text-orange-400 transition-colors font-medium">
                     +1 (316) 655-1270
                   </a>
@@ -144,7 +141,7 @@ const Footer = () => {
               <li className="flex items-start space-x-3">
                 <Mail className="w-4 h-4 mt-0.5 flex-shrink-0 text-white" />
                 <div>
-                  <p className="text-sm text-gray-400">Email Us</p>
+                  <p className="text-sm text-neutral-400">Email Us</p>
                   <a href="mailto:Drake@lumeoutdoorlighting.com" className="text-white hover:text-orange-400 transition-colors">
                     Drake@lumeoutdoorlighting.com
                   </a>
@@ -153,7 +150,7 @@ const Footer = () => {
               <li className="flex items-start space-x-3">
                 <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0 text-white" />
                 <div>
-                  <p className="text-sm text-gray-400">Service Area</p>
+                  <p className="text-sm text-neutral-400">Service Area</p>
                   <p className="text-white">Wichita Metro & Surrounding Areas</p>
                 </div>
               </li>
@@ -174,21 +171,21 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-16 pt-8 border-t border-gray-800">
+        <div className="mt-16 pt-8 border-t border-neutral-800">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-neutral-400">
               © 2024 Lume Outdoor. Brightening nights since 2020
             </p>
             <div className="flex items-center space-x-6">
-              <a href="#" className="text-sm text-gray-400 hover:text-orange-400 transition-colors">
+              <a href="#" className="text-sm text-neutral-400 hover:text-orange-400 transition-colors">
                 Privacy Policy
               </a>
-              <span className="text-gray-600">•</span>
-              <a href="#" className="text-sm text-gray-400 hover:text-orange-400 transition-colors">
+              <span className="text-neutral-600">•</span>
+              <a href="#" className="text-sm text-neutral-400 hover:text-orange-400 transition-colors">
                 Terms of Service
               </a>
-              <span className="text-gray-600">•</span>
-              <a href="/sitemap.xml" className="text-sm text-gray-400 hover:text-orange-400 transition-colors">
+              <span className="text-neutral-600">•</span>
+              <a href="/sitemap.xml" className="text-sm text-neutral-400 hover:text-orange-400 transition-colors">
                 Sitemap
               </a>
             </div>

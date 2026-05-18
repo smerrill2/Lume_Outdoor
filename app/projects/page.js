@@ -44,7 +44,7 @@ export default function ProjectsPage() {
                   />
                   {project.featured && (
                     <div className="absolute top-4 right-4">
-                      <div className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
+                      <div className="text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1" style={{ backgroundColor: '#C96A1B' }}>
                         <Star className="w-4 h-4 fill-current" />
                         Featured
                       </div>
@@ -97,7 +97,8 @@ export default function ProjectsPage() {
           </p>
           <Link
             href="/consultation"
-            className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-lg font-medium transition-colors"
+            className="inline-flex items-center gap-2 text-white px-8 py-4 rounded-lg font-medium transition-all hover:brightness-110"
+            style={{ backgroundColor: '#C96A1B' }}
           >
             Schedule Free Consultation
             <ArrowRight className="w-5 h-5" />

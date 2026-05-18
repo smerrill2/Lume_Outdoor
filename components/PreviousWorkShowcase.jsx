@@ -1,105 +1,95 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowRight, MapPin } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { projects } from '@/lib/content';
 
-// Register ScrollTrigger plugin
-gsap.registerPlugin(ScrollTrigger);
-
 function PreviousWorkShowcase() {
-  const sectionRef = useRef(null);
-  const titleRef = useRef(null);
-  const projectRefs = useRef([]);
-  const lastScrollY = useRef(0);
-  const scrollSpeed = useRef(0);
-
-  useEffect(() => {
-    // No animations - elements stay visible
-  }, []);
-
-  // Filter projects to show only those with showOnHomePage !== false
   const homePageProjects = projects.filter(project => project.showOnHomePage !== false);
 
   return (
-    <section id="projects" className="py-20 bg-gradient-to-b from-amber-50/40 via-orange-50/20 to-white" ref={sectionRef}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16" ref={titleRef}>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+    <section id="previous-work" className="py-24 md:py-28 bg-amber-50/40">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="text-center mb-16 md:mb-20">
+          <h2 className="text-3xl md:text-4xl font-light text-gray-900">
             Recent Projects
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            See how we&apos;ve transformed outdoor spaces across Kansas with professional lighting solutions
-          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-6 md:px-0">
-          {homePageProjects.map((project, index) => (
-            <Link 
-              key={project.id}
-              href={`/projects/${project.id}`}
-              ref={el => projectRefs.current[index] = el}
-              className="group relative bg-black rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 cursor-pointer block"
-            >
-              {/* Project Image */}
-              <div className="relative z-0 h-[450px] overflow-hidden">
-                <Image 
-                  src={project.image} 
-                  alt={project.title}
-                  fill
-                  className="project-image object-cover transition-transform duration-500 group-hover:scale-105"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  quality={75}
-                  loading="lazy"
-                  placeholder="blur"
-                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
-                />
-              </div>
+        {/* Alternating Mosaic Rows */}
+        <div className="flex flex-col gap-16 md:gap-20">
+          {homePageProjects.map((project, index) => {
+            const isImageLeft = index % 2 === 0;
 
-              {/* Content overlaying bottom of image */}
-              <div className="relative z-10 px-6 pb-5 pt-4 -mt-32 text-white bg-gradient-to-t from-black/90 via-black/70 to-transparent">
-                <div className="flex items-center gap-2 mb-3 text-sm text-gray-300">
-                  <MapPin className="w-4 h-4 text-orange-500" />
-                  <span>{project.location}</span>
-                </div>
+            return (
+              <Link
+                key={project.id}
+                href={`/projects/${project.id}`}
+                className="group block"
+              >
+                <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 items-center ${
+                  !isImageLeft ? 'md:[direction:rtl]' : ''
+                }`}>
+                  {/* Image Side */}
+                  <div className="relative aspect-[4/3] rounded-xl overflow-hidden md:[direction:ltr]">
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      quality={80}
+                      loading="lazy"
+                      placeholder="blur"
+                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                    />
+                  </div>
 
-                <h3 className="text-xl font-bold mb-2 text-white group-hover:text-orange-400 transition-colors">
-                  {project.title}
-                </h3>
-
-                <p className="text-gray-200 mb-3 line-clamp-2">
-                  {project.description}
-                </p>
-
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {project.tags.map((tag, tagIndex) => (
-                    <span
-                      key={tagIndex}
-                      className="bg-orange-500/20 text-orange-300 text-xs px-3 py-1 rounded-full"
-                    >
-                      {tag}
+                  {/* Text Side */}
+                  <div className="md:[direction:ltr] flex flex-col justify-center py-2 md:py-4">
+                    <span className="text-xs font-light tracking-wide text-gray-400 uppercase mb-3 block">
+                      {project.location}
                     </span>
-                  ))}
-                </div>
 
-                <div className="inline-flex items-center gap-2 text-orange-400 group-hover:text-orange-300 font-medium transition-colors duration-300">
-                  View Project <ArrowRight className="w-4 h-4" />
+                    <h3 className="text-2xl md:text-3xl font-light text-gray-900 mb-4 group-hover:text-gray-600 transition-colors duration-300">
+                      {project.title}
+                    </h3>
+
+                    <p className="text-sm md:text-base font-light text-gray-500 leading-relaxed mb-6">
+                      {project.description}
+                    </p>
+
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {project.tags.map((tag, tagIndex) => (
+                        <span
+                          key={tagIndex}
+                          className="text-xs font-light tracking-wide text-gray-400 border border-gray-200 px-3 py-1 rounded-full"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="flex items-center text-gray-900 font-semibold text-xs tracking-wide group-hover:text-gray-600 transition-colors duration-300">
+                      View Project <ArrowRight className="w-4 h-4 ml-1.5 group-hover:translate-x-2 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]" />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
 
-        <div className="text-center mt-12">
-          <Link 
+        {/* View All */}
+        <div className="text-center mt-16 md:mt-20">
+          <Link
             href="/projects"
-            className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-full font-medium transition-colors duration-300"
+            className="inline-flex items-center gap-2 text-gray-900 font-semibold text-xs tracking-wide hover:text-gray-600 transition-colors duration-300"
           >
-            View All Projects <ArrowRight className="w-5 h-5" />
+            See More <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </div>

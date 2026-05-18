@@ -81,7 +81,8 @@ function ServicePage({ slug }) {
           <p className="text-xl md:text-2xl mb-8 text-white/90">{service.subtitle}</p>
           <Button 
             onClick={scrollToContact}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 text-lg rounded-lg shadow-lg"
+            className="text-white px-8 py-4 text-lg rounded-lg shadow-lg hover:brightness-110 transition-all"
+            style={{ backgroundColor: '#C96A1B' }}
           >
             Schedule Light Consultation
             <ArrowRight className="ml-2 h-5 w-5" />
@@ -121,7 +122,7 @@ function ServicePage({ slug }) {
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {service.galleryImages.map((image, index) => (
                   <div key={index} className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-                    <Image 
+                    <Image
                       src={image.src}
                       alt={image.alt || `${service.title} example ${index + 1}`}
                       fill
@@ -142,7 +143,7 @@ function ServicePage({ slug }) {
             <div className="space-y-4">
               {service.process.map((step, index) => (
                 <div key={index} className="flex items-center space-x-4">
-                  <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#C96A1B' }}>
                     <span className="font-bold text-white">{index + 1}</span>
                   </div>
                   <p className="text-lg text-gray-700">{step}</p>
@@ -159,9 +160,10 @@ function ServicePage({ slug }) {
             <p className="text-lg text-gray-700 mb-8">
               Let&apos;s create a custom lighting design that perfectly suits your needs and budget.
             </p>
-            <Button 
+            <Button
               onClick={scrollToContact}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 text-lg rounded-lg shadow-lg"
+              className="text-white px-8 py-4 text-lg rounded-lg shadow-lg hover:brightness-110 transition-all"
+              style={{ backgroundColor: '#C96A1B' }}
             >
               Schedule Light Consultation
               <ArrowRight className="ml-2 h-5 w-5" />

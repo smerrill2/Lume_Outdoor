@@ -340,7 +340,8 @@ const ContactForm = () => {
                   <button
                     type="submit"
                     disabled={formStatus.submitting}
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 px-6 rounded-md font-semibold text-lg transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full text-white py-3 px-6 rounded-md font-semibold text-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-110"
+                    style={{ backgroundColor: '#C96A1B' }}
                   >
                     {formStatus.submitting ? 'Sending...' : 'Schedule Light Consultation'}
                   </button>
@@ -379,7 +380,7 @@ const ContactForm = () => {
               );
             })}
 
-            <div className="bg-orange-500 rounded-lg p-6 text-white">
+            <div className="rounded-lg p-6 text-white" style={{ backgroundColor: '#C96A1B' }}>
               <h3 className="text-xl font-bold mb-3">Why Choose Lume Outdoor?</h3>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-start">

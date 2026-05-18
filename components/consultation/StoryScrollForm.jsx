@@ -20,8 +20,9 @@ import {
   deckSizes,
   materialTip,
   fixtureTip,
-  pathwayFinishes,
-  specialtyFixtures,
+  pathwayFixtures,
+  wallWasherFixtures,
+  deckLightFixtures,
 } from './formData';
 
 /* ── Helper: initial config state per service type ── */
@@ -30,13 +31,11 @@ function initialConfigForService(service) {
     case 'fixture':
       return { fixtureType: null, finish: null, aluminumColor: null };
     case 'pathway':
-      return { finish: null };
     case 'specialty':
+    case 'deck-fixture':
       return { fixtureType: null, finish: null };
     case 'tree':
       return { focus: null };
-    case 'deck':
-      return { size: null, aluminumColor: null };
     case 'none':
       return {};
     case 'color-only':
@@ -161,10 +160,10 @@ export default function StoryScrollForm() {
       case 'pathway':
         return !!config.finish;
       case 'specialty':
+      case 'deck-fixture':
         return !!config.fixtureType && !!config.finish;
       case 'tree':
         return !!config.focus;
-      case 'deck':
       case 'color-only':
         return !!config.aluminumColor;
       case 'none':
@@ -187,7 +186,7 @@ export default function StoryScrollForm() {
       if (fixture) summary += fixture.shortName;
       if (finish) {
         summary += ` · ${finish.name}`;
-        if (finish.price) summary += ` (~$${finish.price}/light)`;
+        if (finish.upcharge > 0) summary += ` (+$${finish.upcharge})`;
       }
       if (aluColor) summary += ` — ${aluColor.name}`;
       return summary || 'No configuration selected';
@@ -207,6 +206,25 @@ export default function StoryScrollForm() {
       return parts.join(' · ');
     }
 
+    if (service.configType === 'pathway') {
+      const fixture = pathwayFixtures.find((f) => f.id === config.fixtureType);
+      if (!fixture || !config.finish) return 'No finish selected';
+      const finishId = config.finish.replace(`${config.fixtureType}-`, '');
+      const allFinishes = [...fixture.finishes.brass, ...fixture.finishes.aluminum];
+      const finish = allFinishes.find((f) => f.id === finishId);
+      return finish ? `${fixture.name} · ${finish.name}` : 'No finish selected';
+    }
+
+    if (service.configType === 'specialty' || service.configType === 'deck-fixture') {
+      const fixtureList = service.configType === 'deck-fixture' ? deckLightFixtures : wallWasherFixtures;
+      const fixture = fixtureList.find((f) => f.id === config.fixtureType);
+      if (!fixture || !config.finish) return 'No finish selected';
+      const finishId = config.finish.replace(`${config.fixtureType}-`, '');
+      const allFinishes = [...fixture.finishes.brass, ...fixture.finishes.aluminum];
+      const finish = allFinishes.find((f) => f.id === finishId);
+      return finish ? `${fixture.name} · ${finish.name}` : 'No finish selected';
+    }
+
     if (service.configType === 'none') {
       return 'Selected';
     }
@@ -224,6 +242,8 @@ export default function StoryScrollForm() {
     const services = selectedServicesList.map((service) => ({
       name: service.name,
       configSummary: buildServiceSummary(service, serviceConfigs[service.id]),
+      rawConfig: serviceConfigs[service.id],
+      configType: service.configType,
     }));
 
     try {
@@ -296,7 +316,7 @@ export default function StoryScrollForm() {
                 <p className={`text-xs font-medium ${isActive ? 'text-white' : 'text-white/60'}`}>
                   {color.name}
                 </p>
-                {color.price && <p className="text-[10px] text-white/40">~${color.price}/light</p>}
+                {color.upcharge != null && <p className="text-[10px] text-white/40">{color.upcharge > 0 ? `+$${color.upcharge}` : '+$0'}</p>}
               </button>
             );
           })}
@@ -413,13 +433,12 @@ export default function StoryScrollForm() {
     };
 
     const brassOptions = brassFinishes.map((f) => {
-      const upcharge = f.price && selectedFixture.basePrice ? f.price - selectedFixture.basePrice : 0;
       return {
         key: f.id,
         photo: f.photo,
         name: f.name,
         isActive: config.finish === f.id,
-        priceLabel: f.price ? `~$${f.price}/light` : null,
+        priceLabel: f.upcharge > 0 ? `+$${f.upcharge}` : '+$0',
         isBase: !!f.isBase,
         onClick: () => {
           setFinish(service.id, f.id);
@@ -431,14 +450,13 @@ export default function StoryScrollForm() {
     const aluminumFinish = selectedFixture.finishes.find((f) => f.hasColorOptions);
     const aluminumOptions = hasAluminum && aluminumFinish?.colorOptions
       ? aluminumFinish.colorOptions.map((c) => {
-          const colorPrice = c.price || aluminumFinish.price;
-          const upcharge = colorPrice && selectedFixture.basePrice ? colorPrice - selectedFixture.basePrice : 0;
+          const colorUpcharge = c.upcharge ?? aluminumFinish.upcharge ?? 0;
           return {
             key: `aluminum-${c.id}`,
             photo: c.photo,
             name: c.name,
             isActive: config.finish === 'aluminum' && config.aluminumColor === c.id,
-            priceLabel: colorPrice ? `~$${colorPrice}/light` : null,
+            priceLabel: colorUpcharge > 0 ? `+$${colorUpcharge}` : '+$0',
             isBase: !!(c.isBase || aluminumFinish.isBase),
             onClick: () => {
               setFinish(service.id, 'aluminum');
@@ -448,14 +466,9 @@ export default function StoryScrollForm() {
         })
       : [];
 
-    const minBrassPrice = brassFinishes.length
-      ? Math.min(...brassFinishes.map((f) => f.price).filter(Boolean))
+    const minBrassUpcharge = brassFinishes.length
+      ? Math.min(...brassFinishes.map((f) => f.upcharge).filter((u) => u != null))
       : null;
-    const aluminumFinishObj = selectedFixture.finishes.find((f) => f.hasColorOptions);
-    const alumPrices = aluminumFinishObj?.colorOptions
-      ?.map((c) => c.price ?? aluminumFinishObj.price ?? selectedFixture.basePrice)
-      .filter(Boolean) ?? [];
-    const minAlumPrice = alumPrices.length ? Math.min(...alumPrices) : selectedFixture.basePrice;
 
     return (
       <div className="mb-6 animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-5">
@@ -467,9 +480,7 @@ export default function StoryScrollForm() {
                 <h4 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.15em]">Aluminum</h4>
                 <p className="text-[11px] text-white/30 mt-0.5">Budget-friendly, lightweight, multiple colors.</p>
               </div>
-              {minAlumPrice > 0 && (
-                <span className="text-[10px] text-white/40 whitespace-nowrap ml-3 mt-0.5">Base · ~${minAlumPrice}/light</span>
-              )}
+              <span className="text-[10px] text-white/40 whitespace-nowrap ml-3 mt-0.5">Base</span>
             </div>
             {renderSwatchRow(aluminumOptions)}
           </div>
@@ -483,8 +494,8 @@ export default function StoryScrollForm() {
                 <h4 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.15em]">Brass</h4>
                 <p className="text-[11px] text-white/30 mt-0.5">Develops a patina over time. Lasts decades with no upkeep.</p>
               </div>
-              {minBrassPrice > 0 && minAlumPrice > 0 && (
-                <span className="text-[10px] text-orange-400/60 whitespace-nowrap ml-3 mt-0.5">+${minBrassPrice - minAlumPrice} upgrade</span>
+              {minBrassUpcharge > 0 && (
+                <span className="text-[10px] text-orange-400/60 whitespace-nowrap ml-3 mt-0.5">+${minBrassUpcharge} upgrade</span>
               )}
             </div>
             {renderSwatchRow(brassOptions)}
@@ -570,55 +581,6 @@ export default function StoryScrollForm() {
     </>
   );
 
-  /* ── Pathway config (P14 fixture — brass or aluminum) ── */
-  const renderPathwayConfig = (service, config) => {
-    const renderSwatchRow = (options) => {
-      const hasSelection = !!config.finish;
-      return (
-      <div className="flex flex-wrap gap-3">
-        {options.map((finish) => {
-          const isActive = config.finish === finish.id;
-          return (
-            <button
-              key={finish.id}
-              onClick={() => setServiceConfigs((prev) => ({ ...prev, [service.id]: { finish: finish.id } }))}
-              className={`flex flex-col items-center gap-2 group transition-opacity duration-200 ${hasSelection && !isActive ? 'opacity-40' : ''}`}
-            >
-              <div className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 ${isActive ? 'border-orange-500 ring-2 ring-orange-500/30 scale-105' : 'border-white/10 hover:border-white/25'} ${finish.whiteBg ? 'bg-white' : ''}`}>
-                <Image src={finish.photo} alt={finish.name} fill className="object-contain" sizes="80px" />
-                {isActive && <div className="absolute inset-0 bg-orange-500/10" />}
-              </div>
-              <p className={`text-xs font-medium ${isActive ? 'text-white' : 'text-white/60'}`}>{finish.name}</p>
-              {finish.price && <p className="text-[10px] text-white/40">~${finish.price}/light</p>}
-            </button>
-          );
-        })}
-      </div>
-    );
-    };
-
-    return (
-      <div className="space-y-4">
-        <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
-          <div className="mb-3">
-            <h4 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.15em]">Brass</h4>
-            <p className="text-[11px] text-white/30 mt-0.5">Develops a patina over time. Lasts decades with no upkeep.</p>
-          </div>
-          {renderSwatchRow(pathwayFinishes.brass)}
-        </div>
-        <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
-          <div className="mb-3">
-            <h4 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.15em]">Aluminum</h4>
-            <p className="text-[11px] text-white/30 mt-0.5">Budget-friendly, lightweight, available in multiple colors.</p>
-          </div>
-          {renderSwatchRow(pathwayFinishes.aluminum)}
-        </div>
-      </div>
-    );
-  };
-
-  /* ── Deck config (color only, V2 integrated) ── */
-  const renderDeckConfig = (service, config) => renderAluminumPicker(service.id, config);
 
   /* ── Color-only config (wash, pool, security) ── */
   const renderColorOnlyConfig = (service, config) => renderAluminumPicker(service.id, config);
@@ -636,10 +598,11 @@ export default function StoryScrollForm() {
     </div>
   );
 
-  /* ── Specialty config (X5 + C1 spotlights) ── */
-  const renderSpecialtyConfig = (service, config) => {
-    const selectedFixture = specialtyFixtures.find((f) => f.id === config.fixtureType);
+  /* ── Size-picker config (wall washers, deck lights) ── */
+  const renderSizePickerConfig = (service, config, fixtureList) => {
+    const selectedFixture = fixtureList.find((f) => f.id === config.fixtureType);
 
+    const isDeckFixture = service.configType === 'deck-fixture';
     const renderSwatchRow = (finishes) => {
       const hasSelection = !!config.finish;
       return (
@@ -656,10 +619,11 @@ export default function StoryScrollForm() {
               className={`flex flex-col items-center gap-2 group transition-opacity duration-200 ${hasSelection && !isActive ? 'opacity-40' : ''}`}
             >
               <div className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 ${isActive ? 'border-orange-500 ring-2 ring-orange-500/30 scale-105' : 'border-white/10 hover:border-white/25'} ${finish.whiteBg ? 'bg-white' : ''}`}>
-                <Image src={finish.photo} alt={finish.name} fill className="object-contain" sizes="80px" />
+                <Image src={finish.photo} alt={finish.name} fill className={`object-contain ${isDeckFixture ? 'scale-[1.6] -translate-y-[15%]' : ''}`} sizes="80px" />
                 {isActive && <div className="absolute inset-0 bg-orange-500/10" />}
               </div>
               <p className={`text-xs font-medium ${isActive ? 'text-white' : 'text-white/60'}`}>{finish.name}</p>
+              {finish.upcharge != null && <p className="text-[10px] text-white/40">{finish.upcharge > 0 ? `+$${finish.upcharge}` : '+$0'}</p>}
             </button>
           );
         })}
@@ -673,7 +637,7 @@ export default function StoryScrollForm() {
         <div>
           <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-3">Choose Your Fixture</h4>
           <div className="grid grid-cols-2 gap-3">
-            {specialtyFixtures.map((fixture) => {
+            {fixtureList.map((fixture) => {
               const isActive = config.fixtureType === fixture.id;
               const isDimmed = config.fixtureType && !isActive;
               return (
@@ -688,7 +652,7 @@ export default function StoryScrollForm() {
                   }`}
                 >
                   <div className={`relative w-full aspect-[4/3] ${fixture.whiteBg ? 'bg-white' : ''}`}>
-                    <Image src={fixture.photo} alt={fixture.name} fill className={fixture.whiteBg ? 'object-contain p-4' : 'object-cover'} sizes="50%" />
+                    <Image src={fixture.photo} alt={fixture.name} fill className={`${fixture.whiteBg ? 'object-contain p-4' : 'object-cover'} ${isDeckFixture ? 'scale-[1.6] -translate-y-[15%]' : ''}`} sizes="50%" />
                     <div className={`absolute inset-0 transition-all duration-300 ${isActive ? 'bg-gradient-to-t from-black/80 via-black/20 to-transparent' : 'bg-gradient-to-t from-black/90 via-black/40 to-black/10'}`} />
                     {isActive && (
                       <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center">
@@ -716,21 +680,23 @@ export default function StoryScrollForm() {
                   <h4 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.15em]">Aluminum</h4>
                   <p className="text-[11px] text-white/30 mt-0.5">Budget-friendly, lightweight, multiple colors.</p>
                 </div>
-                <span className="text-[10px] text-white/40 whitespace-nowrap ml-3 mt-0.5">Base price</span>
+                <span className="text-[10px] text-white/40 whitespace-nowrap ml-3 mt-0.5">Base</span>
               </div>
               {renderSwatchRow(selectedFixture.finishes.aluminum)}
             </div>
             {/* Brass as upgrade */}
-            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <h4 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.15em]">Brass</h4>
-                  <p className="text-[11px] text-white/30 mt-0.5">Develops a patina over time. Lasts decades with no upkeep.</p>
+            {selectedFixture.finishes.brass.length > 0 && (
+              <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h4 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.15em]">Brass</h4>
+                    <p className="text-[11px] text-white/30 mt-0.5">Develops a patina over time. Lasts decades with no upkeep.</p>
+                  </div>
+                  <span className="text-[10px] text-orange-400/60 whitespace-nowrap ml-3 mt-0.5">+${Math.min(...selectedFixture.finishes.brass.map((f) => f.upcharge).filter((u) => u != null))} upgrade</span>
                 </div>
-                <span className="text-[10px] text-orange-400/60 whitespace-nowrap ml-3 mt-0.5">Upgrade</span>
+                {renderSwatchRow(selectedFixture.finishes.brass)}
               </div>
-              {renderSwatchRow(selectedFixture.finishes.brass)}
-            </div>
+            )}
           </div>
         )}
       </div>
@@ -751,23 +717,28 @@ export default function StoryScrollForm() {
         if (config.finish === 'aluminum' && config.aluminumColor) {
           const aluFinish = fixture.finishes.find((f) => f.hasColorOptions);
           const color = aluFinish?.colorOptions.find((c) => c.id === config.aluminumColor);
-          return color ? { photo: color.photo, label: `${fixture.shortName} · ${color.name}`, price: color.price } : null;
+          return color ? { photo: color.photo, label: `${fixture.shortName} · ${color.name}`, upcharge: color.upcharge } : null;
         }
         const finish = fixture.finishes.find((f) => f.id === config.finish);
-        return finish ? { photo: finish.photo, label: `${fixture.shortName} · ${finish.name}`, price: finish.price } : null;
+        return finish ? { photo: finish.photo, label: `${fixture.shortName} · ${finish.name}`, upcharge: finish.upcharge } : null;
       }
       case 'pathway': {
-        const allFinishes = [...pathwayFinishes.brass, ...pathwayFinishes.aluminum];
-        const finish = allFinishes.find((f) => f.id === config.finish);
-        return finish ? { photo: finish.photo, label: finish.name, price: finish.price, whiteBg: finish.whiteBg } : null;
+        const pathFixture = pathwayFixtures.find((f) => f.id === config.fixtureType);
+        if (!pathFixture || !config.finish) return null;
+        const pathFinishId = config.finish.replace(`${config.fixtureType}-`, '');
+        const allPathFinishes = [...pathFixture.finishes.brass, ...pathFixture.finishes.aluminum];
+        const pathFinish = allPathFinishes.find((f) => f.id === pathFinishId);
+        return pathFinish ? { photo: pathFinish.photo, label: `${pathFixture.name} · ${pathFinish.name}`, upcharge: pathFinish.upcharge, whiteBg: pathFinish.whiteBg } : null;
       }
-      case 'specialty': {
-        const fixture = specialtyFixtures.find((f) => f.id === config.fixtureType);
+      case 'specialty':
+      case 'deck-fixture': {
+        const fixtureList = service.configType === 'deck-fixture' ? deckLightFixtures : wallWasherFixtures;
+        const fixture = fixtureList.find((f) => f.id === config.fixtureType);
         if (!fixture || !config.finish) return null;
         const finishId = config.finish.replace(`${config.fixtureType}-`, '');
         const allFinishes = [...fixture.finishes.brass, ...fixture.finishes.aluminum];
         const finish = allFinishes.find((f) => f.id === finishId);
-        return finish ? { photo: finish.photo, label: `${fixture.name} · ${finish.name}`, whiteBg: finish.whiteBg } : null;
+        return finish ? { photo: finish.photo, label: `${fixture.name} · ${finish.name}`, upcharge: finish.upcharge, whiteBg: finish.whiteBg } : null;
       }
       case 'tree': {
         const focus = treeFocusOptions.find((f) => f.id === config.focus);
@@ -776,7 +747,7 @@ export default function StoryScrollForm() {
       case 'deck':
       case 'color-only': {
         const color = v2AluminumColors.find((c) => c.id === config.aluminumColor);
-        return color ? { photo: color.photo, label: color.name, price: color.price } : null;
+        return color ? { photo: color.photo, label: color.name, upcharge: color.upcharge } : null;
       }
       case 'none':
       default:
@@ -795,7 +766,7 @@ export default function StoryScrollForm() {
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-white text-sm">{service.name}</p>
           {finishInfo && <p className="text-xs text-white/40 mt-0.5">{finishInfo.label}</p>}
-          {finishInfo?.price && <p className="text-[10px] text-white/30 mt-0.5">~${finishInfo.price}/light</p>}
+          {finishInfo?.upcharge > 0 && <p className="text-[10px] text-white/30 mt-0.5">+${finishInfo.upcharge}/fixture</p>}
           {!finishInfo && service.configNote && <p className="text-xs text-white/30 mt-0.5 line-clamp-1">{service.configNote}</p>}
           {!finishInfo && !service.configNote && <p className="text-xs text-white/40 mt-0.5">Selected</p>}
         </div>
@@ -937,10 +908,10 @@ export default function StoryScrollForm() {
                   {/* Config half */}
                   <div className="lg:w-1/2 p-6 lg:p-10 flex flex-col justify-center">
                     {service.configType === 'fixture' && renderFixtureConfig(service, config)}
-                    {service.configType === 'pathway' && renderPathwayConfig(service, config)}
-                    {service.configType === 'specialty' && renderSpecialtyConfig(service, config)}
+                    {service.configType === 'pathway' && renderSizePickerConfig(service, config, pathwayFixtures)}
+                    {service.configType === 'specialty' && renderSizePickerConfig(service, config, wallWasherFixtures)}
                     {service.configType === 'tree' && renderTreeConfig(service, config)}
-                    {service.configType === 'deck' && renderDeckConfig(service, config)}
+                    {service.configType === 'deck-fixture' && renderSizePickerConfig(service, config, deckLightFixtures)}
                     {service.configType === 'color-only' && renderColorOnlyConfig(service, config)}
                     {service.configType === 'none' && renderNoneConfig(service)}
                   </div>

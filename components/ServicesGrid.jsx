@@ -1,80 +1,47 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronUp, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 const featuredServices = [
   {
     id: "residential-landscape",
     title: "Residential Landscape",
-    description: "Transform your home's outdoor spaces with elegant illumination",
+    description: "Elegant illumination for every corner of your property",
     image: "/servicesphotos/outside.jpg",
   },
   {
     id: "pathway-lighting",
     title: "Pathway Lighting",
-    description: "Safe and beautiful walkway illumination",
-    image: "/servicesphotos/pathwaylighting.png",
+    description: "Safe and stunning walkway lighting",
+    image: "/projects/newton_project/NEWTON3.jpeg",
   },
   {
-    id: "deck-patio",
-    title: "Deck & Patio",
-    description: "Perfect outdoor entertaining spaces",
-    image: "/servicesphotos/deck&patio.jpg",
-  },
-];
-
-const moreServices = [
-  {
-    id: "commercial-lighting",
-    title: "Commercial Lighting",
-    description: "Professional business illumination",
-  },
-  {
-    id: "security-lighting",
-    title: "Security Lighting",
-    description: "Enhanced safety and protection",
-  },
-  {
-    id: "architectural",
-    title: "Architectural Lighting",
-    description: "Highlight your building's features",
-  },
-  {
-    id: "pool-water",
-    title: "Pool & Water Features",
-    description: "Stunning aquatic illumination",
-  },
-  {
-    id: "holiday-lighting",
-    title: "Holiday Lighting",
-    description: "Seasonal decorative displays",
+    id: "tree-lighting",
+    title: "Tree Lighting",
+    description: "Dramatic uplighting for any landscape",
+    image: "/servicesphotos/tree_lighting.jpeg",
   },
 ];
 
 function ServicesGrid() {
   const router = useRouter();
-  const [showMore, setShowMore] = useState(false);
-
   const handleServiceClick = (serviceId) => {
     router.push(`/services/${serviceId}`);
   };
 
   return (
-    <section id="services" className="py-20 px-4 bg-gradient-to-b from-amber-50/40 via-orange-50/20 to-white">
+    <section id="services" className="py-24 md:py-28 px-4 bg-neutral-900">
       <div className="container mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Lume Outdoor Offers More for You
+        <div className="text-center mb-14 md:mb-20">
+          <h2 className="text-3xl md:text-4xl font-light text-white">
+            Our Services
           </h2>
-          <div className="w-24 h-1 bg-[#FFA928] mx-auto mb-6"></div>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Professional lighting solutions for every outdoor space and need
-          </p>
         </div>
 
         {/* Featured Services - 3 Big Image Cards */}
@@ -92,75 +59,34 @@ function ServicesGrid() {
                 sizes="(max-width: 768px) 100vw, 33vw"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
-              {/* Dark Overlay */}
-              <div className="absolute inset-0 bg-black/50 group-hover:bg-black/40 transition-colors duration-300" />
               {/* Text Content */}
               <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8">
-                <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                <h3 className="text-lg md:text-xl font-light text-white tracking-tight mb-1.5">
                   {service.title}
                 </h3>
-                <p className="text-white/80 text-sm md:text-base mb-4">
+                <p className="text-white/50 text-xs font-light mb-4">
                   {service.description}
                 </p>
-                <div className="flex items-center text-[#FFA928] font-medium text-sm group-hover:translate-x-1 transition-transform duration-300">
-                  Learn More <ArrowRight className="w-4 h-4 ml-1" />
+                <div className="flex items-center text-white/80 font-semibold text-xs tracking-wide group-hover:text-white transition-colors duration-300">
+                  Learn More <ArrowRight className="w-4 h-4 ml-1.5 group-hover:translate-x-1 transition-transform duration-300" />
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* See More Toggle */}
+        {/* See All Services Link */}
         <div className="text-center mt-10">
-          <button
-            onClick={() => setShowMore(!showMore)}
-            className="inline-flex items-center gap-2 text-[#1D4B26] font-medium hover:text-[#FFA928] transition-colors duration-300"
+          <Link
+            href="/services"
+            className="inline-flex items-center gap-2 text-white/40 font-light hover:text-white transition-colors duration-300"
           >
-            {showMore ? 'Show Less' : 'See All Services'}
-            {showMore ? (
-              <ChevronUp className="w-5 h-5" />
-            ) : (
-              <ChevronDown className="w-5 h-5" />
-            )}
-          </button>
+            See All Services
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
 
-        {/* More Services - Compact List */}
-        <div
-          className={`overflow-hidden transition-all duration-500 ease-in-out ${
-            showMore ? 'max-h-[500px] opacity-100 mt-8' : 'max-h-0 opacity-0'
-          }`}
-        >
-          <div className="max-w-3xl mx-auto divide-y divide-gray-100">
-            {moreServices.map((service) => (
-              <div
-                key={service.id}
-                onClick={() => handleServiceClick(service.id)}
-                className="group flex items-center justify-between py-4 px-4 cursor-pointer hover:bg-gray-50 rounded-lg transition-colors duration-200"
-              >
-                <div>
-                  <h4 className="font-semibold text-[#1D4B26] group-hover:text-[#FFA928] transition-colors duration-200">
-                    {service.title}
-                  </h4>
-                  <p className="text-sm text-gray-500">
-                    {service.description}
-                  </p>
-                </div>
-                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#FFA928] group-hover:translate-x-1 transition-all duration-200 flex-shrink-0" />
-              </div>
-            ))}
-          </div>
-        </div>
 
-        {/* Call to Action */}
-        <div className="text-center mt-16">
-          <Button
-            onClick={() => { if (typeof window.gtag_report_conversion === 'function') window.gtag_report_conversion(); router.push('/consultation'); }}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 text-lg rounded-lg font-medium"
-          >
-            Schedule Today
-          </Button>
-        </div>
       </div>
     </section>
   );
