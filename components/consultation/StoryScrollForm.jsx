@@ -6,7 +6,6 @@ import {
   Check,
   Plus,
   Send,
-  ArrowDown,
   Loader2,
   CheckCircle,
   Info,
@@ -82,9 +81,6 @@ export default function StoryScrollForm() {
           ...configs,
           [serviceId]: initialConfigForService(service),
         }));
-        if (prev.size === 0) {
-          setTimeout(() => scrollToSection(configSectionRef), 300);
-        }
       }
       return next;
     });
@@ -307,13 +303,13 @@ export default function StoryScrollForm() {
                 className={`flex flex-col items-center gap-2 group transition-opacity duration-200 ${hasSelection && !isActive ? 'opacity-40' : ''}`}
               >
                 <div
-                  className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 ${
+                  className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-300 ${
                     isActive
                       ? 'border-orange-500 ring-2 ring-orange-500/30 scale-105'
-                      : 'border-white/10 hover:border-white/25'
+                      : 'border-white/10 hover:border-white/25 group-hover:-translate-y-1 group-hover:shadow-lg group-hover:shadow-black/40'
                   }`}
                 >
-                  <Image src={color.photo} alt={color.name} fill className="object-cover" sizes="80px" />
+                  <Image src={color.photo} alt={color.name} fill className="object-cover transition-transform duration-500 ease-out group-hover:scale-110" sizes="80px" />
                   {isActive && <div className="absolute inset-0 bg-orange-500/10" />}
                 </div>
                 <p className={`text-xs font-medium ${isActive ? 'text-white' : 'text-white/60'}`}>
@@ -346,16 +342,16 @@ export default function StoryScrollForm() {
               <button
                 key={fixture.id}
                 onClick={() => setFixtureType(service.id, isActive ? null : fixture.id)}
-                className={`w-full flex items-start gap-4 p-4 rounded-xl border transition-all duration-300 text-left ${
+                className={`group w-full flex items-start gap-4 p-4 rounded-xl border transition-all duration-300 text-left ${
                   isActive
                     ? 'border-orange-500/50 bg-orange-500/[0.06]'
                     : isDimmed
                       ? 'border-white/5 opacity-40'
-                      : 'border-white/10 hover:border-white/25 bg-white/[0.02]'
+                      : 'border-white/10 hover:border-white/25 bg-white/[0.02] hover:-translate-y-1 hover:shadow-lg hover:shadow-black/40'
                 }`}
               >
                 <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0">
-                  <Image src={fixture.photo} alt={fixture.name} fill className="object-cover" sizes="64px" />
+                  <Image src={fixture.photo} alt={fixture.name} fill className="object-cover transition-transform duration-500 ease-out group-hover:scale-110" sizes="64px" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
@@ -398,10 +394,10 @@ export default function StoryScrollForm() {
             className={`flex flex-col items-center gap-2 group transition-opacity duration-200 ${hasSelection && !option.isActive ? 'opacity-40' : ''}`}
           >
             <div
-              className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 ${
+              className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-300 ${
                 option.isActive
                   ? 'border-orange-500 ring-2 ring-orange-500/30 scale-105'
-                  : 'border-white/10 hover:border-white/25'
+                  : 'border-white/10 hover:border-white/25 group-hover:-translate-y-1 group-hover:shadow-lg group-hover:shadow-black/40'
               }`}
             >
               {option.photo ? (
@@ -409,7 +405,7 @@ export default function StoryScrollForm() {
                   src={option.photo}
                   alt={option.name}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
                   sizes="80px"
                 />
               ) : (
@@ -651,11 +647,11 @@ export default function StoryScrollForm() {
                     [service.id]: { fixtureType: isActive ? null : fixture.id, finish: null },
                   }))}
                   className={`group relative overflow-hidden rounded-xl border transition-all duration-300 ${
-                    isActive ? 'border-orange-500/50 ring-1 ring-orange-500/20' : isDimmed ? 'border-white/5 opacity-40' : 'border-white/10 hover:border-white/25'
+                    isActive ? 'border-orange-500/50 ring-1 ring-orange-500/20' : isDimmed ? 'border-white/5 opacity-40' : 'border-white/10 hover:border-white/25 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/50'
                   }`}
                 >
                   <div className={`relative w-full aspect-[4/3] ${fixture.whiteBg ? 'bg-white' : ''}`}>
-                    <Image src={fixture.photo} alt={fixture.name} fill className={`${fixture.whiteBg ? 'object-contain p-4' : 'object-cover'} ${isDeckFixture ? 'scale-[1.6] -translate-y-[15%]' : ''}`} sizes="50%" />
+                    <Image src={fixture.photo} alt={fixture.name} fill className={`transition-transform duration-500 ease-out ${fixture.whiteBg ? 'object-contain p-4' : 'object-cover'} ${isDeckFixture ? 'scale-[1.6] -translate-y-[15%]' : 'group-hover:scale-110'}`} sizes="50%" />
                     <div className={`absolute inset-0 transition-all duration-300 ${isActive ? 'bg-gradient-to-t from-black/80 via-black/20 to-transparent' : 'bg-gradient-to-t from-black/90 via-black/40 to-black/10'}`} />
                     {isActive && (
                       <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center">
@@ -790,23 +786,14 @@ export default function StoryScrollForm() {
     <div className="bg-[#0a0a0a] rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
       {/* ============ SECTION 1: HERO AREA SELECTION ============ */}
       <section className="relative min-h-[600px] flex flex-col">
-        {/* Background collage */}
+        {/* Cover image */}
         <div className="absolute inset-0">
-          <div className="grid grid-cols-3 h-full">
-            {lightingServices.slice(0, 3).map((service) => (
-              <div key={service.id} className="relative">
-                <Image src={service.photo} alt="" fill className="object-cover" sizes="33vw" />
-              </div>
-            ))}
-          </div>
+          <Image src="/light_form/form-cover.jpg" alt="" fill priority className="object-cover" sizes="100vw" />
           <div className="absolute inset-0 bg-black/75" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black" />
         </div>
 
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-16">
-          <span className="inline-block text-[10px] font-bold tracking-[0.2em] text-orange-400 uppercase mb-4">
-            Step 1
-          </span>
           <h2 className="text-3xl md:text-5xl font-bold text-white text-center mb-3 font-[family-name:var(--font-lora)] max-w-2xl">
             Select Your Lighting Areas
           </h2>
@@ -825,14 +812,14 @@ export default function StoryScrollForm() {
                   className={`group relative aspect-[3/4] rounded-xl overflow-hidden transition-all duration-300 border border-white/[0.14] ${
                     isSelected
                       ? 'ring-2 ring-orange-500 scale-[1.02] border-transparent'
-                      : 'hover:border-white/25'
+                      : 'hover:border-white/25 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/50'
                   }`}
                 >
                   <Image
                     src={service.photo}
                     alt={service.name}
                     fill
-                    className="object-cover"
+                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   />
                   <div
@@ -879,8 +866,8 @@ export default function StoryScrollForm() {
             return (
               <div key={service.id} className="relative">
                 <div className="relative min-h-[500px] flex flex-col lg:flex-row">
-                  {/* Photo half */}
-                  <div className="relative lg:w-1/2 aspect-[16/10] lg:aspect-auto lg:min-h-[500px]">
+                  {/* Photo half — fixed height + self-start so it never resizes when the config panel grows/shrinks on selection */}
+                  <div className="relative lg:w-1/2 aspect-[16/10] lg:aspect-auto lg:h-[600px] lg:self-start lg:sticky lg:top-8">
                     <Image
                       src={service.photo}
                       alt={service.name}
@@ -889,6 +876,8 @@ export default function StoryScrollForm() {
                       sizes="(max-width: 1024px) 100vw, 50vw"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-[#0a0a0a]" />
+                    {/* Top fade so the photo blends into the dark section above instead of a hard seam */}
+                    <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#0a0a0a] to-transparent" />
 
                     <div className="absolute bottom-0 left-0 p-6 lg:p-10 lg:bottom-auto lg:top-1/2 lg:-translate-y-1/2">
                       <div className="inline-flex flex-col bg-black/50 backdrop-blur-md rounded-2xl px-5 py-4 border border-white/10">
@@ -926,27 +915,15 @@ export default function StoryScrollForm() {
               </div>
             );
           })}
-
-          <div className="flex justify-center py-8">
-            <button
-              onClick={() => scrollToSection(contactSectionRef)}
-              className="flex flex-col items-center gap-2 text-orange-400 hover:text-orange-300 transition-colors"
-            >
-              <span className="text-xs font-medium">Continue to your details</span>
-              <ArrowDown className="w-5 h-5 animate-bounce" />
-            </button>
-          </div>
         </section>
       )}
 
       {/* ============ SECTION 3: CONTACT ============ */}
       {selectedServicesList.length > 0 && (
         <section ref={contactSectionRef} className="relative">
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-[#0d1a0f] to-[#0a0a0a]" />
+          <div className="absolute inset-0 bg-[#0a0a0a]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,169,40,0.05),transparent_70%)]" />
           <div className="relative z-10 max-w-lg mx-auto px-6 py-16">
-            <span className="inline-block text-[10px] font-bold tracking-[0.2em] text-orange-400 uppercase mb-4">
-              Step 3
-            </span>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 font-[family-name:var(--font-lora)]">
               Your Details
             </h2>

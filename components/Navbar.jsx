@@ -3,13 +3,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
 
 function Navbar() {
   const router = useRouter();
-  
+  const pathname = usePathname();
+  // Auto-hide the header on scroll-down (reveal on scroll-up) only on the lighting form page
+  const autoHideOnScroll = pathname === '/light_service_form';
+
   const navItems = [
     { name: 'Home', href: '/' },
     { name: 'About Us', href: '/about' },
@@ -34,20 +37,35 @@ function Navbar() {
   ];
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
   const headerRef = useRef(null);
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      const currentScrollY = window.scrollY;
+      setIsScrolled(currentScrollY > 50);
+
+      if (autoHideOnScroll) {
+        // Hide once we've scrolled down past the header, reveal as soon as we scroll up
+        if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+          setIsHidden(true);
+        } else if (currentScrollY < lastScrollY.current) {
+          setIsHidden(false);
+        }
+      } else {
+        setIsHidden(false);
+      }
+      lastScrollY.current = currentScrollY;
     };
 
     handleScroll();
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [autoHideOnScroll]);
 
   const handleNavClick = (e, href) => {
     e.preventDefault();
@@ -75,7 +93,11 @@ function Navbar() {
     <>
       <header 
         ref={headerRef} 
-        className={`fixed top-0 left-0 w-full z-50 isolation-isolate will-change-transform [transform:translateZ(0)] transition-all duration-300 ${
+        className={`fixed top-0 left-0 w-full z-50 isolation-isolate will-change-transform transition-all duration-300 ${
+          isHidden && !isMobileMenuOpen
+            ? '[transform:translateY(-100%)]'
+            : '[transform:translateZ(0)]'
+        } ${
           isScrolled
             ? 'bg-black/20 backdrop-blur-md border-b border-white/10 shadow-lg'
             : 'bg-black/10 backdrop-blur-sm border-b border-white/5'
