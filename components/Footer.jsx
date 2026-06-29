@@ -1,33 +1,9 @@
-'use client';
-
-import React, { useEffect, useRef } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
-import { useImage } from '@/lib/imageConfig';
-import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin, Zap, Star, Sparkles } from 'lucide-react';
+import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin, Zap } from 'lucide-react';
 
 const Footer = () => {
-  const logoUrl = useImage('logo', 'svg');
-  const footerRef = useRef(null);
-  
-  const handleNavClick = (e, href) => {
-    e.preventDefault();
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const scrollToContact = (e) => {
-    e.preventDefault();
-    const contactSection = document.getElementById('contact');
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
-    <footer ref={footerRef} className="relative bg-gradient-to-b from-neutral-900 to-black text-white overflow-hidden">
+    <footer className="relative bg-gradient-to-b from-neutral-900 to-black text-white overflow-hidden">
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Top decorative element */}
@@ -104,7 +80,6 @@ const Footer = () => {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    onClick={(e) => link.href.startsWith('#') && handleNavClick(e, link.href)}
                     className="group flex items-center text-neutral-300 hover:text-orange-400 transition-colors text-sm"
                   >
                     <span className="w-1 h-1 bg-orange-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
@@ -113,13 +88,13 @@ const Footer = () => {
                 </li>
               ))}
               <li>
-                <button
-                  onClick={scrollToContact}
+                <Link
+                  href="/#contact"
                   className="group flex items-center text-neutral-300 hover:text-orange-400 transition-colors text-sm text-left"
                 >
                   <span className="w-1 h-1 bg-orange-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                   Contact Us
-                </button>
+                </Link>
               </li>
             </ul>
           </div>
@@ -155,9 +130,9 @@ const Footer = () => {
               </li>
             </ul>
 
-            <button
-              onClick={() => { if (typeof window.gtag_report_conversion === 'function') window.gtag_report_conversion(); window.location.href = '/?view=consultation'; }}
-              className="mt-6 w-full relative group overflow-hidden"
+            <Link
+              href="/consultation"
+              className="mt-6 block w-full relative group overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-orange-500 transition-transform group-hover:scale-105"></div>
               <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -165,7 +140,7 @@ const Footer = () => {
                 Light Up Your Property
                 <Zap className="ml-2 w-4 h-4" />
               </span>
-            </button>
+            </Link>
           </div>
         </div>
 

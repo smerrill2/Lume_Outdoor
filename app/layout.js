@@ -76,7 +76,7 @@ export default function RootLayout({ children }) {
       <body>
         {process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID && (
           <>
-            <Script id="fb-pixel" strategy="afterInteractive">
+            <Script id="fb-pixel" strategy="lazyOnload">
               {`
                 !function(f,b,e,v,n,t,s)
                 {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -98,9 +98,9 @@ export default function RootLayout({ children }) {
         <Script
           async
           src="https://www.googletagmanager.com/gtag/js?id=AW-17048667028"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="google-analytics" strategy="afterInteractive">
+        <Script id="google-analytics" strategy="lazyOnload">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}

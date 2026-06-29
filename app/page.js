@@ -1,61 +1,19 @@
-'use client'
-
-import React, { useEffect, useRef } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import ServicesGrid from '@/components/ServicesGrid';
 import PreviousWorkShowcase from '@/components/PreviousWorkShowcase';
-import Testimonials from '@/components/Testimonials';
 import ServiceProcess from '@/components/ServiceProcess';
-import ServiceAreaMap from '@/components/ServiceAreaMap';
-import FAQ from '@/components/FAQ';
-import ContactFormWithJobber from '@/components/ContactFormWithJobber';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useImage } from '@/lib/imageConfig';
+import HomeDeferredSections from '@/components/HomeDeferredSections';
 
-gsap.registerPlugin(ScrollTrigger);
+const heroBackground = '/projects/crestview_project/showcase_photo-hero.webp';
 
 export default function Home() {
-  const heroBackground = useImage('hero', 'background');
-  const heroSectionRef = useRef(null);
-  const heroTitleRef = useRef(null);
-  const heroSubtitleRef = useRef(null);
-  const heroButtonRef = useRef(null);
-
-  useEffect(() => {
-    // Ensure we're on the client side
-    if (typeof window === 'undefined') return;
-
-    const ctx = gsap.context(() => {
-      // Quick fade in on initial load only - much faster
-      gsap.set([heroTitleRef.current, heroSubtitleRef.current, heroButtonRef.current], {
-        opacity: 0
-      });
-
-      gsap.to([heroTitleRef.current, heroSubtitleRef.current, heroButtonRef.current], {
-        opacity: 1,
-        duration: 0.3,
-        stagger: 0.05,
-        ease: "power2.out"
-      });
-    }, heroSectionRef);
-
-    return () => ctx.revert();
-  }, []);
-
-  const scrollToServices = () => {
-    const servicesSection = document.getElementById('services');
-    if (servicesSection) {
-      servicesSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section ref={heroSectionRef} className="relative h-[calc(72vh+200px)] md:h-[calc(90vh+200px)] -mt-[200px] pt-[200px] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[calc(72vh+200px)] md:h-[calc(90vh+200px)] -mt-[200px] pt-[200px] flex items-center justify-center overflow-hidden">
         {/* Background Image with optimization */}
         <div className="absolute inset-0 z-0">
           <Image
@@ -63,11 +21,10 @@ export default function Home() {
             alt="Professional outdoor lighting installation"
             fill
             priority
-            quality={85}
+            fetchPriority="high"
+            quality={76}
             sizes="100vw"
             className="scale-x-[-1] object-cover object-[center_45%] md:scale-x-100 md:object-[center_30%]"
-            placeholder="blur"
-            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
           />
         </div>
 
@@ -75,23 +32,24 @@ export default function Home() {
         <div className="relative z-20 text-center text-white px-4 max-w-4xl mx-auto">
           {/* Text content */}
           <div className="relative z-10">
-            <h1 ref={heroTitleRef} className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.6), 0 1px 4px rgba(0,0,0,0.4)' }}>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.6), 0 1px 4px rgba(0,0,0,0.4)' }}>
               Illuminate Your Outdoor Dreams
             </h1>
 
-            <p ref={heroSubtitleRef} className="text-lg md:text-xl font-light mb-8 text-gray-200 max-w-3xl mx-auto tracking-wide" style={{ textShadow: '0 2px 16px rgba(0,0,0,0.8), 0 1px 6px rgba(0,0,0,0.6)' }}>
+            <p className="text-lg md:text-xl font-light mb-8 text-gray-200 max-w-3xl mx-auto tracking-wide" style={{ textShadow: '0 2px 16px rgba(0,0,0,0.8), 0 1px 6px rgba(0,0,0,0.6)' }}>
               Professional landscape lighting designed to elevate your home after dark.
             </p>
             
             <Button
-              ref={heroButtonRef}
-              onClick={() => window.location.href = '/consultation'}
+              asChild
               size="lg"
               className="text-white px-8 py-4 text-lg font-light rounded-lg transition-all duration-300 hover:brightness-110"
               style={{ backgroundColor: '#C96A1B' }}
             >
-              Schedule a Consultation
-              <ArrowRight className="ml-2 w-5 h-5" />
+              <Link href="/consultation">
+                Schedule a Consultation
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
             </Button>
           </div>
         </div>
@@ -144,11 +102,8 @@ export default function Home() {
 
       <ServicesGrid />
       <PreviousWorkShowcase />
-      <Testimonials />
       <ServiceProcess />
-      <ServiceAreaMap />
-      <ContactFormWithJobber />
-      <FAQ />
+      <HomeDeferredSections />
     </div>
   );
 }

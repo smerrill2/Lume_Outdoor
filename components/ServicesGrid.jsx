@@ -1,10 +1,6 @@
-'use client';
-
 import React from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 
 const featuredServices = [
@@ -12,31 +8,23 @@ const featuredServices = [
     id: "residential-landscape",
     title: "Residential Landscape",
     description: "Elegant illumination for every corner of your property",
-    image: "/servicesphotos/outside.jpg",
+    image: "/servicesphotos/outside-card.webp",
   },
   {
     id: "pathway-lighting",
     title: "Pathway Lighting",
     description: "Safe and stunning walkway lighting",
-    image: "/projects/newton_project/NEWTON3.jpeg",
+    image: "/projects/newton_project/NEWTON3-card.webp",
   },
   {
     id: "tree-lighting",
     title: "Tree Lighting",
     description: "Dramatic uplighting for any landscape",
-    image: "/servicesphotos/tree_lighting.jpeg",
+    image: "/servicesphotos/tree_lighting-card.webp",
   },
 ];
 
 function ServicesGrid() {
-  const router = useRouter();
-  const handleServiceClick = (serviceId) => {
-    if (typeof window.fbq === 'function') {
-      window.fbq('track', 'ViewContent', { content_name: serviceId });
-    }
-    router.push(`/services/${serviceId}`);
-  };
-
   return (
     <section id="services" className="py-24 md:py-28 px-4 bg-neutral-900">
       <div className="container mx-auto">
@@ -50,16 +38,16 @@ function ServicesGrid() {
         {/* Featured Services - 3 Big Image Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {featuredServices.map((service) => (
-            <div
+            <Link
               key={service.id}
-              onClick={() => handleServiceClick(service.id)}
+              href={`/services/${service.id}`}
               className="group relative cursor-pointer rounded-xl overflow-hidden aspect-[3/4] md:aspect-[4/5]"
             >
               <Image
                 src={service.image}
                 alt={service.title}
                 fill
-                sizes="(max-width: 768px) 100vw, 33vw"
+                sizes="(max-width: 768px) calc(100vw - 96px), 33vw"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
               {/* Text Content */}
@@ -74,7 +62,7 @@ function ServicesGrid() {
                   Learn More <ArrowRight className="w-4 h-4 ml-1.5 group-hover:translate-x-1 transition-transform duration-300" />
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
