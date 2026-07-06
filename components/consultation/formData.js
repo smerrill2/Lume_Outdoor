@@ -332,16 +332,16 @@ export const pathwayFixtures = [
 export const lightingServices = [
   {
     id: 'uplighting',
-    name: 'House Uplighting',
-    description: "Highlight your home's facade and architectural features",
+    name: 'Above-Ground Uplights',
+    description: 'Visible fixtures for homes, trees, columns, and landscape features',
     Icon: Building2,
     photo: "/projects/SamProject/drakes-home-04.jpg",
     configType: 'fixture',
   },
   {
     id: 'tree',
-    name: 'Tree Uplighting',
-    description: 'In-ground well lights to showcase your trees',
+    name: 'Tree Well Lights',
+    description: 'In-ground fixtures for tree, canopy, or trunk lighting',
     Icon: TreePine,
     photo: '/servicesphotos/tree_lighting.jpeg',
     basePrice: 117,
