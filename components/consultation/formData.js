@@ -141,14 +141,8 @@ export const materialTip = {
     "Brass is the gold standard for outdoor fixtures — it develops a natural protective patina and can last 20+ years with minimal maintenance. It's a premium investment that only gets better with age. Aluminum is budget-friendly, lightweight, and comes in multiple color options, but it's more susceptible to wear over time and may need replacement sooner.",
 };
 
-export const fixtureTip = {
-  title: 'Drop-In vs. Integrated',
-  content:
-    'V1 can be moved or swapped after install — good if your yard is still changing. V2 mounts flush for a cleaner, permanent look.',
-};
-
 /* ── Lighting service areas ── */
-/* configType: 'fixture'    = V1/V2 fixture → finish flow (uplighting, pathway)  */
+/* configType: 'fixture'    = Drop-in uplight fixture → finish flow              */
 /* configType: 'tree'       = focus question only (trunk/canopy/designer)         */
 /* configType: 'deck'       = size + aluminum color (V2 integrated only)          */
 /* configType: 'color-only' = just aluminum color picker                          */

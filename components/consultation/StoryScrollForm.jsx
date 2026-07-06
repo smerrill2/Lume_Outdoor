@@ -18,17 +18,18 @@ import {
   treeFocusOptions,
   deckSizes,
   materialTip,
-  fixtureTip,
   pathwayFixtures,
   wallWasherFixtures,
   deckLightFixtures,
 } from './formData';
 
+const UPLIGHTING_FIXTURE_ID = 'v1-dropin';
+
 /* ── Helper: initial config state per service type ── */
 function initialConfigForService(service) {
   switch (service.configType) {
     case 'fixture':
-      return { fixtureType: null, finish: null, aluminumColor: null };
+      return { fixtureType: UPLIGHTING_FIXTURE_ID, finish: null, aluminumColor: null };
     case 'pathway':
     case 'specialty':
     case 'deck-fixture':
@@ -87,13 +88,6 @@ export default function StoryScrollForm() {
   };
 
   /* ── Config handlers ── */
-  const setFixtureType = (serviceId, fixtureId) => {
-    setServiceConfigs((prev) => ({
-      ...prev,
-      [serviceId]: { ...prev[serviceId], fixtureType: fixtureId, finish: null, aluminumColor: null },
-    }));
-  };
-
   const setFinish = (serviceId, finishId) => {
     setServiceConfigs((prev) => ({
       ...prev,
@@ -324,49 +318,29 @@ export default function StoryScrollForm() {
     );
   };
 
-  /* ── V1/V2 fixture type selector (shared by fixture + tree) ── */
-  const renderFixtureTypeSelector = (service, config) => {
-    const hasSelected = !!config.fixtureType;
+  /* ── House uplighting uses the drop-in fixture only ── */
+  const renderUplightingFixtureSummary = () => {
+    const fixture = fixtureTypes.find((f) => f.id === UPLIGHTING_FIXTURE_ID);
+    if (!fixture) return null;
 
     return (
       <div className="mb-6">
         <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">
-          {hasSelected ? 'Your Fixture' : 'Choose Your Fixture'}
+          Fixture
         </h4>
-        <div className="space-y-3">
-          {fixtureTypes.map((fixture) => {
-            const isActive = config.fixtureType === fixture.id;
-            const isDimmed = hasSelected && !isActive;
-
-            return (
-              <button
-                key={fixture.id}
-                onClick={() => setFixtureType(service.id, isActive ? null : fixture.id)}
-                className={`group w-full flex items-start gap-4 p-4 rounded-xl border transition-all duration-300 text-left ${
-                  isActive
-                    ? 'border-orange-500/50 bg-orange-500/[0.06]'
-                    : isDimmed
-                      ? 'border-white/5 opacity-40'
-                      : 'border-white/10 hover:border-white/25 bg-white/[0.02] hover:-translate-y-1 hover:shadow-lg hover:shadow-black/40'
-                }`}
-              >
-                <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0">
-                  <Image src={fixture.photo} alt={fixture.name} fill className="object-cover transition-transform duration-500 ease-out group-hover:scale-110" sizes="64px" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className={`font-semibold text-sm ${isActive ? 'text-white' : 'text-white/70'}`}>{fixture.name}</p>
-                    {isActive && (
-                      <div className="w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center shrink-0">
-                        <Check className="w-3 h-3 text-white" />
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-[11px] text-white/40 mt-1 leading-relaxed">{fixture.description}</p>
-                </div>
-              </button>
-            );
-          })}
+        <div className="flex items-start gap-4 p-4 rounded-xl border border-orange-500/30 bg-orange-500/[0.06]">
+          <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0">
+            <Image src={fixture.photo} alt={fixture.name} fill className="object-cover" sizes="64px" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <p className="font-semibold text-sm text-white">{fixture.name}</p>
+              <div className="w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center shrink-0">
+                <Check className="w-3 h-3 text-white" />
+              </div>
+            </div>
+            <p className="text-[11px] text-white/40 mt-1 leading-relaxed">{fixture.description}</p>
+          </div>
         </div>
       </div>
     );
@@ -508,11 +482,10 @@ export default function StoryScrollForm() {
   /*  CONFIG PANEL RENDERERS                                                  */
   /* ======================================================================== */
 
-  /* ── Fixture config (uplighting, pathway) ── */
+  /* ── Fixture config (house uplighting) ── */
   const renderFixtureConfig = (service, config) => (
     <>
-      <InfoTip title={fixtureTip.title} content={fixtureTip.content} neutral />
-      {renderFixtureTypeSelector(service, config)}
+      {renderUplightingFixtureSummary()}
       {renderFinishSelector(service, config)}
     </>
   );
