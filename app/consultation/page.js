@@ -26,15 +26,15 @@ export default function ConsultationPage() {
       {/* Hero Section */}
       <section 
         ref={heroRef} 
-        className="relative pt-40 pb-28 px-4 text-white bg-cover bg-center"
-        style={{ backgroundImage: "url('/3rdProject.png')" }}
+        className="relative overflow-hidden pt-40 pb-28 px-4 text-white bg-cover bg-center"
+        style={{ backgroundImage: "url('/Hero_photo.webp')" }}
       >
-        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/25 to-black/45"></div>
         <div className="relative max-w-4xl mx-auto text-center">
           <h1 ref={titleRef} className="text-4xl md:text-5xl font-bold mb-6">
             Schedule Your Free Consultation
           </h1>
-          <p ref={subtitleRef} className="text-xl text-gray-300 max-w-2xl mx-auto">
+          <p ref={subtitleRef} className="text-xl text-white/90 max-w-2xl mx-auto">
             Take the first step toward transforming your outdoor space. 
             Our lighting experts will visit your property, discuss your vision, 
             and provide a custom design proposal.
