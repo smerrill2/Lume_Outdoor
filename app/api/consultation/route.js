@@ -211,7 +211,7 @@ function ConsultationPdf({ contactInfo, services, date }) {
 /* ── API Route Handler ── */
 export async function POST(request) {
   try {
-    const { contactInfo, services } = await request.json();
+    const { contactInfo, services, attribution, transactionId } = await request.json();
 
     if (!contactInfo?.name || !contactInfo?.email || !contactInfo?.phone) {
       return Response.json(
@@ -227,17 +227,52 @@ export async function POST(request) {
       );
     }
 
+    const allowedAttributionKeys = [
+      'gclid',
+      'gbraid',
+      'wbraid',
+      'utm_source',
+      'utm_medium',
+      'utm_campaign',
+      'utm_term',
+      'utm_content',
+      'first_seen_at',
+      'last_seen_at',
+      'landing_page',
+    ];
+    const leadAttribution = Object.fromEntries(
+      allowedAttributionKeys
+        .filter((key) => typeof attribution?.[key] === 'string')
+        .map((key) => [key, attribution[key].trim().slice(0, 1000)]),
+    );
+    const leadTransactionId =
+      typeof transactionId === 'string'
+        ? transactionId.trim().slice(0, 100)
+        : null;
+    let submissionId = null;
+
     /* ── Persist to Supabase (graceful — emails still send on failure) ── */
     try {
       const supabase = createServiceClient();
-      await supabase.from('consultation_submissions').insert({
-        customer_name: contactInfo.name,
-        customer_email: contactInfo.email,
-        customer_phone: contactInfo.phone,
-        customer_address: contactInfo.address || null,
-        customer_notes: contactInfo.notes || null,
-        services,
-      });
+      const { data, error } = await supabase
+        .from('consultation_submissions')
+        .insert({
+          customer_name: contactInfo.name,
+          customer_email: contactInfo.email,
+          customer_phone: contactInfo.phone,
+          customer_address: contactInfo.address || null,
+          customer_notes: contactInfo.notes || null,
+          services,
+          proposal_data: {
+            leadAttribution,
+            leadTransactionId,
+          },
+        })
+        .select('id')
+        .single();
+
+      if (error) throw error;
+      submissionId = data?.id || null;
     } catch (dbError) {
       console.error('Supabase insert error (non-blocking):', dbError);
     }
@@ -322,7 +357,11 @@ export async function POST(request) {
       attachments: [pdfAttachment],
     });
 
-    return Response.json({ success: true });
+    return Response.json({
+      success: true,
+      submissionId,
+      transactionId: leadTransactionId,
+    });
   } catch (error) {
     console.error('Consultation submission error:', error);
     return Response.json(

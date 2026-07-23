@@ -1,6 +1,10 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+import { buildTrackedJobberFormUrl } from '@/lib/leadAttribution';
+
+const JOBBER_FORM_URL =
+  'https://clienthub.getjobber.com/client_hubs/71b278a2-07ad-43e3-80c7-a57c292b1277/public/work_request/embedded_work_request_form';
 
 const SimpleJobberForm = () => {
   const containerRef = useRef(null);
@@ -24,7 +28,7 @@ const SimpleJobberForm = () => {
         const script = document.createElement('script');
         script.src = scriptSrc;
         script.setAttribute('clienthub_id', '71b278a2-07ad-43e3-80c7-a57c292b1277');
-        script.setAttribute('form_url', 'https://clienthub.getjobber.com/client_hubs/71b278a2-07ad-43e3-80c7-a57c292b1277/public/work_request/embedded_work_request_form');
+        script.setAttribute('form_url', buildTrackedJobberFormUrl(JOBBER_FORM_URL));
         containerRef.current.appendChild(script);
       }
     };

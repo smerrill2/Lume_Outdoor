@@ -123,8 +123,8 @@ function StarRating({ rating }) {
 
 export default function PMaxLandingPage() {
   const handleCtaClick = () => {
-    if (typeof window.gtag_report_conversion === 'function') {
-      window.gtag_report_conversion();
+    if (typeof window.gtag_report_lead_start === 'function') {
+      window.gtag_report_lead_start('get_started_cta');
     }
     if (typeof window.fbq === 'function') {
       window.fbq('track', 'Schedule');

@@ -22,6 +22,7 @@ import {
   wallWasherFixtures,
   deckLightFixtures,
 } from './formData';
+import { getLeadAttribution } from '@/lib/leadAttribution';
 
 const UPLIGHTING_FIXTURE_ID = 'v1-dropin';
 
@@ -237,20 +238,34 @@ export default function StoryScrollForm() {
     }));
 
     try {
+      const transactionId =
+        typeof crypto?.randomUUID === 'function'
+          ? crypto.randomUUID()
+          : `lead-${Date.now()}`;
       const response = await fetch('/api/consultation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contactInfo, services }),
+        body: JSON.stringify({
+          contactInfo,
+          services,
+          attribution: getLeadAttribution(),
+          transactionId,
+        }),
       });
 
+      const data = await response.json();
       if (!response.ok) {
-        const data = await response.json();
         throw new Error(data.error || 'Failed to submit consultation.');
       }
 
       setSubmitStatus('success');
       if (typeof window.gtag_report_conversion === 'function') {
-        window.gtag_report_conversion();
+        window.gtag_report_conversion({
+          email: contactInfo.email,
+          phone: contactInfo.phone,
+          transactionId: data.transactionId || transactionId,
+          formName: 'lighting_configurator',
+        });
       }
       if (typeof window.fbq === 'function') {
         window.fbq('track', 'Lead');

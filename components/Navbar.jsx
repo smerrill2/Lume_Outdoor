@@ -165,7 +165,7 @@ function Navbar() {
               <Button
                 className="text-white px-6 py-2.5 rounded-lg font-light ml-8 hover:brightness-110 transition-all"
                 style={{ backgroundColor: '#C96A1B' }}
-                onClick={() => { if (typeof window.gtag_report_conversion === 'function') window.gtag_report_conversion(); router.push('/consultation'); }}
+                onClick={() => { if (typeof window.gtag_report_lead_start === 'function') window.gtag_report_lead_start('navbar_desktop'); router.push('/consultation'); }}
               >
                 Schedule Consultation
               </Button>
@@ -214,7 +214,7 @@ function Navbar() {
             <Button
               className="px-6 py-3 text-white rounded-lg text-lg hover:brightness-110 transition-all"
               style={{ backgroundColor: '#C96A1B' }}
-              onClick={() => { if (typeof window.gtag_report_conversion === 'function') window.gtag_report_conversion(); router.push('/consultation'); }}
+              onClick={() => { if (typeof window.gtag_report_lead_start === 'function') window.gtag_report_lead_start('navbar_mobile'); router.push('/consultation'); }}
             >
               Schedule Light Consultation
             </Button>

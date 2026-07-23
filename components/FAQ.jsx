@@ -118,7 +118,7 @@ const FAQ = () => {
             Still have questions? We&apos;re here to help!
           </p>
           <button
-            onClick={() => { if (typeof window.gtag_report_conversion === 'function') window.gtag_report_conversion(); window.location.href = '/?view=consultation'; }}
+            onClick={() => { if (typeof window.gtag_report_lead_start === 'function') window.gtag_report_lead_start('faq'); window.location.href = '/?view=consultation'; }}
             className="inline-flex items-center px-6 py-3 text-white font-medium rounded-lg transition-all hover:brightness-110"
             style={{ backgroundColor: '#C96A1B' }}
           >

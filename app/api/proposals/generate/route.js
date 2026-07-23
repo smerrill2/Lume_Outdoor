@@ -43,11 +43,22 @@ export async function POST(request) {
     /* ── Save proposal data to Supabase ── */
     try {
       const supabase = createServiceClient();
+      const { data: submission } = await supabase
+        .from('consultation_submissions')
+        .select('proposal_data')
+        .eq('id', submissionId)
+        .single();
       await supabase
         .from('consultation_submissions')
         .update({
           proposal_status: 'proposal_created',
-          proposal_data: { lineItems, grandTotal, notes, generatedAt: new Date().toISOString() },
+          proposal_data: {
+            ...(submission?.proposal_data || {}),
+            lineItems,
+            grandTotal,
+            notes,
+            generatedAt: new Date().toISOString(),
+          },
         })
         .eq('id', submissionId);
     } catch (dbError) {

@@ -2,6 +2,7 @@ import './globals.css'
 import { Montserrat, Inter } from 'next/font/google'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import LeadAttribution from '@/components/LeadAttribution'
 import Script from 'next/script'
 
 const montserrat = Montserrat({
@@ -98,32 +99,58 @@ export default function RootLayout({ children }) {
         <Script
           async
           src="https://www.googletagmanager.com/gtag/js?id=AW-17048667028"
-          strategy="lazyOnload"
+          strategy="afterInteractive"
         />
-        <Script id="google-analytics" strategy="lazyOnload">
+        <Script id="google-analytics" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'AW-17048667028');
-            gtag('config', 'G-G88VKQDXHY');
+            window.gtag = window.gtag || function(){window.dataLayer.push(arguments);};
+            window.gtag('js', new Date());
+            window.gtag('config', 'AW-17048667028');
+            window.gtag('config', 'G-G88VKQDXHY');
 
-            window.gtag_report_conversion = function(url) {
-              var callback = function () {
-                if (typeof(url) != 'undefined') {
-                  window.location = url;
-                }
-              };
-              gtag('event', 'conversion', {
+            window.gtag_report_lead_start = function(source) {
+              window.gtag('event', 'lead_form_start', {
+                'send_to': 'G-G88VKQDXHY',
+                'form_name': source || 'consultation'
+              });
+            };
+
+            window.gtag_report_conversion = function(options) {
+              options = options || {};
+              var email = typeof options.email === 'string'
+                ? options.email.trim().toLowerCase()
+                : '';
+              var phone = typeof options.phone === 'string'
+                ? options.phone.replace(/[^0-9+]/g, '')
+                : '';
+
+              if (phone && phone.charAt(0) !== '+' && phone.length === 10) {
+                phone = '+1' + phone;
+              }
+
+              var userData = {};
+              if (email) userData.email = email;
+              if (phone) userData.phone_number = phone;
+              if (email || phone) window.gtag('set', 'user_data', userData);
+
+              window.gtag('event', 'conversion', {
                 'send_to': 'AW-17048667028/4qmOCIyqn-UaEJSHuME_',
                 'value': 1.0,
                 'currency': 'USD',
-                'event_callback': callback
+                'transaction_id': options.transactionId || ''
               });
-              return false;
-            }
+              window.gtag('event', 'generate_lead', {
+                'send_to': 'G-G88VKQDXHY',
+                'value': 1.0,
+                'currency': 'USD',
+                'form_name': options.formName || 'consultation',
+                'transaction_id': options.transactionId || ''
+              });
+            };
           `}
         </Script>
+        <LeadAttribution />
         <Navbar />
         <main>{children}</main>
         <Footer />
