@@ -28,7 +28,7 @@ function Navbar() {
         { name: 'Deck & Patio', href: '/services/deck-patio' },
         { name: 'Architectural Lighting', href: '/services/architectural' },
         { name: 'Pool & Water Features', href: '/services/pool-water' },
-        { name: 'Holiday Lighting', href: '/services/holiday-lighting' }
+        { name: 'Repair & Maintenance', href: '/services/landscape-lighting-repair' }
       ]
     },
     { name: 'Our Work', href: '#previous-work' },

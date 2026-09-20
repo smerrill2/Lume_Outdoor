@@ -51,7 +51,7 @@ const Footer = () => {
                 { name: 'Deck & Patio', id: 'deck-patio' },
                 { name: 'Architectural', id: 'architectural' },
                 { name: 'Pool & Water Features', id: 'pool-water' },
-                { name: 'Holiday Lighting', id: 'holiday-lighting' }
+                { name: 'Repair & Maintenance', id: 'landscape-lighting-repair' }
               ].map((service) => (
                 <li key={service.id}>
                   <Link

@@ -3,10 +3,10 @@ import ServicesIndexPage from '@/components/ServicesIndexPage';
 
 export const metadata = {
   title: 'Our Services - Professional Outdoor Lighting | Lume Outdoor',
-  description: 'Explore our full range of professional outdoor lighting services including residential landscape, commercial, architectural, pathway, deck & patio, pool, security, and holiday lighting.',
+  description: 'Explore professional outdoor lighting design, installation, landscape lighting repair, and low-voltage system maintenance services in Wichita, KS.',
   openGraph: {
     title: 'Our Services - Professional Outdoor Lighting | Lume Outdoor',
-    description: 'Explore our full range of professional outdoor lighting services.',
+    description: 'Outdoor lighting design, installation, repair, and maintenance services in Wichita, KS.',
   },
 };
 

@@ -84,7 +84,7 @@ export default function AboutPage() {
   const stats = [
     { number: "1000+", label: "Properties Illuminated" },
     { number: "5+", label: "Years Combined Experience" },
-    { number: "20yr", label: "Warranty on Fixtures" },
+    { number: "20yr", label: "Product Warranty" },
     { number: "100%", label: "Customer Satisfaction" }
   ];
 

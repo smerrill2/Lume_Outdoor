@@ -46,7 +46,7 @@ const benefits = [
   'Free on-site design consultation',
   'Premium brass & copper fixtures',
   'Professional installation in 1-2 days',
-  'Lifetime warranty on all fixtures',
+  '20-year product warranty on fixtures and transformers',
   'Smart lighting controls included',
   'Increases home value by up to 20%',
 ];
@@ -194,7 +194,7 @@ export default function PMaxLandingPage() {
         <div className="max-w-6xl mx-auto px-4 flex flex-wrap justify-center gap-8 md:gap-16 text-white/70 text-sm font-medium">
           <span>100+ Homes Illuminated</span>
           <span>5.0 Star Average Rating</span>
-          <span>Lifetime Fixture Warranty</span>
+          <span>20-Year Product Warranty</span>
           <span>Wichita&apos;s #1 Choice</span>
         </div>
       </div>

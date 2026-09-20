@@ -46,7 +46,7 @@ const JobberForm = () => {
           </div>
           <div className="bg-gray-50 rounded-lg p-6">
             <h3 className="font-semibold text-lg mb-2">Expert Installation</h3>
-            <p className="text-gray-600">Professional installation with warranty</p>
+            <p className="text-gray-600">Careful installation with concealed wiring</p>
           </div>
         </div>
       </div>

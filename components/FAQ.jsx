@@ -24,7 +24,7 @@ const FAQ = () => {
     },
     {
       question: "Do you offer a warranty?",
-      answer: "Yes! We offer a 20-year manufacturer warranty on all fixtures and transformers. System controls are covered by the manufacturer's warranty. Labor is not included."
+      answer: "Yes. Fixtures and transformers include a 20-year product warranty. System controls carry their applicable manufacturer's warranty. Labor and installation are not covered."
     },
     {
       question: "What if I want to expand the system later?",

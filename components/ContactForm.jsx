@@ -397,7 +397,7 @@ const ContactForm = () => {
                 </li>
                 <li className="flex items-start">
                   <span className="mr-2">✓</span>
-                  <span>Lifetime warranty & support</span>
+                  <span>20-year product warranty</span>
                 </li>
               </ul>
             </div>

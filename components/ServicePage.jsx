@@ -47,9 +47,13 @@ function ServicePage({ slug }) {
   }, [slug]);
 
   const scrollToContact = () => {
-    if (typeof window.gtag_report_lead_start === 'function') window.gtag_report_lead_start('service_page');
+    const source = service.attributionContent || `service_page_${slug}`;
+    if (typeof window.gtag_report_lead_start === 'function') window.gtag_report_lead_start(source);
     if (typeof window.fbq === 'function') window.fbq('track', 'Schedule');
-    router.push('/consultation');
+    const query = service.attributionContent
+      ? `?service=repair-maintenance&utm_content=${encodeURIComponent(service.attributionContent)}`
+      : '';
+    router.push(`/consultation${query}`);
   };
 
   if (!service) {
@@ -85,7 +89,7 @@ function ServicePage({ slug }) {
             className="text-white px-8 py-4 text-lg rounded-lg shadow-lg hover:brightness-110 transition-all"
             style={{ backgroundColor: '#C96A1B' }}
           >
-            Schedule Light Consultation
+            {service.ctaLabel || 'Schedule Light Consultation'}
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </div>
@@ -154,19 +158,40 @@ function ServicePage({ slug }) {
           </div>
         </section>
 
+        {service.faqs?.length > 0 && (
+          <section ref={el => (contentRefs.current[3] = el)} className="py-16 md:py-24">
+            <div className="max-w-4xl mx-auto px-4">
+              <p className="mb-3 text-center text-xs font-semibold uppercase tracking-[0.24em] text-orange-600">
+                Repair Questions
+              </p>
+              <h2 className="text-3xl md:text-4xl font-light text-center text-gray-900 mb-12">
+                What to Expect From a Service Visit
+              </h2>
+              <div className="divide-y divide-gray-200 border-y border-gray-200">
+                {service.faqs.map((faq) => (
+                  <div key={faq.question} className="py-7 md:grid md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] md:gap-12">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3 md:mb-0">{faq.question}</h3>
+                    <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* CTA Section */}
         <section ref={el => (contentRefs.current[5] = el)} className="py-16 text-center">
           <div className="max-w-4xl mx-auto px-4">
-            <h2 className="text-3xl font-bold mb-6">Ready to Transform Your Property?</h2>
+            <h2 className="text-3xl font-bold mb-6">{service.ctaTitle || 'Ready to Transform Your Property?'}</h2>
             <p className="text-lg text-gray-700 mb-8">
-              Let&apos;s create a custom lighting design that perfectly suits your needs and budget.
+              {service.ctaBody || 'Let\'s create a custom lighting design that perfectly suits your needs and budget.'}
             </p>
             <Button
               onClick={scrollToContact}
               className="text-white px-8 py-4 text-lg rounded-lg shadow-lg hover:brightness-110 transition-all"
               style={{ backgroundColor: '#C96A1B' }}
             >
-              Schedule Light Consultation
+              {service.ctaLabel || 'Schedule Light Consultation'}
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>

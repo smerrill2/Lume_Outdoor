@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'Transform Your Home | Lume Outdoor Lighting',
-  description: 'Premium outdoor lighting design & installation for Wichita homeowners. Free consultation, lifetime warranty. See our before & after transformations.',
+  description: 'Premium outdoor lighting design & installation for Wichita homeowners. Free consultation and a 20-year product warranty. See our before & after transformations.',
 };
 
 export default function GetStartedLayout({ children }) {

@@ -22,9 +22,9 @@ const ServiceProcess = () => {
     },
     {
       id: 4,
-      title: "Lifetime Support",
-      description: "Ongoing maintenance, warranty protection, and seasonal adjustments included.",
-      duration: "Ongoing"
+      title: "Product Warranty",
+      description: "Fixtures and transformers include a 20-year product warranty. Labor and installation are not covered.",
+      duration: "20 Years"
     }
   ];
 

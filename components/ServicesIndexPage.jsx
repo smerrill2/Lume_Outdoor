@@ -20,7 +20,7 @@ function ServicesIndexPage() {
   };
 
   const serviceEntries = Object.entries(serviceData)
-    .filter(([slug]) => slug !== 'commercial-lighting');
+    .filter(([slug]) => !['commercial-lighting', 'holiday-lighting'].includes(slug));
 
   useEffect(() => {
     // Header fade in
