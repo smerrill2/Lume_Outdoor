@@ -31,6 +31,7 @@ function Navbar() {
         { name: 'Repair & Maintenance', href: '/services/landscape-lighting-repair' }
       ]
     },
+    { name: 'Blog', href: '/blog' },
     { name: 'Our Work', href: '#previous-work' },
     { name: 'Service Area', href: '#service-area' },
     { name: 'Contact', href: '#contact' }

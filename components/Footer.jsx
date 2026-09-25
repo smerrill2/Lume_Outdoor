@@ -16,7 +16,7 @@ const Footer = () => {
           <div className="space-y-4">
             <Link href="/" className="inline-block">
               <img
-                src="/lume-logo-white-transparent.png"
+                src="/lume-logo-white.svg"
                 alt="Lume Outdoor"
                 className="h-16 md:h-20 w-auto object-contain hover:opacity-80 transition-opacity cursor-pointer"
               />
@@ -73,6 +73,7 @@ const Footer = () => {
               {[
                 { label: 'About Us', href: '/about' },
                 { label: 'Services', href: '/#services' },
+                { label: 'Outdoor Lighting Blog', href: '/blog' },
                 { label: 'Service Area', href: '/#service-area' },
                 { label: 'Our Process', href: '/#process' },
                 { label: 'Testimonials', href: '/#testimonials' }
