@@ -100,7 +100,7 @@ function Navbar() {
         } ${
           isScrolled
             ? 'bg-black/20 backdrop-blur-md border-b border-white/10 shadow-lg'
-            : 'bg-black/10 backdrop-blur-sm border-b border-white/5'
+            : 'bg-transparent border-b border-transparent'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -108,7 +108,7 @@ function Navbar() {
             {/* Logo */}
             <Link href="/" className="relative z-10 flex h-full flex-shrink-0 items-center">
               <Image
-                src="/lume-logo-white-transparent.png"
+                src="/lume-logo-white.svg"
                 alt="Lume Outdoors Logo"
                 width={930}
                 height={346}
@@ -163,8 +163,7 @@ function Navbar() {
               </nav>
               
               <Button
-                className="text-white px-6 py-2.5 rounded-lg font-light ml-8 hover:brightness-110 transition-all"
-                style={{ backgroundColor: '#C96A1B' }}
+                className="btn-copper h-10 px-6 ml-8"
                 onClick={() => { if (typeof window.gtag_report_lead_start === 'function') window.gtag_report_lead_start('navbar_desktop'); router.push('/consultation'); }}
               >
                 Schedule Consultation
@@ -212,8 +211,7 @@ function Navbar() {
             className="mt-12"
           >
             <Button
-              className="px-6 py-3 text-white rounded-lg text-lg hover:brightness-110 transition-all"
-              style={{ backgroundColor: '#C96A1B' }}
+              className="btn-copper h-12 px-8 text-lg"
               onClick={() => { if (typeof window.gtag_report_lead_start === 'function') window.gtag_report_lead_start('navbar_mobile'); router.push('/consultation'); }}
             >
               Schedule Light Consultation

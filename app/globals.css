@@ -85,3 +85,81 @@
   -webkit-mask-size: 100% 100%;
           mask-size: 100% 100%;
 }
+
+/* Premium CTA buttons */
+.btn-copper,
+.btn-glass {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: #fff;
+  transition:
+    transform 250ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 250ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 250ms ease,
+    border-color 250ms ease;
+}
+
+.btn-copper,
+.btn-copper:hover {
+  background: linear-gradient(180deg, #d8813a 0%, #c96a1b 55%, #b45d15 100%);
+}
+
+.btn-copper {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 1px 2px rgba(0, 0, 0, 0.25),
+    0 6px 20px -6px rgba(201, 106, 27, 0.55);
+}
+
+.btn-copper:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.25),
+    0 10px 28px -6px rgba(201, 106, 27, 0.7);
+}
+
+.btn-glass {
+  background-color: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+          backdrop-filter: blur(14px) saturate(140%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 8px 32px -8px rgba(0, 0, 0, 0.45);
+}
+
+.btn-glass:hover {
+  transform: translateY(-1px);
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.btn-copper:active,
+.btn-glass:active {
+  transform: translateY(0);
+}
+
+.btn-copper .btn-arrow,
+.btn-glass .btn-arrow {
+  transition: transform 250ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.btn-copper:hover .btn-arrow,
+.btn-glass:hover .btn-arrow {
+  transform: translateX(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-copper,
+  .btn-glass,
+  .btn-arrow {
+    transition: none;
+  }
+}
