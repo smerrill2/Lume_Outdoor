@@ -135,7 +135,7 @@ export default function PMaxLandingPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Minimal Top Bar */}
-      <div className="bg-neutral-900 text-white py-3 px-4">
+      <div className="bg-neutral-950 text-white py-3 px-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <Image src="/LogoLume.svg" alt="Lume Outdoor" width={120} height={40} className="invert" />
           <a
@@ -190,7 +190,7 @@ export default function PMaxLandingPage() {
       </section>
 
       {/* Social Proof Bar */}
-      <div className="bg-neutral-900 py-4 border-y border-white/10">
+      <div className="bg-neutral-950 py-4 border-y border-white/10">
         <div className="max-w-6xl mx-auto px-4 flex flex-wrap justify-center gap-8 md:gap-16 text-white/70 text-sm font-medium">
           <span>100+ Homes Illuminated</span>
           <span>5.0 Star Average Rating</span>
@@ -304,7 +304,7 @@ export default function PMaxLandingPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-16 md:py-24 px-4 bg-neutral-900">
+      <section className="py-16 md:py-24 px-4 bg-neutral-950">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
             Ready to Transform Your Home?

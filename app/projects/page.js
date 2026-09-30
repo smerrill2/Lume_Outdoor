@@ -2,109 +2,98 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { projects } from '@/lib/content';
-import { ArrowRight, MapPin, Star } from 'lucide-react';
 
 export const metadata = {
   title: 'Our Projects - Lume Outdoor',
   description: 'Explore our portfolio of outdoor lighting projects and see how we transform properties with custom lighting solutions.',
 };
 
+const blurPlaceholder = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q==";
+
 export default function ProjectsPage() {
+  const headerProject = projects.find((project) => project.featured) ?? projects[0];
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <section className="bg-gray-900 text-white py-20">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Projects</h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Discover how we transform properties with custom outdoor lighting solutions. 
-            Each project showcases our commitment to quality, creativity, and customer satisfaction.
+    <div className="min-h-screen bg-[#FDFBF6]">
+      {/* Header: full-bleed photo of the featured project */}
+      <section className="relative h-[62svh] min-h-[440px] md:h-[70vh] flex items-end overflow-hidden bg-neutral-950">
+        <Image
+          src={headerProject.image}
+          alt={headerProject.title}
+          fill
+          priority
+          sizes="100vw"
+          quality={80}
+          className="object-cover"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.55)_0%,rgba(0,0,0,0.1)_35%,rgba(0,0,0,0.75)_100%)]"
+        />
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pb-12 md:pb-16 text-white">
+          <h1 className="font-display text-5xl md:text-7xl font-medium leading-[1.02] mb-4">
+            Selected <em className="italic font-normal">work</em>
+          </h1>
+          <p className="text-base md:text-lg text-white/80 max-w-lg leading-relaxed">
+            Homes across Wichita, Newton, and the surrounding area, each lit with a design built for the architecture and the landscape.
           </p>
         </div>
       </section>
 
-      {/* Projects Grid */}
-      <section className="py-16">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {projects.map((project) => (
-              <div key={project.id} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-                {/* Project Image */}
-                <div className="relative h-64">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    quality={75}
-                    loading="lazy"
-                    placeholder="blur"
-                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
-                  />
-                  {project.featured && (
-                    <div className="absolute top-4 right-4">
-                      <div className="text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1" style={{ backgroundColor: '#C96A1B' }}>
-                        <Star className="w-4 h-4 fill-current" />
-                        Featured
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Project Content */}
-                <div className="p-6">
-                  <div className="flex items-center gap-2 text-gray-600 text-sm mb-2">
-                    <MapPin className="w-4 h-4" />
-                    {project.location}
-                  </div>
-                  
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">{project.title}</h3>
-                  
-                  <p className="text-gray-600 mb-4 line-clamp-3">{project.description}</p>
-                  
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {project.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-3 py-1 bg-orange-100 text-orange-800 text-sm rounded-full"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                  
-                  <Link
-                    href={`/projects/${project.id}`}
-                    className="inline-flex items-center gap-2 text-orange-500 font-medium hover:text-orange-600 transition-colors group"
-                  >
-                    View Project Details
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </div>
+      {/* Projects */}
+      <section className="py-16 md:py-24">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 grid md:grid-cols-2 gap-x-10 lg:gap-x-14 gap-y-16 md:gap-y-20">
+          {projects.map((project) => (
+            <Link key={project.id} href={`/projects/${project.id}`} className="group block">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-sm bg-neutral-200">
+                <Image
+                  src={project.image}
+                  alt={project.title}
+                  fill
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  quality={78}
+                  placeholder="blur"
+                  blurDataURL={blurPlaceholder}
+                />
               </div>
-            ))}
-          </div>
+
+              <div className="mt-5 md:mt-6">
+                <p className="text-sm text-gray-500 mb-2">
+                  {project.location} &middot; {project.tags.join(', ')}
+                </p>
+                <h2 className="font-display text-3xl md:text-[2.1rem] font-medium leading-tight text-gray-900 mb-3">
+                  {project.title}
+                </h2>
+                <p className="text-base text-gray-600 leading-relaxed line-clamp-2 max-w-xl mb-4">
+                  {project.description}
+                </p>
+                <span className="text-sm font-medium text-gray-900 underline underline-offset-[6px] decoration-gray-300 group-hover:decoration-gray-900 transition-colors duration-300">
+                  View project
+                </span>
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="bg-gray-900 text-white py-16">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Start Your Project?</h2>
-          <p className="text-xl text-gray-300 mb-8">
-            Let&apos;s create a custom lighting design that transforms your property
+      {/* CTA */}
+      <section className="bg-neutral-950 text-white py-20 md:py-28">
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <h2 className="font-display text-4xl md:text-6xl font-medium leading-[1.05] mb-5">
+            Imagine your home <em className="italic font-normal">here.</em>
+          </h2>
+          <p className="text-base md:text-lg text-white/75 mb-10">
+            Every project starts with a free on-site consultation and a custom lighting design.
           </p>
           <Link
             href="/consultation"
-            className="inline-flex items-center gap-2 text-white px-8 py-4 rounded-lg font-medium transition-all hover:brightness-110"
-            style={{ backgroundColor: '#C96A1B' }}
+            className="inline-flex items-center h-12 px-7 rounded-sm bg-orange-500 hover:bg-orange-600 text-white font-medium tracking-wide transition-colors duration-300"
           >
-            Schedule Free Consultation
-            <ArrowRight className="w-5 h-5" />
+            Schedule a Consultation
           </Link>
         </div>
       </section>
     </div>
   );
-} 
+}

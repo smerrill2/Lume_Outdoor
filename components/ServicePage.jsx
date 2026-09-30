@@ -1,52 +1,16 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Check } from 'lucide-react';
-import { useImage } from '@/lib/imageConfig';
-import { serviceData as allServiceData } from '@/lib/content'; // Import from content.js
-
-// Register ScrollTrigger plugin
-gsap.registerPlugin(ScrollTrigger);
+import { serviceData as allServiceData } from '@/lib/content';
 
 function ServicePage({ slug }) {
   const service = allServiceData[slug];
   const router = useRouter();
-  const heroRef = useRef(null);
-  const contentRefs = useRef([]);
-  
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      window.scrollTo(0, 0);
-    }
-    
-    gsap.fromTo(heroRef.current, { opacity: 0 }, { opacity: 1, duration: 0.5 });
-    
-    contentRefs.current.forEach((el) => {
-      if (el) {
-        gsap.fromTo(
-          el,
-          { opacity: 0, y: 50 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            scrollTrigger: {
-              trigger: el,
-              start: 'top 85%',
-              toggleActions: 'play none none none',
-            },
-          }
-        );
-      }
-    });
-  }, [slug]);
 
-  const scrollToContact = () => {
+  const goToConsultation = () => {
     const source = service.attributionContent || `service_page_${slug}`;
     if (typeof window.gtag_report_lead_start === 'function') window.gtag_report_lead_start(source);
     if (typeof window.fbq === 'function') window.fbq('track', 'Schedule');
@@ -64,139 +28,152 @@ function ServicePage({ slug }) {
     );
   }
 
+  const ctaLabel = service.ctaLabel || 'Schedule a Consultation';
+  const primaryButtonClassName =
+    'inline-flex items-center h-12 px-7 rounded-sm bg-orange-500 hover:bg-orange-600 text-white font-medium tracking-wide transition-colors duration-300';
+
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <section 
-        ref={heroRef}
-        className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-gray-800 pt-24"
-      >
-        <div className="absolute inset-0">
-          <Image 
-            src={service.heroImage}
-            alt={service.title}
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
-        <div className="absolute inset-0 bg-black/50"></div>
-        <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-4">
-          <h1 className="text-5xl md:text-6xl font-bold mb-4">{service.title}</h1>
-          <p className="text-xl md:text-2xl mb-8 text-white/90">{service.subtitle}</p>
-          <Button 
-            onClick={scrollToContact}
-            className="text-white px-8 py-4 text-lg rounded-lg shadow-lg hover:brightness-110 transition-all"
-            style={{ backgroundColor: '#C96A1B' }}
-          >
-            {service.ctaLabel || 'Schedule Light Consultation'}
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+    <div className="min-h-screen bg-[#FDFBF6]">
+      {/* Hero */}
+      <section className="relative h-[72svh] min-h-[480px] md:h-[78vh] flex items-end overflow-hidden bg-neutral-950">
+        <Image
+          src={service.heroImage}
+          alt={service.title}
+          fill
+          priority
+          sizes="100vw"
+          quality={80}
+          className="object-cover"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.55)_0%,rgba(0,0,0,0.1)_35%,rgba(0,0,0,0.8)_100%)]"
+        />
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pb-12 md:pb-16 text-white">
+          <Link href="/services" className="inline-block text-sm text-white/70 hover:text-white transition-colors duration-300 mb-4">
+            Services
+          </Link>
+          <h1 className="font-display text-5xl md:text-7xl font-medium leading-[1.02] max-w-3xl mb-4 md:mb-5">
+            {service.title}
+          </h1>
+          <p className="text-base md:text-lg text-white/85 leading-relaxed max-w-xl mb-8">
+            {service.subtitle}
+          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-8">
+            <button type="button" onClick={goToConsultation} className={`self-start sm:self-auto ${primaryButtonClassName}`}>
+              {ctaLabel}
+            </button>
+            <Link
+              href="/projects"
+              className="self-start sm:self-auto text-white font-medium underline underline-offset-[6px] decoration-white/40 hover:decoration-white transition-colors duration-300"
+            >
+              See our work
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* Main Content */}
-      <main className="py-16">
-        {/* Overview Section */}
-        <section ref={el => (contentRefs.current[0] = el)} className="max-w-4xl mx-auto px-4 mb-16">
-          <p className="text-lg text-gray-700 leading-relaxed">
-            {service.description}
-          </p>
-        </section>
-
-        {/* Benefits Section */}
-        <section ref={el => (contentRefs.current[1] = el)} className="py-16">
-          <div className="max-w-6xl mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-12">Benefits of Our {service.title}</h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {service.benefits.map((benefit, index) => (
-                <div key={index} className="flex items-start space-x-3">
-                  <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-                  <p className="text-gray-700">{benefit}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Gallery Section */}
-        {service.galleryImages && service.galleryImages.length > 0 && (
-          <section ref={el => (contentRefs.current[2] = el)} className="py-16">
-            <div className="max-w-7xl mx-auto px-4">
-              <h2 className="text-3xl font-bold text-center mb-12">Project Gallery</h2>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {service.galleryImages.map((image, index) => (
-                  <div key={index} className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-                    <Image
-                      src={image.src}
-                      alt={image.alt || `${service.title} example ${index + 1}`}
-                      fill
-                      className="object-cover hover:scale-105 transition-transform duration-300"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Process Section */}
-        <section ref={el => (contentRefs.current[4] = el)} className="bg-gray-50 py-16">
-          <div className="max-w-4xl mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-12">Our Process</h2>
-            <div className="space-y-4">
-              {service.process.map((step, index) => (
-                <div key={index} className="flex items-center space-x-4">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#C96A1B' }}>
-                    <span className="font-bold text-white">{index + 1}</span>
-                  </div>
-                  <p className="text-lg text-gray-700">{step}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {service.faqs?.length > 0 && (
-          <section ref={el => (contentRefs.current[3] = el)} className="py-16 md:py-24">
-            <div className="max-w-4xl mx-auto px-4">
-              <p className="mb-3 text-center text-xs font-semibold uppercase tracking-[0.24em] text-orange-600">
-                Repair Questions
-              </p>
-              <h2 className="text-3xl md:text-4xl font-light text-center text-gray-900 mb-12">
-                What to Expect From a Service Visit
-              </h2>
-              <div className="divide-y divide-gray-200 border-y border-gray-200">
-                {service.faqs.map((faq) => (
-                  <div key={faq.question} className="py-7 md:grid md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] md:gap-12">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3 md:mb-0">{faq.question}</h3>
-                    <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* CTA Section */}
-        <section ref={el => (contentRefs.current[5] = el)} className="py-16 text-center">
-          <div className="max-w-4xl mx-auto px-4">
-            <h2 className="text-3xl font-bold mb-6">{service.ctaTitle || 'Ready to Transform Your Property?'}</h2>
-            <p className="text-lg text-gray-700 mb-8">
-              {service.ctaBody || 'Let\'s create a custom lighting design that perfectly suits your needs and budget.'}
+      {/* Overview + Benefits */}
+      <section className="py-20 md:py-28">
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <div className="grid md:grid-cols-12 gap-6 md:gap-12 mb-16 md:mb-24">
+            <p className="md:col-span-3 text-sm text-gray-500 pt-2">Overview</p>
+            <p className="md:col-span-9 font-display text-2xl md:text-4xl leading-snug text-gray-900">
+              {service.description}
             </p>
-            <Button
-              onClick={scrollToContact}
-              className="text-white px-8 py-4 text-lg rounded-lg shadow-lg hover:brightness-110 transition-all"
-              style={{ backgroundColor: '#C96A1B' }}
-            >
-              {service.ctaLabel || 'Schedule Light Consultation'}
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+          </div>
+
+          <div className="grid md:grid-cols-12 gap-6 md:gap-12">
+            <h2 className="md:col-span-3 text-sm text-gray-500 pt-2 font-body font-normal">The benefits</h2>
+            <ul className="md:col-span-9 grid sm:grid-cols-2 gap-x-10 border-t border-gray-300">
+              {service.benefits.map((benefit, benefitIndex) => (
+                <li key={benefit} className="flex gap-5 py-5 border-b border-gray-300">
+                  <span className="text-sm text-gray-400 tabular-nums pt-0.5">
+                    {String(benefitIndex + 1).padStart(2, '0')}
+                  </span>
+                  <span className="text-base md:text-lg text-gray-800">{benefit}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* Gallery */}
+      {service.galleryImages?.length > 0 && (
+        <section className="pb-20 md:pb-28">
+          <div className="max-w-7xl mx-auto px-6 md:px-12 grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {service.galleryImages.map((image, imageIndex) => (
+              <div key={image.src} className="relative aspect-[4/3] overflow-hidden rounded-sm bg-neutral-200">
+                <Image
+                  src={image.src}
+                  alt={image.alt || `${service.title} example ${imageIndex + 1}`}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+              </div>
+            ))}
           </div>
         </section>
-      </main>
+      )}
+
+      {/* Process */}
+      <section className="bg-neutral-950 text-white py-20 md:py-28">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 grid md:grid-cols-12 gap-10 md:gap-12">
+          <h2 className="md:col-span-4 font-display text-4xl md:text-6xl font-medium leading-[1.05]">
+            How it <em className="italic font-normal">works</em>
+          </h2>
+          <ol className="md:col-span-8 border-t border-white/15">
+            {service.process.map((step, stepIndex) => (
+              <li key={step} className="flex items-baseline gap-6 md:gap-10 py-5 md:py-6 border-b border-white/15">
+                <span className="font-display text-2xl md:text-3xl text-orange-300 tabular-nums w-10 flex-shrink-0">
+                  {String(stepIndex + 1).padStart(2, '0')}
+                </span>
+                <span className="text-base md:text-xl text-white/90">{step}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* FAQs */}
+      {service.faqs?.length > 0 && (
+        <section className="py-20 md:py-28">
+          <div className="max-w-7xl mx-auto px-6 md:px-12 grid md:grid-cols-12 gap-10 md:gap-12">
+            <h2 className="md:col-span-4 font-display text-4xl md:text-5xl font-medium leading-[1.05] text-gray-900">
+              What to expect from a service visit
+            </h2>
+            <div className="md:col-span-8 border-t border-gray-300">
+              {service.faqs.map((faq) => (
+                <div key={faq.question} className="py-6 md:py-7 border-b border-gray-300">
+                  <h3 className="font-body text-lg font-semibold text-gray-900 mb-2">{faq.question}</h3>
+                  <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* CTA */}
+      <section className="bg-neutral-950 text-white py-20 md:py-28">
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <h2 className="font-display text-4xl md:text-6xl font-medium leading-[1.05] mb-5">
+            {service.ctaTitle || (
+              <>
+                Let&rsquo;s light <em className="italic font-normal">your</em> home.
+              </>
+            )}
+          </h2>
+          <p className="text-base md:text-lg text-white/75 mb-10">
+            {service.ctaBody || 'Every project starts with a free on-site consultation and a custom lighting design.'}
+          </p>
+          <button type="button" onClick={goToConsultation} className={primaryButtonClassName}>
+            {ctaLabel}
+          </button>
+        </div>
+      </section>
     </div>
   );
 }

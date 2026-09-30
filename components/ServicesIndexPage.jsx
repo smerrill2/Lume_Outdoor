@@ -58,7 +58,7 @@ function ServicesIndexPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Back Button */}
-      <div className="bg-neutral-900 -mt-[80px] pt-[80px]">
+      <div className="bg-neutral-950 -mt-[80px] pt-[80px]">
         <div className="max-w-6xl mx-auto px-4 pt-6">
           <Link
             href="/"
@@ -71,7 +71,7 @@ function ServicesIndexPage() {
       </div>
 
       {/* Hero Header */}
-      <header className="relative bg-neutral-900">
+      <header className="relative bg-neutral-950">
         <div
           ref={headerRef}
           className="max-w-5xl mx-auto px-4 py-16 md:py-24 text-center"
@@ -128,7 +128,7 @@ function ServicesIndexPage() {
       </main>
 
       {/* CTA */}
-      <section className="bg-neutral-900 py-16 md:py-20">
+      <section className="bg-neutral-950 py-16 md:py-20">
         <div className="max-w-3xl mx-auto px-4 text-center">
           <h2 className="text-2xl md:text-3xl font-light text-white mb-3">
             Not sure which service you need?
