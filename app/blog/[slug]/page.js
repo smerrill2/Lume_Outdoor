@@ -180,10 +180,9 @@ export default async function BlogPostPage({ params }) {
             </p>
             <Link
               href="/consultation"
-              className="btn-copper mt-7 h-11 px-6 text-sm"
+              className="mt-7 h-12 px-7 inline-flex items-center rounded-sm bg-orange-500 hover:bg-orange-600 text-white font-medium tracking-wide transition-colors duration-300"
             >
-              Schedule a consultation
-              <ArrowRight className="btn-arrow h-4 w-4" />
+              Schedule a Consultation
             </Link>
           </div>
         </article>

@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
 
 function Navbar() {
@@ -39,6 +38,8 @@ function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
+  // On the homepage the hero has its own solid CTA, so the header CTA stays outlined until the hero scrolls away
+  const [isPastHomeHero, setIsPastHomeHero] = useState(pathname !== '/');
   const headerRef = useRef(null);
   const lastScrollY = useRef(0);
 
@@ -46,6 +47,14 @@ function Navbar() {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       setIsScrolled(currentScrollY > 50);
+
+      if (pathname === '/') {
+        const heroSection = document.querySelector('section');
+        const headerHeight = headerRef.current?.offsetHeight ?? 80;
+        setIsPastHomeHero(heroSection ? heroSection.getBoundingClientRect().bottom <= headerHeight : true);
+      } else {
+        setIsPastHomeHero(true);
+      }
 
       if (autoHideOnScroll) {
         // Hide once we've scrolled down past the header, reveal as soon as we scroll up
@@ -66,7 +75,7 @@ function Navbar() {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [autoHideOnScroll]);
+  }, [autoHideOnScroll, pathname]);
 
   const handleNavClick = (e, href) => {
     e.preventDefault();
@@ -163,12 +172,17 @@ function Navbar() {
                 })}
               </nav>
               
-              <Button
-                className="btn-copper h-10 px-6 ml-8"
+              <button
+                type="button"
+                className={`ml-8 inline-flex items-center h-10 px-5 rounded-sm border text-sm font-medium tracking-wide text-white transition-colors duration-300 ${
+                  isPastHomeHero
+                    ? 'bg-orange-500 border-orange-500 hover:bg-orange-600 hover:border-orange-600'
+                    : 'bg-transparent border-orange-400 hover:bg-orange-500 hover:border-orange-500'
+                }`}
                 onClick={() => { if (typeof window.gtag_report_lead_start === 'function') window.gtag_report_lead_start('navbar_desktop'); router.push('/consultation'); }}
               >
-                Schedule Consultation
-              </Button>
+                Schedule a Consultation
+              </button>
             </div>
 
             {/* Mobile Menu Button - Always on the right */}
@@ -211,12 +225,13 @@ function Navbar() {
           <div 
             className="mt-12"
           >
-            <Button
-              className="btn-copper h-12 px-8 text-lg"
+            <button
+              type="button"
+              className="inline-flex items-center h-12 px-7 rounded-sm bg-orange-500 hover:bg-orange-600 text-white font-medium tracking-wide transition-colors duration-300"
               onClick={() => { if (typeof window.gtag_report_lead_start === 'function') window.gtag_report_lead_start('navbar_mobile'); router.push('/consultation'); }}
             >
-              Schedule Light Consultation
-            </Button>
+              Schedule a Consultation
+            </button>
           </div>
         </div>
       </div>
