@@ -77,9 +77,9 @@ const ServiceAreaMap = () => {
         icon: {
           path: window.google.maps.SymbolPath.CIRCLE,
           scale: area.name === "Wichita" ? 7 : 5,
-          fillColor: area.name === "Wichita" ? '#ffffff' : '#999999',
-          fillOpacity: area.name === "Wichita" ? 0.9 : 0.6,
-          strokeColor: '#ffffff',
+          fillColor: area.name === "Wichita" ? '#D8813A' : '#999999',
+          fillOpacity: area.name === "Wichita" ? 1 : 0.6,
+          strokeColor: area.name === "Wichita" ? '#D8813A' : '#ffffff',
           strokeWeight: 1,
         },
         label: {
@@ -98,11 +98,11 @@ const ServiceAreaMap = () => {
 
     new window.google.maps.Polygon({
       paths: polygonCoords,
-      strokeColor: '#ffffff',
-      strokeOpacity: 0.2,
+      strokeColor: '#D8813A',
+      strokeOpacity: 0.5,
       strokeWeight: 1,
-      fillColor: '#ffffff',
-      fillOpacity: 0.05,
+      fillColor: '#D8813A',
+      fillOpacity: 0.08,
       map,
     });
 
@@ -113,6 +113,18 @@ const ServiceAreaMap = () => {
     if (window.google?.maps) {
       setMapLoaded(true);
       return;
+    }
+
+    // Another mount may already be loading the script; wait for it instead of adding a second copy
+    const existingMapsScript = document.querySelector('script[src*="maps.googleapis.com/maps/api/js"]');
+    if (existingMapsScript) {
+      const readyCheck = setInterval(() => {
+        if (window.google?.maps) {
+          clearInterval(readyCheck);
+          setMapLoaded(true);
+        }
+      }, 200);
+      return () => clearInterval(readyCheck);
     }
 
     const callbackName = `initMap_${Date.now()}`;
@@ -126,10 +138,6 @@ const ServiceAreaMap = () => {
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);
-
-    return () => {
-      delete window[callbackName];
-    };
   }, []);
 
   useEffect(() => {
@@ -139,78 +147,44 @@ const ServiceAreaMap = () => {
   }, [mapLoaded]);
 
   return (
-    <section id="service-area" className="py-24 md:py-28 px-4 bg-neutral-950">
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-14 md:mb-20">
-          <h2 className="text-3xl md:text-4xl font-light text-white">
-            Service Area
+    <section id="service-area" className="py-20 md:py-28 bg-neutral-950 border-t border-white/10">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 grid lg:grid-cols-12 gap-12 lg:gap-16">
+        <div className="lg:col-span-5">
+          <h2 className="font-display text-4xl md:text-6xl font-medium leading-[1.05] text-white mb-5">
+            Where we <em className="italic font-normal">work</em>
           </h2>
+          <p className="text-base md:text-lg text-white/70 leading-relaxed mb-10 max-w-md">
+            Based in Wichita and serving homes across the metro, roughly a 30-mile radius.
+          </p>
+
+          <ul className="grid grid-cols-2 gap-x-8 border-t border-white/15">
+            {serviceAreas.map((area) => (
+              <li
+                key={area.name}
+                className={`py-3 border-b border-white/15 ${area.name === 'Wichita' ? 'text-orange-300' : 'text-white/80'}`}
+              >
+                {area.name}
+              </li>
+            ))}
+          </ul>
+
+          <p className="mt-8 text-sm text-white/55">
+            Don&rsquo;t see your town?{' '}
+            <a href="/consultation" className="text-white underline underline-offset-4 decoration-white/40 hover:decoration-white transition-colors duration-300">
+              Ask us anyway
+            </a>
+            .
+          </p>
         </div>
 
-        {/* Map + Side Tiles */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-4">
-          {/* Map */}
-          <div className="lg:col-span-2 rounded-xl overflow-hidden">
-            <div className="relative h-72 sm:h-80 md:h-full min-h-[350px] bg-neutral-800">
-              {!mapLoaded && (
-                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center">
-                  <p className="text-sm font-light text-white/40 tracking-wide">Loading map...</p>
-                </div>
-              )}
-              <div ref={mapAreaRef} className="w-full h-full" />
-            </div>
-          </div>
-
-          {/* Side Tiles */}
-          <div className="grid grid-cols-2 lg:grid-cols-1 gap-3 md:gap-4">
-            {/* Service Radius */}
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 md:p-8 flex flex-col justify-between">
-              <div>
-                <span className="text-4xl md:text-5xl font-extralight text-white/80 block mb-1">
-                  30+
-                </span>
-                <span className="text-[10px] font-light tracking-[0.2em] text-white/40 uppercase">
-                  Mile Radius
-                </span>
+        <div className="lg:col-span-7">
+          <div className="relative h-80 sm:h-96 lg:h-full lg:min-h-[520px] rounded-sm overflow-hidden bg-neutral-900">
+            {!mapLoaded && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center">
+                <p className="text-sm text-white/40">Loading map…</p>
               </div>
-              <p className="text-xs font-light text-white/25 leading-relaxed mt-4">
-                If it&apos;s in the metro, we&apos;re there.
-              </p>
-            </div>
-
-            {/* Response Time */}
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 md:p-8 flex flex-col justify-between">
-              <div>
-                <span className="text-4xl md:text-5xl font-extralight text-white/80 block mb-1">
-                  24-48
-                </span>
-                <span className="text-[10px] font-light tracking-[0.2em] text-white/40 uppercase">
-                  Hour Response
-                </span>
-              </div>
-              <p className="text-xs font-light text-white/25 leading-relaxed mt-4">
-                Quick consultation scheduling.
-              </p>
-            </div>
-
-            {/* Cities Served */}
-            <div className="col-span-2 lg:col-span-1 bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 md:p-8 text-center">
-              <span className="text-[10px] font-light tracking-[0.3em] text-white/30 uppercase block mb-4">
-                Proudly Serving
-              </span>
-              <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5">
-                {serviceAreas.map((area, index) => (
-                  <span
-                    key={index}
-                    className={`text-xs font-light tracking-wide ${
-                      area.name === "Wichita" ? 'text-white/60' : 'text-white/30'
-                    }`}
-                  >
-                    {area.name}
-                  </span>
-                ))}
-              </div>
-            </div>
+            )}
+            <div ref={mapAreaRef} className="w-full h-full" />
           </div>
         </div>
       </div>

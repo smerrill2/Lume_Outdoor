@@ -1,89 +1,93 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import SimpleJobberForm from '@/components/SimpleJobberForm';
-import { gsap } from 'gsap';
+import ContactDetails from '@/components/ContactDetails';
 
 export default function ConsultationPage() {
-  const heroRef = useRef(null);
-  const titleRef = useRef(null);
-  const subtitleRef = useRef(null);
   const [isRepairVisit, setIsRepairVisit] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setIsRepairVisit(params.get('service') === 'repair-maintenance');
-
-    gsap.fromTo(titleRef.current,
-      { opacity: 0, y: 30 },
-      { opacity: 1, y: 0, duration: 0.8, delay: 0.2, ease: "power3.out" }
-    );
-    
-    gsap.fromTo(subtitleRef.current,
-      { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.8, delay: 0.4, ease: "power3.out" }
-    );
   }, []);
 
+  const steps = isRepairVisit
+    ? [
+        { title: 'System assessment', description: 'We inspect the complete low-voltage system: fixtures, wiring, transformer, and controls.' },
+        { title: 'Clear repair plan', description: 'We explain the recommended work and expected cost before anything is fixed.' },
+        { title: 'Full-system service', description: 'Repairs, replacements, adjustments, and upgrades, all handled by us.' },
+      ]
+    : [
+        { title: 'We walk your property', description: 'A free, no-obligation visit to see the space and talk through what you want.' },
+        { title: 'You get a custom design', description: 'A lighting plan built around your home’s architecture and landscape.' },
+        { title: 'We install it', description: 'Careful installation with concealed wiring and minimal disruption.' },
+      ];
+
   return (
-    <main>
-      {/* Hero Section */}
-      <section 
-        ref={heroRef} 
-        className="relative overflow-hidden pt-40 pb-28 px-4 text-white bg-cover bg-center"
-        style={{ backgroundImage: "url('/Hero_photo.webp')" }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/25 to-black/45"></div>
-        <div className="relative max-w-4xl mx-auto text-center">
-          <h1 ref={titleRef} className="text-4xl md:text-5xl font-bold mb-6">
-            {isRepairVisit ? 'Schedule an Outdoor Lighting Repair Visit' : 'Schedule Your Free Consultation'}
+    <main className="bg-[#FDFBF6]">
+      {/* Photo header */}
+      <section className="relative h-[46svh] min-h-[380px] md:h-[52vh] flex items-end overflow-hidden bg-neutral-950">
+        <Image
+          src="/projects/coves_project/coves-stone-corner.webp"
+          alt="Warm uplighting on the stone corner of a modern Wichita home"
+          fill
+          priority
+          sizes="100vw"
+          quality={80}
+          className="object-cover object-[center_60%]"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.55)_0%,rgba(0,0,0,0.15)_40%,rgba(0,0,0,0.75)_100%)]"
+        />
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pb-10 md:pb-14 text-white">
+          <h1 className="font-display text-5xl md:text-7xl font-medium leading-[1.02] mb-4">
+            {isRepairVisit ? (
+              <>Schedule a <em className="italic font-normal">repair visit</em></>
+            ) : (
+              <>Let&rsquo;s light <em className="italic font-normal">your</em> home</>
+            )}
           </h1>
-          <p ref={subtitleRef} className="text-xl text-white/90 max-w-2xl mx-auto">
+          <p className="text-base md:text-lg text-white/85 leading-relaxed max-w-lg">
             {isRepairVisit
-              ? 'Tell us what your lighting system is doing. We’ll inspect the fixtures, wiring, transformer, and controls to find the problem and explain the repair.'
-              : 'Take the first step toward transforming your outdoor space. Our lighting experts will visit your property, discuss your vision, and provide a custom design proposal.'}
+              ? 'Tell us what your lighting system is doing. We’ll find the problem and explain the repair.'
+              : 'Tell us a little about your property and we’ll set up a free on-site consultation.'}
           </p>
         </div>
       </section>
 
-      {/* Form Section */}
-      <section className="py-16 px-4 bg-white">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              {isRepairVisit ? 'Tell Us What’s Going On' : 'Ready to Get Started?'}
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              {isRepairVisit
-                ? 'Use the form below to describe the issue. We’ll contact you within 24-48 hours to schedule an inspection.'
-                : 'Fill out the form below and we’ll contact you within 24-48 hours to schedule your free consultation.'}
-            </p>
-          </div>
-          
-          {/* Jobber Form Container */}
-          <div className="bg-white rounded-lg shadow-lg p-8">
-            <SimpleJobberForm />
+      {/* Steps + details + form */}
+      <section className="py-16 md:py-24">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 grid lg:grid-cols-12 gap-12 lg:gap-16">
+          <div className="lg:col-span-5">
+            <h2 className="font-body text-sm font-normal text-gray-500 mb-4">What happens next</h2>
+            <ol className="border-t border-gray-300 mb-12">
+              {steps.map((step, stepIndex) => (
+                <li key={step.title} className="grid grid-cols-[2.5rem_1fr] py-5 border-b border-gray-300">
+                  <span className="font-display text-2xl text-orange-600 tabular-nums">
+                    {String(stepIndex + 1).padStart(2, '0')}
+                  </span>
+                  <div>
+                    <h3 className="font-body text-base font-semibold text-gray-900 mb-1">{step.title}</h3>
+                    <p className="text-sm text-gray-600 leading-relaxed">{step.description}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+
+            <div className="hidden lg:block">
+              <ContactDetails tone="light" />
+            </div>
           </div>
 
-          {/* Additional Information */}
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="font-semibold text-lg mb-2">{isRepairVisit ? 'System Assessment' : 'Free Consultation'}</h3>
-              <p className="text-gray-600">
-                {isRepairVisit ? 'We inspect the complete low-voltage lighting system' : 'No obligation design consultation at your property'}
-              </p>
+          <div className="lg:col-span-7">
+            <div className="bg-white border border-gray-200 rounded-sm p-3 sm:p-6 lg:p-10">
+              <SimpleJobberForm />
             </div>
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="font-semibold text-lg mb-2">{isRepairVisit ? 'Clear Repair Plan' : 'Custom Design'}</h3>
-              <p className="text-gray-600">
-                {isRepairVisit ? 'We explain the recommended work and expected cost' : 'Tailored lighting plan for your unique space'}
-              </p>
-            </div>
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="font-semibold text-lg mb-2">{isRepairVisit ? 'Full-System Service' : 'Expert Installation'}</h3>
-              <p className="text-gray-600">
-                {isRepairVisit ? 'Repairs, replacements, adjustments, and upgrades' : 'Careful installation with concealed wiring'}
-              </p>
+            <div className="lg:hidden mt-12">
+              <ContactDetails tone="light" />
             </div>
           </div>
         </div>
