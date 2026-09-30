@@ -19,6 +19,7 @@ module.exports = {
       fontFamily: {
         heading: ['var(--font-montserrat)', 'system-ui', 'sans-serif'],
         body: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-cormorant)', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",

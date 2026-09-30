@@ -1,5 +1,5 @@
 import './globals.css'
-import { Montserrat, Inter } from 'next/font/google'
+import { Montserrat, Inter, Cormorant } from 'next/font/google'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import LeadAttribution from '@/components/LeadAttribution'
@@ -7,8 +7,16 @@ import Script from 'next/script'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
-  weight: ['200', '300'],
+  weight: ['200', '300', '400', '500', '600', '700'],
   variable: '--font-montserrat',
+  display: 'swap',
+})
+
+const cormorant = Cormorant({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  style: ['normal', 'italic'],
+  variable: '--font-cormorant',
   display: 'swap',
 })
 
@@ -72,7 +80,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${montserrat.variable} ${inter.variable}`}>
+    <html lang="en" className={`${montserrat.variable} ${inter.variable} ${cormorant.variable}`}>
       <head />
       <body>
         {process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID && (
