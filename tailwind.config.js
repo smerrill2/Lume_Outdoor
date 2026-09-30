@@ -55,6 +55,20 @@ module.exports = {
           foreground: "hsl(var(--card-foreground))",
         },
         'brand-green': '#1D4B26',
+        // Copper scale matching the header CTA (.btn-copper): 400/500/600 are its gradient stops
+        orange: {
+          50: '#FBF3EC',
+          100: '#F5E3D2',
+          200: '#EDC7A6',
+          300: '#E3A46F',
+          400: '#D8813A',
+          500: '#C96A1B',
+          600: '#B45D15',
+          700: '#8F4A12',
+          800: '#6E3910',
+          900: '#522B0D',
+          950: '#2E1807',
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
