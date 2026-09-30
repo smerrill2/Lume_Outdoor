@@ -139,7 +139,7 @@ const ServiceAreaMap = () => {
   }, [mapLoaded]);
 
   return (
-    <section id="service-area" className="py-24 md:py-28 px-4 bg-neutral-900">
+    <section id="service-area" className="py-24 md:py-28 px-4 bg-neutral-950">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-14 md:mb-20">
           <h2 className="text-3xl md:text-4xl font-light text-white">

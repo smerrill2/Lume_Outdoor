@@ -1,17 +1,11 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Lightbulb } from 'lucide-react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { Plus } from 'lucide-react';
 
 const FAQ = () => {
-  const [openIndex, setOpenIndex] = useState(null);
-  const sectionRef = useRef(null);
-  const titleRef = useRef(null);
-  const faqRefs = useRef([]);
+  const [openIndex, setOpenIndex] = useState(0);
 
   const faqs = [
     {
@@ -56,74 +50,70 @@ const FAQ = () => {
     }
   ];
 
-  useEffect(() => {
-    // No animations - elements stay visible
-  }, []);
-
   const toggleFAQ = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
   return (
-    <section ref={sectionRef} className="py-16 md:py-20 px-4 bg-gradient-to-b from-amber-50/40 via-orange-50/20 to-white">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-12">
-          <div className="flex justify-center items-center mb-4">
-            <Lightbulb className="w-8 h-8 text-orange-500 mr-2" />
-            <h2 ref={titleRef} className="text-3xl md:text-4xl font-bold text-gray-900">
-              Frequently Asked Questions
+    <section id="faq" className="py-20 md:py-28 bg-[#FDFBF6]">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 grid md:grid-cols-12 gap-10 md:gap-12">
+        {/* Header */}
+        <div className="md:col-span-4">
+          <div className="md:sticky md:top-28">
+            <h2 className="font-display text-4xl md:text-6xl font-medium leading-[1.05] text-gray-900 mb-5">
+              Questions, <em className="italic font-normal">answered</em>
             </h2>
-          </div>
-          <p className="text-gray-600 mt-4">
-            Everything you need to know about outdoor lighting
-          </p>
-        </div>
-
-        <div className="space-y-4">
-          {faqs.map((faq, index) => (
-            <div
-              key={index}
-              ref={el => faqRefs.current[index] = el}
-              className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+            <p className="text-base text-gray-600 leading-relaxed mb-8 max-w-sm">
+              Everything homeowners usually ask before their first consultation. Don&rsquo;t see yours? Ask us on the walkthrough.
+            </p>
+            <Link
+              href="/consultation"
+              onClick={() => { if (typeof window.gtag_report_lead_start === 'function') window.gtag_report_lead_start('faq'); }}
+              className="inline-flex items-center h-12 px-7 rounded-sm bg-orange-500 hover:bg-orange-600 text-white font-medium tracking-wide transition-colors duration-300"
             >
-              <button
-                onClick={() => toggleFAQ(index)}
-                className="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 transition-colors"
-              >
-                <h3 className="text-lg font-semibold text-gray-900 pr-4">
-                  {faq.question}
-                </h3>
-                <ChevronDown 
-                  className={`w-5 h-5 text-gray-500 flex-shrink-0 transition-transform duration-300 ${
-                    openIndex === index ? 'rotate-180' : ''
-                  }`}
-                />
-              </button>
-              
-              <div 
-                className={`px-6 overflow-hidden transition-all duration-300 ${
-                  openIndex === index ? 'max-h-96 pb-4' : 'max-h-0'
-                }`}
-              >
-                <p className="text-gray-600 leading-relaxed">
-                  {faq.answer}
-                </p>
-              </div>
-            </div>
-          ))}
+              Schedule a Consultation
+            </Link>
+          </div>
         </div>
 
-        <div className="mt-12 text-center">
-          <p className="text-gray-600 mb-4">
-            Still have questions? We&apos;re here to help!
-          </p>
-          <button
-            onClick={() => { if (typeof window.gtag_report_lead_start === 'function') window.gtag_report_lead_start('faq'); window.location.href = '/?view=consultation'; }}
-            className="inline-flex items-center px-6 py-3 text-white font-medium rounded-lg transition-all hover:brightness-110"
-            style={{ backgroundColor: '#C96A1B' }}
-          >
-            Schedule Your Free Consultation
-          </button>
+        {/* Questions */}
+        <div className="md:col-span-8 border-t border-gray-300">
+          {faqs.map((faq, index) => {
+            const isOpen = openIndex === index;
+            const answerId = `faq-answer-${index}`;
+            return (
+              <div key={faq.question} className="border-b border-gray-300">
+                <h3>
+                  <button
+                    type="button"
+                    onClick={() => toggleFAQ(index)}
+                    aria-expanded={isOpen}
+                    aria-controls={answerId}
+                    className="w-full flex items-start justify-between gap-6 py-5 md:py-6 text-left group"
+                  >
+                    <span className="text-base md:text-lg font-semibold text-gray-900 group-hover:text-orange-600 transition-colors duration-300">
+                      {faq.question}
+                    </span>
+                    <Plus
+                      className={`w-5 h-5 mt-0.5 flex-shrink-0 text-gray-500 transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}
+                      aria-hidden="true"
+                    />
+                  </button>
+                </h3>
+                {/* grid-rows transition animates to the answer's real height */}
+                <div
+                  id={answerId}
+                  className={`grid transition-[grid-template-rows] duration-300 ease-out ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
+                >
+                  <div className="overflow-hidden">
+                    <p className="pb-6 pr-10 text-base text-gray-600 leading-relaxed max-w-2xl">
+                      {faq.answer}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

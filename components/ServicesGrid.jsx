@@ -1,83 +1,86 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight } from 'lucide-react';
 
 const featuredServices = [
   {
     id: "residential-landscape",
     title: "Residential Landscape",
-    description: "Elegant illumination for every corner of your property",
-    image: "/servicesphotos/outside-card.webp",
+    description: "Uplighting, bed lighting, and accents designed around your home.",
+    image: "/servicesphotos/residential-landscape-card.webp",
   },
   {
     id: "pathway-lighting",
     title: "Pathway Lighting",
-    description: "Safe and stunning walkway lighting",
+    description: "Warm, low-glare light that guides every step to the door.",
     image: "/projects/newton_project/NEWTON3-card.webp",
   },
   {
     id: "tree-lighting",
     title: "Tree Lighting",
-    description: "Dramatic uplighting for any landscape",
+    description: "Uplighting that turns mature trees into the centerpiece.",
     image: "/servicesphotos/tree_lighting-card.webp",
   },
 ];
 
 function ServicesGrid() {
   return (
-    <section id="services" className="py-24 md:py-28 px-4 bg-neutral-900">
-      <div className="container mx-auto">
+    <section id="services" className="py-20 md:py-28 bg-neutral-950">
+      <div className="max-w-7xl mx-auto px-6 md:px-12">
         {/* Header */}
-        <div className="text-center mb-14 md:mb-20">
-          <h2 className="text-3xl md:text-4xl font-light text-white">
-            Our Services
+        <div className="flex items-end justify-between gap-6 mb-10 md:mb-14">
+          <h2 className="font-display text-4xl md:text-6xl font-medium leading-[1.05] text-white">
+            Our services
           </h2>
+          <Link
+            href="/services"
+            className="hidden md:inline-block mb-2 text-white font-medium underline underline-offset-[6px] decoration-white/40 hover:decoration-white transition-colors duration-300"
+          >
+            See all services
+          </Link>
         </div>
 
-        {/* Featured Services - 3 Big Image Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {featuredServices.map((service) => (
-            <Link
-              key={service.id}
-              href={`/services/${service.id}`}
-              className="group relative cursor-pointer rounded-xl overflow-hidden aspect-[3/4] md:aspect-[4/5]"
-            >
-              <Image
-                src={service.image}
-                alt={service.title}
-                fill
-                sizes="(max-width: 768px) calc(100vw - 96px), 33vw"
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              {/* Text Content */}
-              <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8">
-                <h3 className="text-lg md:text-xl font-light text-white tracking-tight mb-1.5">
+        {/* Featured Services */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 lg:gap-x-10 gap-y-14">
+          {featuredServices.map((service, serviceIndex) => (
+            <Link key={service.id} href={`/services/${service.id}`} className="group block">
+              <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-neutral-800">
+                <Image
+                  src={service.image}
+                  alt={service.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                />
+              </div>
+
+              <div className="mt-5 md:mt-6">
+                <p className="text-sm text-white/40 mb-2 tabular-nums">
+                  {String(serviceIndex + 1).padStart(2, '0')}
+                </p>
+                <h3 className="font-display text-3xl font-medium leading-tight text-white mb-2">
                   {service.title}
                 </h3>
-                <p className="text-white/50 text-xs font-light mb-4">
+                <p className="text-base text-white/65 leading-relaxed mb-4">
                   {service.description}
                 </p>
-                <div className="flex items-center text-white/80 font-semibold text-xs tracking-wide group-hover:text-white transition-colors duration-300">
-                  Learn More <ArrowRight className="w-4 h-4 ml-1.5 group-hover:translate-x-1 transition-transform duration-300" />
-                </div>
+                <span className="text-sm font-medium text-white underline underline-offset-[6px] decoration-white/30 group-hover:decoration-white transition-colors duration-300">
+                  Learn more
+                </span>
               </div>
             </Link>
           ))}
         </div>
 
-        {/* See All Services Link */}
-        <div className="text-center mt-10">
+        {/* See All Services (mobile) */}
+        <div className="md:hidden mt-14">
           <Link
             href="/services"
-            className="inline-flex items-center gap-2 text-white/40 font-light hover:text-white transition-colors duration-300"
+            className="flex items-center justify-center h-12 w-full rounded-sm border border-white/40 text-white font-medium hover:bg-white hover:text-neutral-950 transition-colors duration-300"
           >
-            See All Services
-            <ArrowRight className="w-4 h-4" />
+            See all services
           </Link>
         </div>
-
-
       </div>
     </section>
   );

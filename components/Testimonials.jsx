@@ -102,46 +102,54 @@ const Testimonials = () => {
     ));
   };
 
-  const currentTestimonial = testimonials[activeIndex];
-
   return (
-    <section id="testimonials" className="py-24 md:py-28 px-4 bg-neutral-900">
+    <section id="testimonials" className="py-24 md:py-28 px-4 bg-neutral-950">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-14 md:mb-20">
-          <h2 className="text-3xl md:text-4xl font-light text-white">
+          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-white">
             What Our Clients Say
           </h2>
         </div>
 
         <div
-          className="relative text-center min-h-[200px] md:min-h-[220px] flex items-center justify-center cursor-grab active:cursor-grabbing select-none"
+          className="relative text-center cursor-grab active:cursor-grabbing select-none"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
           onMouseDown={handleMouseDown}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseLeave}
         >
-          {/* Quote Content */}
-          <div
-            key={activeIndex}
-            className="animate-fadeSlide"
-          >
-            <p className="text-xl md:text-2xl lg:text-3xl font-light text-white/80 leading-relaxed md:leading-relaxed tracking-tight italic max-w-3xl mx-auto">
-              &ldquo;{currentTestimonial.text}&rdquo;
-            </p>
+          {/* All quotes share one grid cell so the container is always as tall as the longest quote and nothing below shifts */}
+          <div className="grid">
+            {testimonials.map((testimonial, testimonialIndex) => {
+              const isActive = testimonialIndex === activeIndex;
+              return (
+                <div
+                  key={testimonial.id}
+                  aria-hidden={!isActive}
+                  className={`[grid-area:1/1] flex flex-col items-center justify-center transition-all duration-500 ease-out ${
+                    isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'
+                  }`}
+                >
+                  <p className="text-xl md:text-2xl lg:text-3xl font-normal text-white/90 leading-relaxed md:leading-relaxed tracking-tight italic max-w-3xl mx-auto">
+                    &ldquo;{testimonial.text}&rdquo;
+                  </p>
 
-            <div className="mt-8 flex items-center justify-center gap-4">
-              <div className="w-10 h-px bg-white/20" />
-              <div>
-                <div className="flex justify-center gap-0.5 mb-1.5">
-                  {renderStars(currentTestimonial.rating)}
+                  <div className="mt-8 flex items-center justify-center gap-4">
+                    <div className="w-10 h-px bg-white/20" />
+                    <div>
+                      <div className="flex justify-center gap-0.5 mb-1.5">
+                        {renderStars(testimonial.rating)}
+                      </div>
+                      <span className="text-xs font-semibold tracking-[0.15em] text-white/70 uppercase">
+                        {testimonial.name} &mdash; {testimonial.location}
+                      </span>
+                    </div>
+                    <div className="w-10 h-px bg-white/20" />
+                  </div>
                 </div>
-                <span className="text-xs font-light tracking-wide text-white/50 uppercase">
-                  {currentTestimonial.name} &mdash; {currentTestimonial.location}
-                </span>
-              </div>
-              <div className="w-10 h-px bg-white/20" />
-            </div>
+              );
+            })}
           </div>
         </div>
 
@@ -178,21 +186,6 @@ const Testimonials = () => {
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes fadeSlide {
-          from {
-            opacity: 0;
-            transform: translateY(8px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fadeSlide {
-          animation: fadeSlide 0.5s ease-out forwards;
-        }
-      `}</style>
     </section>
   );
 };

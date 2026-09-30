@@ -1,20 +1,25 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
 import { projects } from '@/lib/content';
 
 function PreviousWorkShowcase() {
   const homePageProjects = projects.filter(project => project.showOnHomePage !== false);
 
   return (
-    <section id="previous-work" className="py-24 md:py-28 bg-amber-50/40">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="previous-work" className="pt-20 pb-16 md:pt-28 md:pb-20 bg-[#FDFBF6]">
+      <div className="max-w-7xl mx-auto px-6 md:px-12">
         {/* Header */}
-        <div className="text-center mb-16 md:mb-20">
-          <h2 className="text-3xl md:text-4xl font-light text-gray-900">
-            Recent Projects
+        <div className="flex items-end justify-between gap-6 mb-12 md:mb-16">
+          <h2 className="font-display text-4xl md:text-6xl font-medium leading-[1.05] text-gray-900">
+            Recent <em className="italic font-normal">work</em>
           </h2>
+          <Link
+            href="/projects"
+            className="hidden md:inline-block mb-2 text-gray-900 font-medium underline underline-offset-[6px] decoration-gray-300 hover:decoration-gray-900 transition-colors duration-300"
+          >
+            See all projects
+          </Link>
         </div>
 
         {/* Alternating Mosaic Rows */}
@@ -28,17 +33,17 @@ function PreviousWorkShowcase() {
                 href={`/projects/${project.id}`}
                 className="group block"
               >
-                <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 items-center ${
+                <div className={`grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-center ${
                   !isImageLeft ? 'md:[direction:rtl]' : ''
                 }`}>
                   {/* Image Side */}
-                  <div className="relative aspect-[4/3] rounded-xl overflow-hidden md:[direction:ltr]">
+                  <div className="md:col-span-7 relative aspect-[4/3] rounded-sm overflow-hidden bg-neutral-200 md:[direction:ltr]">
                     <Image
                       src={project.image}
                       alt={project.title}
                       fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      sizes="(max-width: 768px) calc(100vw - 32px), 50vw"
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                      sizes="(max-width: 768px) 100vw, 58vw"
                       quality={80}
                       loading="lazy"
                       placeholder="blur"
@@ -47,33 +52,22 @@ function PreviousWorkShowcase() {
                   </div>
 
                   {/* Text Side */}
-                  <div className="md:[direction:ltr] flex flex-col justify-center py-2 md:py-4">
-                    <span className="text-xs font-light tracking-wide text-gray-400 uppercase mb-3 block">
-                      {project.location}
-                    </span>
+                  <div className="md:col-span-5 md:[direction:ltr] flex flex-col justify-center">
+                    <p className="text-sm text-gray-500 mb-2">
+                      {project.location} &middot; {project.tags.join(', ')}
+                    </p>
 
-                    <h3 className="text-2xl md:text-3xl font-light text-gray-900 mb-4 group-hover:text-gray-600 transition-colors duration-300">
+                    <h3 className="font-display text-3xl md:text-[2.5rem] font-medium leading-tight text-gray-900 mb-4">
                       {project.title}
                     </h3>
 
-                    <p className="text-sm md:text-base font-light text-gray-500 leading-relaxed mb-6">
+                    <p className="text-base text-gray-600 leading-relaxed mb-5">
                       {project.description}
                     </p>
 
-                    <div className="flex flex-wrap gap-2 mb-6">
-                      {project.tags.map((tag, tagIndex) => (
-                        <span
-                          key={tagIndex}
-                          className="text-xs font-light tracking-wide text-gray-400 border border-gray-200 px-3 py-1 rounded-full"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="flex items-center text-gray-900 font-semibold text-xs tracking-wide group-hover:text-gray-600 transition-colors duration-300">
-                      View Project <ArrowRight className="w-4 h-4 ml-1.5 group-hover:translate-x-2 transition-transform duration-300 ease-out" />
-                    </div>
+                    <span className="self-start text-sm font-medium text-gray-900 underline underline-offset-[6px] decoration-gray-300 group-hover:decoration-gray-900 transition-colors duration-300">
+                      View project
+                    </span>
                   </div>
                 </div>
               </Link>
@@ -81,13 +75,13 @@ function PreviousWorkShowcase() {
           })}
         </div>
 
-        {/* View All */}
-        <div className="text-center mt-16 md:mt-20">
+        {/* See All Projects (mobile) */}
+        <div className="md:hidden mt-14">
           <Link
             href="/projects"
-            className="inline-flex items-center gap-2 text-gray-900 font-semibold text-xs tracking-wide hover:text-gray-600 transition-colors duration-300"
+            className="flex items-center justify-center h-12 w-full rounded-sm border border-gray-900 text-gray-900 font-medium hover:bg-gray-900 hover:text-white transition-colors duration-300"
           >
-            See More <ArrowRight className="w-4 h-4" />
+            See all projects
           </Link>
         </div>
       </div>

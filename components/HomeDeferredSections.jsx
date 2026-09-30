@@ -20,7 +20,7 @@ function SectionPlaceholder({ variant, height }) {
   const isDark = variant === 'dark';
 
   return (
-    <section className={`${height} ${isDark ? 'bg-neutral-900' : 'bg-amber-50/40'} px-4 py-24`}>
+    <section className={`${height} ${isDark ? 'bg-neutral-950' : 'bg-amber-50/40'} px-4 py-24`}>
       <div className="max-w-5xl mx-auto animate-pulse">
         <div className={`mx-auto mb-14 h-8 w-56 rounded ${isDark ? 'bg-white/10' : 'bg-gray-200'}`} />
         <div className={`h-64 rounded-xl ${isDark ? 'bg-white/[0.04]' : 'bg-white/70'}`} />

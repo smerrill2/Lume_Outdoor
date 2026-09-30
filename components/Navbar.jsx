@@ -188,7 +188,7 @@ function Navbar() {
 
       {/* Mobile Menu - Only shown on mobile */}
       <div
-        className={`lg:hidden fixed inset-0 bg-neutral-900/95 backdrop-blur-md z-40 transform transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`lg:hidden fixed inset-0 bg-neutral-950/95 backdrop-blur-md z-40 transform transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
         <div className="h-full flex flex-col justify-center items-center pt-16">
           <nav className="text-center">
