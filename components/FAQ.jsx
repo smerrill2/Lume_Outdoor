@@ -3,52 +3,10 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
+import { homeFaqs } from '@/lib/content';
 
 const FAQ = () => {
   const [openIndex, setOpenIndex] = useState(0);
-
-  const faqs = [
-    {
-      question: "Will outdoor lighting increase my electricity bill?",
-      answer: "Not by much. Our systems use low-voltage, energy-efficient LED fixtures that are designed to run at minimal cost. On average, a full lighting system may cost just a few dollars per month to operate."
-    },
-    {
-      question: "Will trenching for the wires leave ruts or damage my yard?",
-      answer: "No. We take great care in minimizing disruption. Most trenching is shallow and done with precision tools. After installation, we clean up and restore the area so it looks as if we were never there."
-    },
-    {
-      question: "Do you offer a warranty?",
-      answer: "Yes. Fixtures and transformers include a 20-year product warranty. System controls carry their applicable manufacturer's warranty. Labor and installation are not covered."
-    },
-    {
-      question: "What if I want to expand the system later?",
-      answer: "That's no problem. Our designs are modular and easily expandable, so we can add more lights down the road without starting from scratch."
-    },
-    {
-      question: "What kind of maintenance is required?",
-      answer: "Very little. LEDs are long-lasting, and our systems are built to handle the elements. If something ever needs adjusting or replacing, we're just a call away. We also offer service visits for system checkups."
-    },
-    {
-      question: "Can I control my lights with a timer or app?",
-      answer: "Absolutely. We offer multiple control options, including simple dusk-to-dawn timers, digital smart timers, and app-controlled systems for full remote access."
-    },
-    {
-      question: "How long does installation take?",
-      answer: "Most residential jobs are completed in 1–2 days, depending on size and complexity. We'll give you a clear timeline before we begin."
-    },
-    {
-      question: "Do I need to be home during installation?",
-      answer: "Not necessarily. As long as we have access to the areas we're working on and power for the transformer, we can get everything installed while you're away."
-    },
-    {
-      question: "Will the lights be too bright or harsh at night?",
-      answer: "Not at all. We use professional-grade fixtures with warm-toned LEDs and design each system to create a natural, elegant glow — never harsh or overbearing."
-    },
-    {
-      question: "How do I get started?",
-      answer: "Just book your free consultation! We'll walk your property, discuss your goals, and provide a custom design and quote — no pressure."
-    }
-  ];
 
   const toggleFAQ = (index) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -78,7 +36,7 @@ const FAQ = () => {
 
         {/* Questions */}
         <div className="md:col-span-8 border-t border-gray-300">
-          {faqs.map((faq, index) => {
+          {homeFaqs.map((faq, index) => {
             const isOpen = openIndex === index;
             const answerId = `faq-answer-${index}`;
             return (
@@ -106,9 +64,18 @@ const FAQ = () => {
                   className={`grid transition-[grid-template-rows] duration-300 ease-out ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
                 >
                   <div className="overflow-hidden">
-                    <p className="pb-6 pr-10 text-base text-gray-600 leading-relaxed max-w-2xl">
+                    <p className={`${faq.link ? 'pb-3' : 'pb-6'} pr-10 text-base text-gray-600 leading-relaxed max-w-2xl`}>
                       {faq.answer}
                     </p>
+                    {faq.link && (
+                      <Link
+                        href={faq.link.href}
+                        tabIndex={isOpen ? undefined : -1}
+                        className="inline-block mb-6 text-sm font-medium text-orange-600 underline underline-offset-4 decoration-orange-600/40 hover:decoration-orange-600 transition-colors duration-300"
+                      >
+                        {faq.link.label}
+                      </Link>
+                    )}
                   </div>
                 </div>
               </div>

@@ -157,6 +157,25 @@ export default async function BlogPostPage({ params }) {
                       </p>
                     ))}
                   </div>
+                  {section.image && (
+                    <figure className="mt-8">
+                      <div className="flex justify-center bg-white px-6 py-8">
+                        <Image
+                          src={section.image.src}
+                          alt={section.image.alt}
+                          width={section.image.width}
+                          height={section.image.height}
+                          className="h-auto max-w-full"
+                          sizes="(max-width: 768px) 90vw, 720px"
+                        />
+                      </div>
+                      {section.image.caption && (
+                        <figcaption className="mt-3 text-sm font-light leading-relaxed text-neutral-500">
+                          {section.image.caption}
+                        </figcaption>
+                      )}
+                    </figure>
+                  )}
                   {section.takeaway && (
                     <blockquote className="mt-8 border-l-2 border-[#C96A1B] py-1 pl-6 text-xl font-light leading-relaxed text-neutral-900">
                       {section.takeaway}

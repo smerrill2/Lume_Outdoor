@@ -4,12 +4,31 @@ import ServicesGrid from '@/components/ServicesGrid';
 import PreviousWorkShowcase from '@/components/PreviousWorkShowcase';
 import ServiceProcess from '@/components/ServiceProcess';
 import HomeDeferredSections from '@/components/HomeDeferredSections';
+import { homeFaqs } from '@/lib/content';
 
 const heroBackground = '/projects/hero/lakefront-modern-hero.webp';
+
+// The FAQ section is lazy-loaded on the client, so this schema keeps its content in the server HTML for crawlers
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: homeFaqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: faq.answer,
+    },
+  })),
+};
 
 export default function Home() {
   return (
     <div className="min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema).replace(/</g, '\\u003c') }}
+      />
       {/* Hero Section */}
       <section className="relative md:h-[calc(90vh+200px)] -mt-[200px] pt-[200px] flex items-end overflow-hidden bg-neutral-950">
         {/* Background Image: top band on mobile (copy sits below it on black), full-bleed on desktop */}
