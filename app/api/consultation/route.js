@@ -15,6 +15,14 @@ import fs from 'fs';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+/* ── Addresses ──
+   Sending must use the Resend-verified lumeoutdoor.com domain, but that domain
+   has no mailbox (no MX record). Drake's real inbox is on lumeoutdoorlighting.com,
+   so lead notifications and customer replies route there. */
+const SENDER_ADDRESS = 'Lume Outdoor Lighting <Drake@lumeoutdoor.com>';
+const LEAD_INBOX_ADDRESS = 'Drake@lumeoutdoorlighting.com';
+const SUPABASE_INSERT_TIMEOUT_MS = 8000;
+
 /* ── Read logo once at module load ── */
 const logoPath = path.join(process.cwd(), 'public', 'Lumepng.png');
 const logoBase64 = `data:image/png;base64,${fs.readFileSync(logoPath).toString('base64')}`;
@@ -201,7 +209,7 @@ function ConsultationPdf({ contactInfo, services, date }) {
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>Lume Outdoor Lighting</Text>
-          <Text style={styles.footerText}>Drake@lumeoutdoor.com</Text>
+          <Text style={styles.footerText}>{LEAD_INBOX_ADDRESS}</Text>
         </View>
       </Page>
     </Document>
@@ -269,6 +277,7 @@ export async function POST(request) {
           },
         })
         .select('id')
+        .abortSignal(AbortSignal.timeout(SUPABASE_INSERT_TIMEOUT_MS))
         .single();
 
       if (error) throw error;
@@ -300,12 +309,79 @@ export async function POST(request) {
       content: pdfBuffer,
     };
 
-    /* ── Email to customer ── */
     const customerName = escapeHtml(contactInfo.name);
+    const savedToDashboard = Boolean(submissionId);
 
-    await resend.emails.send({
-      from: 'Lume Outdoor Lighting <Drake@lumeoutdoor.com>',
+    /* ── Lead email to Drake (sent first — it's the backup record when the DB save fails) ── */
+    const serviceListHtml = services
+      .map(
+        (s) =>
+          `<li style="margin-bottom: 6px;"><strong>${escapeHtml(s.name)}</strong> — ${escapeHtml(s.configSummary)}</li>`,
+      )
+      .join('');
+
+    const leadEmailSubject = savedToDashboard
+      ? `New Consultation Request — ${contactInfo.name}`
+      : `⚠️ NOT SAVED TO DASHBOARD — New Consultation Request — ${contactInfo.name}`;
+
+    const unsavedWarningHtml = savedToDashboard
+      ? ''
+      : `<div style="background: #FEF2F2; border: 1px solid #FCA5A5; border-radius: 6px; padding: 12px; margin-bottom: 20px; color: #991B1B;">
+          <strong>This lead was not saved to the admin dashboard</strong> (database error). This email is the only copy — keep it.
+        </div>`;
+
+    const rawSubmissionHtml = savedToDashboard
+      ? ''
+      : `<hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;" />
+        <p style="color: #999; font-size: 12px;">Raw submission data (for re-entering into the dashboard):</p>
+        <pre style="background: #f9f9f9; padding: 10px; font-size: 11px; white-space: pre-wrap; word-break: break-word;">${escapeHtml(
+          JSON.stringify({ contactInfo, services, leadAttribution, leadTransactionId }, null, 2),
+        )}</pre>`;
+
+    const { error: leadEmailError } = await resend.emails.send({
+      from: SENDER_ADDRESS,
+      to: LEAD_INBOX_ADDRESS,
+      replyTo: contactInfo.email,
+      subject: leadEmailSubject,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          ${unsavedWarningHtml}
+          <h2 style="color: ${BRAND_GREEN};">New Consultation Request</h2>
+          <p style="color: #555;"><strong>Name:</strong> ${customerName}</p>
+          <p style="color: #555;"><strong>Email:</strong> ${escapeHtml(contactInfo.email)}</p>
+          <p style="color: #555;"><strong>Phone:</strong> ${escapeHtml(contactInfo.phone)}</p>
+          ${contactInfo.address ? `<p style="color: #555;"><strong>Address:</strong> ${escapeHtml(contactInfo.address)}</p>` : ''}
+          <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;" />
+          <h3 style="color: ${BRAND_GREEN};">Services Requested</h3>
+          <ul style="color: #555; line-height: 1.8;">${serviceListHtml}</ul>
+          ${contactInfo.notes ? `<hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;" /><h3 style="color: ${BRAND_GREEN};">Notes</h3><p style="color: #555;">${escapeHtml(contactInfo.notes)}</p>` : ''}
+          <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;" />
+          <p style="color: #999; font-size: 12px;">Full consultation summary PDF attached. Reply to this email to respond to the customer directly.</p>
+          ${rawSubmissionHtml}
+        </div>
+      `,
+      attachments: [pdfAttachment],
+    });
+
+    if (leadEmailError) {
+      console.error('Lead notification email error:', leadEmailError);
+    }
+
+    /* ── Neither the dashboard nor Drake has this lead — fail loudly so the customer retries ── */
+    if (!savedToDashboard && leadEmailError) {
+      return Response.json(
+        {
+          error: `We couldn't submit your request right now. Please try again in a few minutes, or email us at ${LEAD_INBOX_ADDRESS}.`,
+        },
+        { status: 502 },
+      );
+    }
+
+    /* ── Confirmation email to customer (non-blocking — the lead is already recorded) ── */
+    const { error: customerEmailError } = await resend.emails.send({
+      from: SENDER_ADDRESS,
       to: contactInfo.email,
+      replyTo: LEAD_INBOX_ADDRESS,
       subject: 'Your Lume Outdoor Consultation Summary',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -320,42 +396,16 @@ export async function POST(request) {
           </p>
           <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;" />
           <p style="color: #999; font-size: 12px;">
-            Lume Outdoor Lighting<br />Drake@lumeoutdoor.com
+            Lume Outdoor Lighting<br />${LEAD_INBOX_ADDRESS}
           </p>
         </div>
       `,
       attachments: [pdfAttachment],
     });
 
-    /* ── Receipt email to Drake ── */
-    const serviceListHtml = services
-      .map(
-        (s) =>
-          `<li style="margin-bottom: 6px;"><strong>${escapeHtml(s.name)}</strong> — ${escapeHtml(s.configSummary)}</li>`,
-      )
-      .join('');
-
-    await resend.emails.send({
-      from: 'Lume Outdoor Lighting <Drake@lumeoutdoor.com>',
-      to: 'Drake@lumeoutdoor.com',
-      subject: `New Consultation Request — ${contactInfo.name}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h2 style="color: ${BRAND_GREEN};">New Consultation Request</h2>
-          <p style="color: #555;"><strong>Name:</strong> ${customerName}</p>
-          <p style="color: #555;"><strong>Email:</strong> ${escapeHtml(contactInfo.email)}</p>
-          <p style="color: #555;"><strong>Phone:</strong> ${escapeHtml(contactInfo.phone)}</p>
-          ${contactInfo.address ? `<p style="color: #555;"><strong>Address:</strong> ${escapeHtml(contactInfo.address)}</p>` : ''}
-          <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;" />
-          <h3 style="color: ${BRAND_GREEN};">Services Requested</h3>
-          <ul style="color: #555; line-height: 1.8;">${serviceListHtml}</ul>
-          ${contactInfo.notes ? `<hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;" /><h3 style="color: ${BRAND_GREEN};">Notes</h3><p style="color: #555;">${escapeHtml(contactInfo.notes)}</p>` : ''}
-          <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;" />
-          <p style="color: #999; font-size: 12px;">Full consultation summary PDF attached.</p>
-        </div>
-      `,
-      attachments: [pdfAttachment],
-    });
+    if (customerEmailError) {
+      console.error('Customer confirmation email error:', customerEmailError);
+    }
 
     return Response.json({
       success: true,

@@ -252,7 +252,7 @@ export default function ProposalPdf({ customerInfo, lineItems, grandTotal, notes
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>Lume Outdoor Lighting</Text>
-          <Text style={styles.footerText}>Drake@lumeoutdoor.com</Text>
+          <Text style={styles.footerText}>Drake@lumeoutdoorlighting.com</Text>
         </View>
       </Page>
     </Document>
