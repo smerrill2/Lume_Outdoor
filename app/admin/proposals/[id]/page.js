@@ -2,7 +2,6 @@
 
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
 import Image from 'next/image';
 import { resolvePricing, resolveFinishPhoto } from '@/lib/pricing';
 import {
@@ -34,27 +33,30 @@ export default function ProposalBuilderPage({ params }) {
   }, [id]);
 
   const fetchSubmission = async () => {
-    const { data, error } = await supabase
-      .from('consultation_submissions')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const response = await fetch(`/api/admin/submissions/${id}`);
 
-    if (error || !data) {
+    if (response.status === 401) {
+      router.push('/admin/login');
+      return;
+    }
+
+    const { submission: fetchedSubmission, error } = await response.json().catch(() => ({}));
+
+    if (!response.ok || !fetchedSubmission) {
       console.error('Failed to fetch submission:', error);
       setIsLoading(false);
       return;
     }
 
-    setSubmission(data);
+    setSubmission(fetchedSubmission);
 
     /* If proposal_data already exists, restore it */
-    if (data.proposal_data?.lineItems) {
-      setLineItems(data.proposal_data.lineItems);
-      setProposalNotes(data.proposal_data.notes || '');
+    if (fetchedSubmission.proposal_data?.lineItems) {
+      setLineItems(fetchedSubmission.proposal_data.lineItems);
+      setProposalNotes(fetchedSubmission.proposal_data.notes || '');
     } else {
       /* Initialize line items from the customer's service selections */
-      const initialLineItems = (data.services || []).map((service, index) => {
+      const initialLineItems = (fetchedSubmission.services || []).map((service, index) => {
         const { pricePerUnit } = resolvePricing(service.configType, service.rawConfig);
         const finishInfo = resolveFinishPhoto(service.configType, service.rawConfig);
         return {

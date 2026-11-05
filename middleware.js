@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { hasValidAdminSession } from '@/lib/adminSession';
 
 export function middleware(request) {
   const { pathname } = request.nextUrl;
@@ -8,11 +9,12 @@ export function middleware(request) {
     return NextResponse.next();
   }
 
-  /* All other /admin routes require a valid session cookie */
-  const sessionToken = request.cookies.get('admin_session')?.value;
-  const expectedToken = process.env.ADMIN_SESSION_TOKEN;
+  /* All other admin pages and admin APIs require a valid session cookie */
+  if (!hasValidAdminSession(request)) {
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+    }
 
-  if (!sessionToken || sessionToken !== expectedToken) {
     const loginUrl = new URL('/admin/login', request.url);
     return NextResponse.redirect(loginUrl);
   }
@@ -21,5 +23,5 @@ export function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin/:path*', '/api/admin/:path*', '/api/proposals/:path*'],
 };

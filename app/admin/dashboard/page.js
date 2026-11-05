@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
 import { ClipboardList, LogOut, Clock, CheckCircle, Search } from 'lucide-react';
 
 const STATUS_CONFIG = {
@@ -22,17 +21,25 @@ export default function AdminDashboardPage() {
   }, []);
 
   const fetchSubmissions = async () => {
-    const { data, error } = await supabase
-      .from('consultation_submissions')
-      .select('*')
-      .order('created_at', { ascending: false });
+    try {
+      const response = await fetch('/api/admin/submissions');
 
-    if (error) {
-      console.error('Failed to fetch submissions:', error);
-    } else {
-      setSubmissions(data || []);
+      if (response.status === 401) {
+        router.push('/admin/login');
+        return;
+      }
+
+      const responseBody = await response.json();
+      if (!response.ok) {
+        throw new Error(responseBody.error || 'Failed to fetch submissions.');
+      }
+
+      setSubmissions(responseBody.submissions || []);
+    } catch (fetchError) {
+      console.error('Failed to fetch submissions:', fetchError);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const handleLogout = async () => {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { renderToBuffer } from '@react-pdf/renderer';
 import { createServiceClient } from '@/lib/supabase';
+import { hasValidAdminSession, unauthorizedResponse } from '@/lib/adminSession';
 import ProposalPdf from '@/components/pdf/ProposalPdf';
 import path from 'path';
 import fs from 'fs';
@@ -10,6 +11,10 @@ const logoPath = path.join(process.cwd(), 'public', 'Lumepng.png');
 const logoBase64 = `data:image/png;base64,${fs.readFileSync(logoPath).toString('base64')}`;
 
 export async function POST(request) {
+  if (!hasValidAdminSession(request)) {
+    return unauthorizedResponse();
+  }
+
   try {
     const { submissionId, customerInfo, lineItems, grandTotal, notes } = await request.json();
 
