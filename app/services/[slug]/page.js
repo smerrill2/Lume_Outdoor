@@ -17,12 +17,12 @@ export async function generateMetadata({ params }) {
     title: service.seoTitle || `${service.title} - Professional Installation`,
     description: service.seoDescription || service.description,
     alternates: {
-      canonical: `https://lumeoutdoor.com/services/${slug}`,
+      canonical: `https://www.lumeoutdoor.com/services/${slug}`,
     },
     openGraph: {
       title: service.seoTitle || `${service.title} - Professional Installation | Lume Outdoor`,
       description: service.seoDescription || service.description,
-      url: `https://lumeoutdoor.com/services/${slug}`,
+      url: `https://www.lumeoutdoor.com/services/${slug}`,
     },
   };
 }
@@ -40,7 +40,7 @@ export default async function ServiceDetailPage({ params }) {
     '@type': 'Service',
     name: service.title,
     description: service.seoDescription || service.description,
-    url: `https://lumeoutdoor.com/services/${slug}`,
+    url: `https://www.lumeoutdoor.com/services/${slug}`,
     areaServed: {
       '@type': 'City',
       name: 'Wichita',
@@ -52,7 +52,7 @@ export default async function ServiceDetailPage({ params }) {
     provider: {
       '@type': 'LocalBusiness',
       name: 'Lume Outdoor',
-      url: 'https://lumeoutdoor.com',
+      url: 'https://www.lumeoutdoor.com',
       telephone: '+1-316-655-1270',
     },
   };

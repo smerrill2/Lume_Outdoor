@@ -1,6 +1,10 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
+import { serviceAreaTowns } from '@/lib/serviceAreas';
+
+const townSlugByName = Object.fromEntries(serviceAreaTowns.map((town) => [town.name, town.slug]));
 
 const ServiceAreaMap = () => {
   const mapAreaRef = useRef(null);
@@ -19,6 +23,11 @@ const ServiceAreaMap = () => {
     { name: "Goddard", lat: 37.6597, lng: -97.5753 },
     { name: "Valley Center", lat: 37.8347, lng: -97.3734 },
   ];
+
+  // Towns with their own page that sit outside the mapped metro boundary
+  const fartherOutTowns = serviceAreaTowns.filter(
+    (town) => !serviceAreas.some((area) => area.name === town.name)
+  );
 
   const boundaryOrder = [
     "Valley Center", "El Dorado", "Andover", "Derby",
@@ -163,12 +172,37 @@ const ServiceAreaMap = () => {
                 key={area.name}
                 className={`py-3 border-b border-white/15 ${area.name === 'Wichita' ? 'text-orange-300' : 'text-white/80'}`}
               >
-                {area.name}
+                {townSlugByName[area.name] ? (
+                  <Link
+                    href={`/service-areas/${townSlugByName[area.name]}`}
+                    className="hover:text-white underline-offset-4 hover:underline transition-colors duration-300"
+                  >
+                    {area.name}
+                  </Link>
+                ) : (
+                  area.name
+                )}
               </li>
             ))}
           </ul>
 
-          <p className="mt-8 text-sm text-white/55">
+          <p className="mt-8 text-sm text-white/70">
+            We also take projects farther out, in{' '}
+            {fartherOutTowns.map((town, townIndex) => (
+              <React.Fragment key={town.slug}>
+                {townIndex > 0 && (townIndex === fartherOutTowns.length - 1 ? ' and ' : ', ')}
+                <Link
+                  href={`/service-areas/${town.slug}`}
+                  className="text-white underline underline-offset-4 decoration-white/40 hover:decoration-white transition-colors duration-300"
+                >
+                  {town.name}
+                </Link>
+              </React.Fragment>
+            ))}
+            .
+          </p>
+
+          <p className="mt-3 text-sm text-white/55">
             Don&rsquo;t see your town?{' '}
             <a href="/consultation" className="text-white underline underline-offset-4 decoration-white/40 hover:decoration-white transition-colors duration-300">
               Ask us anyway

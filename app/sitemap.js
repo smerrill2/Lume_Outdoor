@@ -1,12 +1,13 @@
 import { projectDetails, serviceData } from '@/lib/content'
 import { blogPosts } from '@/lib/blog'
+import { serviceAreaTowns } from '@/lib/serviceAreas'
 
 /* The bare domain 307-redirects to www, so every sitemap URL uses the www host
    Google actually lands on. Service, project, and blog entries come from the same
    data the pages are generated from, so new content shows up here automatically. */
 const SITE_ORIGIN = 'https://www.lumeoutdoor.com'
 
-const STATIC_PAGE_PATHS = ['/', '/services', '/projects', '/blog', '/about', '/consultation']
+const STATIC_PAGE_PATHS = ['/', '/services', '/service-areas', '/projects', '/blog', '/about', '/consultation']
 
 export default function sitemap() {
   const staticPageEntries = STATIC_PAGE_PATHS.map((pagePath) => ({
@@ -15,6 +16,10 @@ export default function sitemap() {
 
   const servicePageEntries = Object.keys(serviceData).map((serviceSlug) => ({
     url: `${SITE_ORIGIN}/services/${serviceSlug}`,
+  }))
+
+  const serviceAreaPageEntries = serviceAreaTowns.map((town) => ({
+    url: `${SITE_ORIGIN}/service-areas/${town.slug}`,
   }))
 
   const projectPageEntries = Object.keys(projectDetails).map((projectSlug) => ({
@@ -34,6 +39,7 @@ export default function sitemap() {
   return [
     ...staticPageEntries,
     ...servicePageEntries,
+    ...serviceAreaPageEntries,
     ...projectPageEntries,
     ...blogPostEntries,
   ]

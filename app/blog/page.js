@@ -8,13 +8,13 @@ export const metadata = {
   description:
     'Practical outdoor lighting advice from Lume Outdoor, including fixture guides, design notes, and ideas for Wichita-area homes.',
   alternates: {
-    canonical: 'https://lumeoutdoor.com/blog',
+    canonical: 'https://www.lumeoutdoor.com/blog',
   },
   openGraph: {
     title: 'Outdoor Lighting Guides & Ideas | Lume Outdoor',
     description:
       'Straightforward outdoor lighting advice from the team that designs and installs it.',
-    url: 'https://lumeoutdoor.com/blog',
+    url: 'https://www.lumeoutdoor.com/blog',
     images: ['/projects/reeds_cove_project/IMG_5410.jpeg'],
   },
 }

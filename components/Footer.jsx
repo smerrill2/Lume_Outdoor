@@ -16,7 +16,7 @@ const companyLinks = [
   { label: 'About', href: '/about' },
   { label: 'Our Work', href: '/projects' },
   { label: 'Our Process', href: '/#process' },
-  { label: 'Service Area', href: '/#service-area' },
+  { label: 'Service Areas', href: '/service-areas' },
   { label: 'Blog', href: '/blog' },
   { label: 'Contact', href: '/#contact' },
 ];

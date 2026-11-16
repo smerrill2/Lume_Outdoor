@@ -12,7 +12,7 @@ export async function generateMetadata({ params }) {
     return { title: 'Article Not Found | Lume Outdoor' }
   }
 
-  const url = `https://lumeoutdoor.com/blog/${post.slug}`
+  const url = `https://www.lumeoutdoor.com/blog/${post.slug}`
 
   return {
     title: `${post.title} | Lume Outdoor`,
@@ -52,7 +52,7 @@ export default async function BlogPostPage({ params }) {
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.excerpt,
-    image: `https://lumeoutdoor.com${post.image}`,
+    image: `https://www.lumeoutdoor.com${post.image}`,
     datePublished: post.publishedAt,
     dateModified: post.publishedAt,
     author: {
@@ -62,9 +62,9 @@ export default async function BlogPostPage({ params }) {
     publisher: {
       '@type': 'Organization',
       name: 'Lume Outdoor',
-      url: 'https://lumeoutdoor.com',
+      url: 'https://www.lumeoutdoor.com',
     },
-    mainEntityOfPage: `https://lumeoutdoor.com/blog/${post.slug}`,
+    mainEntityOfPage: `https://www.lumeoutdoor.com/blog/${post.slug}`,
   }
 
   return (

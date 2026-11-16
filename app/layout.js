@@ -46,7 +46,7 @@ export const metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://lumeoutdoor.com',
+    url: 'https://www.lumeoutdoor.com',
     siteName: 'Lume Outdoor',
     title: 'Lume Outdoor - Premium Outdoor Lighting Solutions',
     description: 'Transform your outdoor space with professional landscape lighting. Expert design, installation, and maintenance in Wichita, KS.',
